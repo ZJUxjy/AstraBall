@@ -74,7 +74,8 @@ export function annualPopulation(s){
    // then use payroll-checked reviews in market.js.
    if(!s.economy&&team.id!==s.manager?.clubId&&age>=16&&senior.length<30&&(needed||age>=18&&currentAbility(s,p)>=best-6)){
     promotePlayer(s,p.id,{automatic:true});result.promoted++;
-   }else if(age>=21){
+   }else if(age>=21&&(!s.economy?.contracts[p.id]||s.economy.contracts[p.id].end<s.date)){
+    // Aging out must not cancel a renewed contract; promotion remains a club decision.
     p.lastClub=p.club;p.club=null;p.unit='free';event(pop,s.year,'release',p,team.id);result.released++;
    }
   }

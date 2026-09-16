@@ -15,3 +15,6 @@ LEGACY_ENGINES[14]={...v12,restoreMatch(saved){return {...v12.restoreMatch({...s
 
 // V15 changes contracts and career rosters; its match mathematics remains V12.
 LEGACY_ENGINES[15]={...v12,restoreMatch(saved){return {...v12.restoreMatch({...saved,version:12}),version:15};}};
+
+// V16 changes career recruitment and finances; preserve its in-progress matches.
+LEGACY_ENGINES[16]={...v12,restoreMatch(saved){return {...v12.restoreMatch({...saved,version:12}),version:16};}};

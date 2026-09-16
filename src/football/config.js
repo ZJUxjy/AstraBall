@@ -1,4 +1,4 @@
-export const ENGINE_VERSION=16;
+export const ENGINE_VERSION=17;
 // Game-design coefficients, measured against held-out multi-roster fixtures.
 export const TUNE={
  passBase:.86,advance:.32,shoot:.085,actionSeconds:4.8,homeEdge:.012,

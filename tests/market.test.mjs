@@ -50,6 +50,19 @@ test('损坏账本、合同归属和重复交易记录被拒绝',()=>{
  const s=createSeason();s.manager={clubId:'sky'};signPlayer(s,target(s).player);for(const corrupt of [s=>s.economy.accounts.sky.cash++,s=>s.economy.contracts[clubPlayers(s,'sky')[0].id].club='silver-fc',s=>s.economy.accounts.sky.totals.wages=-1,s=>s.economy.moves.push(s.economy.moves[0]),s=>s.economy.moves[0].fee++]){const broken=clone(s);corrupt(broken);assert.throws(()=>validateSave(broken));}
 });
 
+test('已续约青年满二十一岁仍保留有效合同，实际到期后才释放',()=>{
+ let s=createSeason();s.manager={clubId:'sky'};const p=clubPlayers(s,'sky',{unit:'youth'})[0],id=p.id;
+ p.birthYear=298;s.economy.contracts[id].end='0318-12-31';renewPlayer(s,id,3);
+ assert.equal(s.economy.contracts[id].end,'0320-12-31');
+ for(const year of [319,320,321]){
+  const date=`${String(year).padStart(4,'0')}-01-01`;accrueEconomy(s,date);s.year=year;s.date=date;s.calendar=seasonCalendar(year);annualPopulation(s);rolloverEconomy(s);
+  const current=populationPlayer(s,id);
+  if(year<=320){assert.equal(current.club,'sky');assert.equal(current.unit,'youth');assert.equal(s.economy.contracts[id].end,'0320-12-31');assert.ok(clubPlayers(s,'sky',{unit:'youth'}).some(q=>q.id===id));}
+  else{assert.equal(current.club,null);assert.equal(current.unit,'free');assert.equal(s.economy.contracts[id],undefined);}
+  validateEconomy(s);const restored=validateSave(clone(s));assert.equal(digest(restored),digest(s));s=restored;
+ }
+});
+
 test('合同到期导致一线队不足十一人时仍能进入经理页面和重建阵容',()=>{
  const s=createSeason();s.manager={clubId:'sky'};for(const p of clubPlayers(s,'sky'))s.economy.contracts[p.id].end='0318-12-31';accrueEconomy(s,'0319-01-01');s.year=319;s.date='0319-01-01';s.calendar=seasonCalendar(s.year);annualPopulation(s);rolloverEconomy(s);assert.equal(clubPlayers(s,'sky').length,0);assert.ok(Number.isFinite(seasonGoal(s).target));const q=target(s);signPlayer(s,q.player);assert.equal(clubPlayers(s,'sky').length,1);validateEconomy(s);
 });
