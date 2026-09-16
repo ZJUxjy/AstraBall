@@ -1,3 +1,4 @@
+import {positionalAttribute} from './roles.js';
 import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
 import {rng,clamp,mean,sigmoid,logit} from './random.js';
@@ -8,8 +9,8 @@ import {tacticalEffects} from './tactics.js';
 import {exertion,conditionEffect} from './fitness.js';
 import {periodBase,penaltyShootout} from './rules.js';
 export {ENGINE_VERSION};
-export const DEFAULT_TACTICS={formation:'4-3-3',passing:'mixed',pressing:'balanced',tempo:'normal',line:'normal',width:'normal',mentality:'balanced'};
-export const TACTIC_VALUES={formation:Object.keys(FORMATIONS),passing:['short','mixed','direct'],pressing:['low','balanced','high'],tempo:['slow','normal','fast'],line:['deep','normal','high'],width:['narrow','normal','wide'],mentality:['defensive','balanced','attacking']};
+export const DEFAULT_TACTICS={formation:'4-3-3',passing:'mixed',pressing:'balanced',tempo:'normal',line:'normal',width:'normal',mentality:'balanced',fullbacks:'support',striker:'run',focus:'balanced'};
+export const TACTIC_VALUES={formation:Object.keys(FORMATIONS),passing:['short','mixed','direct'],pressing:['low','balanced','high'],tempo:['slow','normal','fast'],line:['deep','normal','high'],width:['narrow','normal','wide'],mentality:['defensive','balanced','attacking'],fullbacks:['hold','support','overlap'],striker:['link','run'],focus:['balanced','left','right']};
 export function validateTactics(value={}){for(const [k,v] of Object.entries(value))if(!TACTIC_VALUES[k]?.includes(v))throw Error(`战术无效：${k}`);return {...DEFAULT_TACTICS,...value};}
 function lineStats(id){return {id,seconds:0,goals:0,assists:0,shots:0,onTarget:0,xG:0,xA:0,passes:0,completed:0,tackles:0,interceptions:0,dribbles:0,dribblesWon:0,saves:0,goalsAgainst:0,fouls:0,yellow:0,red:0,condition:100};}
 function teamStats(){return {goals:0,shots:0,onTarget:0,xG:0,passes:0,completed:0,dribbles:0,dribblesWon:0,tackles:0,interceptions:0,corners:0,fouls:0,yellow:0,red:0,offsides:0,possessionSeconds:0,playerSeconds:0,penalties:0};}
@@ -37,8 +38,8 @@ const player=(team,id)=>team.roster.find(p=>p.id===id);
 const field=team=>team.slots.map(s=>player(team,s.id));
 const outfield=team=>team.slots.filter(s=>s.position!=='GK').map(s=>player(team,s.id));
 const keeper=team=>player(team,team.slots.find(s=>s.position==='GK')?.id)||field(team).sort((a,b)=>b.attributes.reflexes-a.attributes.reflexes)[0];
-function ability(state,team,p,keys){const value=mean(keys.map(k=>p.attributes[k]));const slot=team.slots.find(s=>s.id===p.id);const physical=keys.some(k=>['pace','acceleration','agility','strength','jumping'].includes(k));
- return (value+team.lines[p.id].form+(p.morale-50)*.025+(p.sharpness-70)*.025)*familiarity(p,slot?.position||p.position)*conditionEffect(team.lines[p.id].condition,physical);}
+function ability(state,team,p,keys){const slot=team.slots.find(s=>s.id===p.id);const value=mean(keys.map(k=>positionalAttribute(p,slot?.position||p.position,k)));const physical=keys.some(k=>['pace','acceleration','agility','strength','jumping'].includes(k));
+ return (value+team.lines[p.id].form+(p.morale-50)*.025+(p.sharpness-70)*.025)*conditionEffect(team.lines[p.id].condition,physical);}
 function teamAbility(state,team,keys){const active=outfield(team);const leadership=Math.max(...active.map(p=>p.attributes.leadership));return (mean(active.map(p=>ability(state,team,p,keys)))+(leadership-65)*.025)*Math.sqrt(team.slots.length/11);}
 function emit(s,type,data={}){const e={seq:s.sequence++,type,seconds:s.elapsed,period:s.period,minute:periodBase(s.period)+s.periodClock/60,side:s.side,x:s.side===0?s.x:105-s.x,y:s.side===0?s.y:68-s.y,score:s.teams.map(t=>t.stats.goals),...data};if(s.capture)s.events.push(e);return e;}
 function clock(s,seconds,active=true){const dt=Math.max(0,Math.min(seconds,s.periodEnd-s.periodClock));s.elapsed+=dt;s.periodClock+=dt;if(active)s.teams[s.side].stats.possessionSeconds+=dt;else{s.lostSeconds+=dt;s.periodEnd=Math.max(s.periodClock,(s.period>2?15:45)*60+Math.min(s.period>2?120:480,60+Math.round(s.lostSeconds*.3/60)*60));}for(const t of s.teams)for(const slot of t.slots){const line=t.lines[slot.id];line.seconds+=dt;t.stats.playerSeconds+=dt;line.condition=clamp(line.condition-exertion(player(t,slot.id),t.tactics,dt*(active?1:.35),slot.position),15,100);}}
@@ -111,10 +112,11 @@ function injure(s,side){
 function playAction(s){
  if(s.pending==='corner'){corner(s);return;}
  const attack=s.teams[s.side],defense=s.teams[1-s.side],actor=player(attack,s.holder)||choose(s,attack,'pass');
- s.holder=actor.id;attack.lines[actor.id].position=[s.x,s.y];const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
+ s.holder=actor.id;attack.lines[actor.id].position=[s.x,s.y];
  const effects=tacticalEffects(attack,defense,s.x);
  const actionSeconds=TUNE.actionSeconds*effects.seconds*(.65+s.random.next()*.7);
  updateSpace(s,actionSeconds);clock(s,actionSeconds);
+ const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
  if(s.random.next()<TUNE.foulRate*(.55+defender.attributes.aggression/100)){foul(s,defender);return;}
  if(s.random.next()<TUNE.injuryRate){injure(s,s.random.int(0,1));return;}
  if(s.x>75&&s.random.next()<(s.lastPass?.kind==='cross'?.62:TUNE.shoot*effects.shooting)){shot(s,actor,{kind:s.lastPass?.kind==='cross'?'header':'open'});return;}

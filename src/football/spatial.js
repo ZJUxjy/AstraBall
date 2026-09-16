@@ -1,3 +1,4 @@
+import {roleFamiliarity,roleOffset} from './roles.js';
 import {clamp} from './random.js';
 
 // Metres in each team's own attacking frame; frame conversion is an involution.
@@ -35,6 +36,8 @@ export function updateSpace(state,seconds){
    let x=goalkeeper?clamp(ball[0]*.12,4,12):anchor[0]+(ball[0]-52)*.45+(attacking?6:-7)+line+intent;
    let y=goalkeeper?34+(ball[1]-34)*.12:34+(anchor[1]-34)*width+(ball[1]-34)*.15;
    if(attacking&&state.holder===slot.id){x=ball[0];y=ball[1];}
+   const offset=roleOffset(slot,team.tactics,attacking,ball),fam=roleFamiliarity(p,slot.position);
+   if(!goalkeeper&&state.holder!==slot.id){x+=offset[0];y+=offset[1];if(attacking)x-=(1-fam.attack)*9;}
    const target=[clamp(x,3,99),clamp(y,3,65)],gap=distance(record.position,target);
    const maxTravel=seconds*(2.5+p.attributes.pace*.035)*(.55+.45*record.condition/100);
    const fraction=gap?Math.min(1,maxTravel/gap,1-Math.exp(-seconds/7)):1;
@@ -45,7 +48,8 @@ export function updateSpace(state,seconds){
 export function coverage(team,point){
  return team.slots.filter(slot=>slot.position!=='GK').map(slot=>{
   const p=team.roster.find(p=>p.id===slot.id),record=team.lines[slot.id];
-  const radius=(5+p.attributes.pace*.04)*(team.tactics.pressing==='high'?1.15:team.tactics.pressing==='low'?.9:1)*(.65+.35*record.condition/100);
+  const fam=roleFamiliarity(p,slot.position);
+  const radius=(5+p.attributes.pace*.04)*(.5+.5*fam.defense)*(team.tactics.pressing==='high'?1.15:team.tactics.pressing==='low'?.9:1)*(.65+.35*record.condition/100);
   const influence=Math.exp(-(distance(record.position,point)**2)/(2*radius**2))*(.5+(p.attributes.positioning+p.attributes.anticipation)/200);
   return {id:slot.id,influence,distance:distance(record.position,point)};
  });
