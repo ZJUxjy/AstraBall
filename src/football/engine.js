@@ -1,4 +1,4 @@
-import {prepareCoach,coachLineup} from './coach.js';
+import {prepareCoach,coachLineup,coachCommands} from './coach.js';
 import {positionalAttribute} from './roles.js';
 import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
@@ -152,6 +152,7 @@ function playAction(s){
 }
 export function stepMatch(s){if(s.status!=='playing')return false;if(++s.actions>20000)throw Error('比赛动作数超过安全上限');
  while(s.plans.length&&s.plans[0].minute<=periodBase(s.period)+Math.min(s.periodClock,(s.period>2?15:45)*60)/60){const plan=s.plans.shift();applyCommand(s,plan.command);}
+ for(let side=0;side<2;side++)for(const command of coachCommands(s,side))applyCommand(s,command);
  playAction(s);
  if(s.status!=='playing')return false;
  if(s.periodClock>=s.periodEnd){emit(s,'periodEnd');
@@ -178,7 +179,7 @@ export function applyCommand(s,command){
     remaining.sort((a,b)=>rating(player(t,b.id),position)*familiarity(player(t,b.id),position)-rating(player(t,a.id),position)*familiarity(player(t,a.id),position));
     return {id:remaining.shift().id,position,anchorIndex};});t.slots=slots;
   }
-  t.tactics=tactics;emit(s,'tactics',{side:command.side,tactics:{...tactics}});return;
+  t.tactics=tactics;emit(s,'tactics',{side:command.side,tactics:{...tactics},reason:command.reason||null});return;
  }
  if(command.type!=='substitution')throw Error('未知指令');
  const index=t.slots.findIndex(p=>p.id===command.out),incoming=player(t,command.in);
@@ -187,7 +188,7 @@ export function applyCommand(s,command){
  const outgoing=t.slots[index];t.slots[index]={id:incoming.id,position:outgoing.position,anchorIndex:outgoing.anchorIndex};t.lines[incoming.id].position=[...t.lines[command.out].position];
  t.used.add(incoming.id);t.subs++;if(!sameWindow&&!halfTime)t.windows++;t.lastSubTime=s.elapsed;
  if(s.side===command.side){if(s.holder===command.out)s.holder=incoming.id;s.lastPass=null;}
- emit(s,'substitution',{side:command.side,player:command.out,incoming:incoming.id});
+ emit(s,'substitution',{side:command.side,player:command.out,incoming:incoming.id,reason:command.reason||null});
 }
 export function getResult(s){return {version:s.version,seed:s.seed,status:s.status,seconds:s.elapsed,score:s.teams.map(t=>t.stats.goals),teams:s.teams.map(t=>({id:t.id,name:t.name,stats:structuredClone(t.stats),players:Object.values(t.lines).map(p=>({...p,minutes:p.seconds/60})),onField:t.slots.map(p=>p.id),subs:t.subs})),events:structuredClone(s.events),shootout:s.shootout,abandonedSide:s.abandonedSide??null};}
 export function simulateMatch(options){const s=createMatch(options);while(s.status==='playing')stepMatch(s);return getResult(s);}

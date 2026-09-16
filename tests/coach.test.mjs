@@ -22,3 +22,29 @@ test('正式比赛双方默认 AI，接手球队后只保留对手 AI',()=>{
  appointManager(s,m.home);s.date=m.date;assert.deepEqual(matchInput(s,m).ai,[false,true]);
  const state=beginCoachedMatch(s);assert.equal(state.teams[0].coach,null);assert.ok(state.teams[1].coach);assert.deepEqual(state.teams[0].tactics,s.manager.tactics);
 });
+
+import {coachCommands} from '../src/football/coach.js';
+import {applyCommand,stepMatch,snapshotMatch,restoreMatch,getResult} from '../src/football/engine.js';
+const aiMatch=()=>createMatch({home,away,ai:[true,true],seed:2217});
+const at=(s,minute)=>{s.period=minute>=45?2:1;s.periodClock=(minute-(s.period===2?45:0))*60;s.elapsed=minute*60;};
+test('临场 AI 追分、守成、减员调整，不抽取随机数或改动人工队',()=>{
+ const s=aiMatch();at(s,76);s.teams[0].stats.goals=0;s.teams[1].stats.goals=1;const before=s.random.snapshot();
+ const commands=coachCommands(s,0);assert.equal(commands.find(c=>c.type==='tactics').reason,'chase');commands.forEach(c=>applyCommand(s,c));assert.equal(s.teams[0].tactics.formation,'4-4-2');
+ const protect=coachCommands(s,1).find(c=>c.type==='tactics');assert.equal(protect.reason,'protect');assert.equal(protect.tactics.tempo,'slow');assert.equal(s.random.snapshot(),before);
+ s.teams[0].slots.pop();s.teams[0].stats.goals=2;const reduced=coachCommands(s,0).find(c=>c.type==='tactics');assert.equal(reduced.reason,'redCard');applyCommand(s,reduced);assert.equal(s.teams[0].slots.length,10);
+ s.teams[0].coach=null;assert.deepEqual(coachCommands(s,0),[]);
+});
+test('主动换人遵守五人三窗口并选择新鲜替补，重复事件不重复换人',()=>{
+ const s=aiMatch(),t=s.teams[0];let total=0;
+ for(const minute of [55,65,78]){
+  at(s,minute);for(const slot of t.slots){t.lines[slot.id].seconds=35*60;t.lines[slot.id].condition=45;}
+  const commands=coachCommands(s,0).filter(c=>c.type==='substitution');assert.ok(commands.length>0);total+=commands.length;commands.forEach(c=>applyCommand(s,c));
+  assert.equal(coachCommands(s,0).filter(c=>c.type==='substitution').length,0);
+ }
+ assert.equal(total,5);assert.equal(t.subs,5);assert.equal(t.windows,3);assert.equal(new Set(t.slots.map(s=>s.id)).size,11);
+});
+test('AI 状态中途恢复与实时/批量一致，人工一方不会收到 AI 指令',()=>{
+ const s=createMatch({home,away,ai:[false,true],seed:6644});while(s.elapsed<3700&&s.status==='playing')stepMatch(s);
+ const saved=restoreMatch(JSON.parse(JSON.stringify(snapshotMatch(s))));while(stepMatch(s));while(stepMatch(saved));assert.deepEqual(getResult(s),getResult(saved));
+ assert.ok(s.events.some(e=>e.reason&&e.side===1));assert.ok(!s.events.some(e=>e.reason&&e.side===0));assert.ok(s.teams[1].subs>0);assert.ok(s.teams[1].windows<=3);
+});
