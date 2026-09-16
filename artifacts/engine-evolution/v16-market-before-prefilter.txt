@@ -63,17 +63,16 @@ export function signPlayer(s,id,buyer=s.manager?.clubId,years=3,{automatic=false
  for(const key of Object.keys(s.discipline)){const [competition,player]=key.split('/');if(player!==id||!getDivision(competition)||competition===newDivision)continue;const old=s.discipline[key],next=s.discipline[`${newDivision}/${id}`]??={yellow:0,ban:0};next.ban+=old.ban;delete s.discipline[key];}
  move(e,s,'transfer',p,q);s.revision++;return q;
 }
-export function renewalQuote(s,id,years=3,{reserveDepth=false}={}){
+export function renewalQuote(s,id,years=3){
  const e=ensureEconomy(s),p=populationPlayer(s,id);if(!p?.club||p.retired||![1,2,3].includes(years))throw Error('续约对象或期限无效');
  const old=e.contracts[id],wage=Math.max(weeklyWage(s,p),Math.ceil((old?.weeklyWage||0)*1.05/7)*7),bonus=wage*2,a=e.accounts[p.club];
  const bill=wageBill(s,p.club)-(old?.weeklyWage||0)+wage,reserve=Math.ceil(bill/7*daysBetween(s.date,dateOf(s.year+1,1,1)));
- const signed=clubPlayers(s,p.club).filter(q=>q.id===id||e.contracts[q.id]).length,depthReserve=reserveDepth?Math.max(0,24-signed)*wageAt(clubLevel(s,p.club)-12):0;
- if(bill+depthReserve>a.wageLimit||bonus>a.cash-reserve)throw Error('续约预算不足');
+ if(bill>a.wageLimit||bonus>a.cash-reserve)throw Error('续约预算不足');
  return {player:id,club:p.club,weeklyWage:wage,bonus,end:[old?.end||'',dateOf(s.year+years-1,12,31)].sort().at(-1)};
 }
 export function renewPlayer(s,id,years=3,{automatic=false}={}){
  const e=ensureReady(s),p=automatic?populationPlayer(s,id):ownPlayer(s,id);if(automatic&&p?.club===s.manager?.clubId)throw Error('本队续约由经理决定');
- const q=renewalQuote(s,id,years,{reserveDepth:automatic});record(e,p.club,'bonuses',q.bonus);e.contracts[id]={club:p.club,start:s.date,end:q.end,weeklyWage:q.weeklyWage,kind:p.unit==='youth'?'youth':'senior'};move(e,s,'renewal',p,q);s.revision++;return q;
+ const q=renewalQuote(s,id,years);record(e,p.club,'bonuses',q.bonus);e.contracts[id]={club:p.club,start:s.date,end:q.end,weeklyWage:q.weeklyWage,kind:p.unit==='youth'?'youth':'senior'};move(e,s,'renewal',p,q);s.revision++;return q;
 }
 export function releaseQuote(s,id){const e=ensureEconomy(s),p=ownPlayer(s,id),c=e.contracts[id];if(p.unit==='senior'&&!canLose(s,p,{minimum:18}))throw Error('阵容或位置人数不足');const compensation=c?Math.max(0,daysBetween(s.date,addDays(c.end,1)))*c.weeklyWage/7:0,reserve=(wageBill(s,p.club)-(c?.weeklyWage||0))/7*daysBetween(s.date,dateOf(s.year+1,1,1));if(compensation>e.accounts[p.club].cash-reserve)throw Error('解约资金不足');return {player:id,club:p.club,compensation};}
 function release(s,p,type,extra={}){const e=s.economy,club=p.club;p.lastClub=club;p.freeSince=s.date;setPlayerClub(s,p,null);p.unit='free';delete e.contracts[p.id];delete s.development?.plans[p.id];move(e,s,type,p,{from:club,...extra});}
@@ -99,27 +98,13 @@ export function rolloverEconomy(s){
  s.revision++;
 }
 function aiReview(s){
- const e=ensureEconomy(s);
- // Expiry and injuries can leave holes after the annual intake. Re-check real
- // registered academy players throughout the year, with the same payroll checks.
- for(const team of footballTeams){if(team.id===s.manager?.clubId)continue;
-  const needsKeeper=clubPlayers(s,team.id).filter(p=>p.position==='GK').length<2;
-  const academy=clubPlayers(s,team.id,{unit:'youth'}).filter(p=>s.year-p.birthYear>=16).sort((a,b)=>(needsKeeper?Number(b.position==='GK')-Number(a.position==='GK'):0)||currentAbility(s,b)-currentAbility(s,a)||a.id.localeCompare(b.id));
-  for(const p of academy){const roster=clubPlayers(s,team.id),peers=roster.filter(q=>q.position===p.position),needed=roster.length<23||peers.length<(p.position==='GK'?3:1),upgrade=roster.length<27&&s.year-p.birthYear>=18&&currentAbility(s,p)>=Math.max(0,...peers.map(q=>currentAbility(s,q)))-6;if(!needed&&!upgrade)continue;if(roster.length>=30)break;try{promoteProfessional(s,p.id,{automatic:true});}catch{}}
- }
- if(!isTransferWindow(s))return;
+ const e=ensureEconomy(s);if(!isTransferWindow(s))return;
  const all=populationPlayers(s).filter(p=>['senior','free'].includes(p.unit)&&p.club!==s.manager?.clubId&&(!p.lastTransfer||daysBetween(p.lastTransfer,s.date)>=90)),ability=new Map(all.map(p=>[p.id,currentAbility(s,p)])),offered=new Set();
  for(const team of footballTeams){if(team.id===s.manager?.clubId)continue;const roster=clubPlayers(s,team.id);if(roster.length<=23)continue;const positions=new Map();for(const p of roster){const peers=positions.get(p.position)||[];peers.push(p);positions.set(p.position,peers);}for(const [position,peers] of positions)if(peers.length>(position==='GK'?2:1)){peers.sort((a,b)=>(ability.get(a.id)??currentAbility(s,a))-(ability.get(b.id)??currentAbility(s,b))||a.id.localeCompare(b.id));offered.add(peers[0].id);}}
  const candidates=all.filter(p=>!p.club||offered.has(p.id));
  const order=footballTeams.filter(t=>t.id!==s.manager?.clubId).sort((a,b)=>hash(`market:${s.date}:${a.id}`)-hash(`market:${s.date}:${b.id}`));
- for(const team of order){const roster=clubPlayers(s,team.id),level=clubLevel(s,team.id);if(roster.length>=30)continue;
-  // Reject impossible payroll offers once per buyer, before expensive seller and
-  // registration checks. Every surviving offer still passes transferQuote.
-  const account=e.accounts[team.id],bill=wageBill(s,team.id),vacant=Math.max(0,24-roster.length-1),capacity=account.wageLimit-bill-vacant*wageAt(level-12),remainingDays=daysBetween(s.date,dateOf(s.year+1,1,1));
-  if(capacity<70)continue;
-  const affordable=p=>{const demand=wageAt(ability.get(p.id)),wage=Math.max(demand,Math.ceil((e.contracts[p.id]?.weeklyWage||0)*1.05/7)*7);if(wage>capacity)return false;const fee=p.club?Math.round(demand*65*clamp(1.25-(s.year-p.birthYear-22)*.045,.35,1.6)/100)*100:0;return fee+wage*4<=Math.min(account.transferBudget-account.spent,account.cash-Math.ceil((bill+wage)/7*remainingDays));};
-  const depths=new Map();for(const p of roster){const depth=depths.get(p.position)||{count:0,low:100};depth.count++;depth.low=Math.min(depth.low,ability.get(p.id)??currentAbility(s,p));depths.set(p.position,depth);}
-  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&ability.get(p.id)<=level+11&&(ability.get(p.id)>=level-16||p.position==='GK'&&!depths.get('GK')?.count)&&affordable(p)).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(p.position==='GK'&&!depth.count?1000:essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&(x.quality>=level-16||x.p.position==='GK'&&!depths.get('GK')?.count)).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
+ for(const team of order){const roster=clubPlayers(s,team.id),level=clubLevel(s,team.id);if(roster.length>=30)continue;const depths=new Map();for(const p of roster){const depth=depths.get(p.position)||{count:0,low:100};depth.count++;depth.low=Math.min(depth.low,ability.get(p.id)??currentAbility(s,p));depths.set(p.position,depth);}
+  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&ability.get(p.id)<=level+11&&ability.get(p.id)>=level-16).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&x.quality>=level-16).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
   for(const {p} of targets){try{signPlayer(s,p.id,team.id,3,{automatic:true});break;}catch{}}
  }
  // AI renewal decisions happen before expiry, leaving the manager's own contracts to the player.
@@ -147,4 +132,4 @@ export function validateEconomy(s){
  const totals=Object.values(e.accounts).reduce((n,a)=>n+a.totals.transferIn-a.totals.transferOut,0);if(totals!==0)throw Error('转会费账本不守恒');
 }
 
-export function promoteProfessional(s,id,{automatic=false}={}){const e=ensureReady(s),p=automatic?populationPlayer(s,id):ownPlayer(s,id);if(!p?.club||automatic&&p.club===s.manager?.clubId)throw Error('青年提拔对象无效');const c=e.contracts[id],wage=weeklyWage(s,p),bill=wageBill(s,p.club)-(c?.weeklyWage||0)+wage,a=e.accounts[p.club];if(bill>a.wageLimit||a.cash<bill/7*daysBetween(s.date,dateOf(s.year+1,1,1)))throw Error('职业合同预算不足');promotePlayer(s,id,{automatic});e.contracts[id]={club:p.club,start:s.date,end:dateOf(s.year+2,12,31),weeklyWage:wage,kind:'senior'};move(e,s,'professional',p,{club:p.club,weeklyWage:wage,end:e.contracts[id].end});}
+export function promoteProfessional(s,id){const e=ensureReady(s),p=ownPlayer(s,id),c=e.contracts[id],wage=weeklyWage(s,p),bill=wageBill(s,p.club)-(c?.weeklyWage||0)+wage,a=e.accounts[p.club];if(bill>a.wageLimit||a.cash<bill/7*daysBetween(s.date,dateOf(s.year+1,1,1)))throw Error('职业合同预算不足');promotePlayer(s,id);e.contracts[id]={club:p.club,start:s.date,end:dateOf(s.year+2,12,31),weeklyWage:wage,kind:'senior'};move(e,s,'professional',p,{club:p.club,weeklyWage:wage,end:e.contracts[id].end});}

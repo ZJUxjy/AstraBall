@@ -1,0 +1,28 @@
+{
+  "scope": "Recovery of the captured real 330-02-28 goalkeeper shortage through the next legal registration window, preserving actual contracts, wages and identities.",
+  "through": "0330-07-15",
+  "club": "lima-league-club-13",
+  "keepers": [
+    {
+      "id": "youth:318:crown-league-3-club-8:0",
+      "position": "GK",
+      "unit": "senior"
+    }
+  ],
+  "moves": [
+    {
+      "id": "move:42915",
+      "date": "0330-07-02",
+      "type": "transfer",
+      "player": "youth:318:crown-league-3-club-8:0",
+      "from": null,
+      "to": "lima-league-club-13",
+      "fee": 0,
+      "bonus": 1512,
+      "weeklyWage": 378,
+      "years": 3,
+      "end": "0332-12-31"
+    }
+  ],
+  "sourceHash": "ceeb50e3d5a0cbb2a9177a9302d784bc12de5bf004b4f029171c812af96ead8c"
+}

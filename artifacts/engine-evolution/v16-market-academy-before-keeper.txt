@@ -103,8 +103,7 @@ function aiReview(s){
  // Expiry and injuries can leave holes after the annual intake. Re-check real
  // registered academy players throughout the year, with the same payroll checks.
  for(const team of footballTeams){if(team.id===s.manager?.clubId)continue;
-  const needsKeeper=clubPlayers(s,team.id).filter(p=>p.position==='GK').length<2;
-  const academy=clubPlayers(s,team.id,{unit:'youth'}).filter(p=>s.year-p.birthYear>=16).sort((a,b)=>(needsKeeper?Number(b.position==='GK')-Number(a.position==='GK'):0)||currentAbility(s,b)-currentAbility(s,a)||a.id.localeCompare(b.id));
+  const academy=clubPlayers(s,team.id,{unit:'youth'}).filter(p=>s.year-p.birthYear>=16).sort((a,b)=>currentAbility(s,b)-currentAbility(s,a)||a.id.localeCompare(b.id));
   for(const p of academy){const roster=clubPlayers(s,team.id),peers=roster.filter(q=>q.position===p.position),needed=roster.length<23||peers.length<(p.position==='GK'?3:1),upgrade=roster.length<27&&s.year-p.birthYear>=18&&currentAbility(s,p)>=Math.max(0,...peers.map(q=>currentAbility(s,q)))-6;if(!needed&&!upgrade)continue;if(roster.length>=30)break;try{promoteProfessional(s,p.id,{automatic:true});}catch{}}
  }
  if(!isTransferWindow(s))return;
@@ -119,7 +118,7 @@ function aiReview(s){
   if(capacity<70)continue;
   const affordable=p=>{const demand=wageAt(ability.get(p.id)),wage=Math.max(demand,Math.ceil((e.contracts[p.id]?.weeklyWage||0)*1.05/7)*7);if(wage>capacity)return false;const fee=p.club?Math.round(demand*65*clamp(1.25-(s.year-p.birthYear-22)*.045,.35,1.6)/100)*100:0;return fee+wage*4<=Math.min(account.transferBudget-account.spent,account.cash-Math.ceil((bill+wage)/7*remainingDays));};
   const depths=new Map();for(const p of roster){const depth=depths.get(p.position)||{count:0,low:100};depth.count++;depth.low=Math.min(depth.low,ability.get(p.id)??currentAbility(s,p));depths.set(p.position,depth);}
-  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&ability.get(p.id)<=level+11&&(ability.get(p.id)>=level-16||p.position==='GK'&&!depths.get('GK')?.count)&&affordable(p)).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(p.position==='GK'&&!depth.count?1000:essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&(x.quality>=level-16||x.p.position==='GK'&&!depths.get('GK')?.count)).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
+  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&ability.get(p.id)<=level+11&&ability.get(p.id)>=level-16&&affordable(p)).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&x.quality>=level-16).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
   for(const {p} of targets){try{signPlayer(s,p.id,team.id,3,{automatic:true});break;}catch{}}
  }
  // AI renewal decisions happen before expiry, leaving the manager's own contracts to the player.

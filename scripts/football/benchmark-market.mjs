@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+import {accrueEconomy} from '../../src/competitions/market.js';
+import {annualPopulation} from '../../src/competitions/population.js';
+import {advanceDevelopment} from '../../src/competitions/development.js';
+import {seasonCalendar,dateOf,addDays} from '../../src/competitions/calendar.js';
+const reportPath=process.env.REPORT||'artifacts/engine-evolution/v16-market-performance.json';if(fs.existsSync(reportPath))throw Error('Report exists');
+const originalSource=fs.readFileSync('artifacts/engine-evolution/v16-market-before-prefilter.txt','utf8');
+const source=originalSource.replace(/from '([^']+)'/g,(_,url)=>`from '${new URL(url,new URL('../../src/competitions/market.js',import.meta.url)).href}'`);
+const previous=await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const optimizedSource=fs.readFileSync('artifacts/engine-evolution/v16-market-before-renewal-reserve.txt','utf8'),optimized=await import(`data:text/javascript;base64,${Buffer.from(optimizedSource.replace(/from '([^']+)'/g,(_,url)=>`from '${new URL(url,new URL('../../src/competitions/market.js',import.meta.url)).href}'`)).toString('base64')}`);
+const s=JSON.parse(fs.readFileSync(process.env.CHECKPOINT||'/tmp/astraball-v16-generation.json')),date=dateOf(s.year+1,1,1);
+advanceDevelopment(s,date);accrueEconomy(s,date);s.date=date;s.year++;s.calendar=seasonCalendar(s.year);annualPopulation(s);previous.rolloverEconomy(s);
+const before=JSON.parse(JSON.stringify(s)),after=JSON.parse(JSON.stringify(s));let t=performance.now();previous.advanceCareer(before,addDays(date,14));const oldMs=performance.now()-t;t=performance.now();optimized.advanceCareer(after,addDays(date,14));const newMs=performance.now()-t;
+const hash=x=>crypto.createHash('sha256').update(x).digest('hex'),a=hash(JSON.stringify(before)),b=hash(JSON.stringify(after));assert.equal(a,b);
+const report={scope:'Identical two-week career progression from the same late-world save, before/after affordability prefilter. Includes all player, contract, transaction, growth and ledger state.',date,oldMs,newMs,speedup:oldMs/newMs,saveHash:a,identical:a===b,sourceHashes:{before:hash(originalSource),after:hash(optimizedSource)}};
+fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');console.log(report);

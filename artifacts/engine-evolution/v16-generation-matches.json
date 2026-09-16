@@ -1,0 +1,25 @@
+{
+  "scope": "First competitive month across all clubs after the training-only 30-year population run. Uses actual match engine, injury/suspension health and minutes; does not fabricate past match history.",
+  "initialDate": "0348-01-01",
+  "seedHash": "4ad11ff2b205c82193a605d5c733ce268e55887d2e72168a52cda0be0ebaa550",
+  "sourceHashes": {
+    "src/competitions/runtime.js": "c6a64fc6375c41e01657fb353c50e43cd86c27783845caf5f56a64077861ef42",
+    "src/competitions/market.js": "ceeb50e3d5a0cbb2a9177a9302d784bc12de5bf004b4f029171c812af96ead8c",
+    "src/competitions/population.js": "08b79e982da6dd96ea6d9061f96c9c3b61b8ef320409a2f9ace95608860e5018",
+    "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+    "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237",
+    "src/football/engine.js": "953db52adfc67d875dd04d490ca4f0cff162f4a7b92a7ca811d69a386340e772",
+    "src/football/config.js": "d28a2973a2763bc08e051526d86bafdc2c2857567457e05ec637fc8151d4ddbd"
+  },
+  "matches": 738,
+  "goals": 1756,
+  "minEligible": 20,
+  "minKeepers": 2,
+  "complete": true,
+  "failures": [],
+  "clubs": 268,
+  "goalsPerGame": 2.3794037940379402,
+  "minCash": 8529101,
+  "through": "0348-03-31",
+  "seconds": 72.644262583
+}

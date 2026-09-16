@@ -70,7 +70,9 @@ export function annualPopulation(s){
   for(const p of youths){
    const age=s.year-p.birthYear,senior=clubPlayers(s,team.id),peers=senior.filter(q=>q.position===p.position),best=Math.max(0,...peers.map(q=>currentAbility(s,q)));
    const needed=senior.length<23||peers.length<(p.position==='GK'?3:1);
-   if(team.id!==s.manager?.clubId&&age>=16&&senior.length<30&&(needed||age>=18&&currentAbility(s,p)>=best-6)){
+   // Financial careers defer promotion until contract expiry has been settled,
+   // then use payroll-checked reviews in market.js.
+   if(!s.economy&&team.id!==s.manager?.clubId&&age>=16&&senior.length<30&&(needed||age>=18&&currentAbility(s,p)>=best-6)){
     promotePlayer(s,p.id,{automatic:true});result.promoted++;
    }else if(age>=21){
     p.lastClub=p.club;p.club=null;p.unit='free';event(pop,s.year,'release',p,team.id);result.released++;

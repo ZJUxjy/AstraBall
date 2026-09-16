@@ -1,0 +1,1654 @@
+{
+  "scope": "Consecutive full-world seasons using actual match engine, injuries, suspensions, minutes, development, market and promotion/relegation. No fabricated results or replacement players.",
+  "years": 3,
+  "hashes": {
+    "src/competitions/runtime.js": "c6a64fc6375c41e01657fb353c50e43cd86c27783845caf5f56a64077861ef42",
+    "src/competitions/market.js": "d3ade86fef1afc39aff766d898bec6c2190dabeeb1dfc7b89dcb56f93955558b",
+    "src/competitions/population.js": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+    "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+    "src/football/engine.js": "953db52adfc67d875dd04d490ca4f0cff162f4a7b92a7ca811d69a386340e772",
+    "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237",
+    "src/football/config.js": "d28a2973a2763bc08e051526d86bafdc2c2857567457e05ec637fc8151d4ddbd"
+  },
+  "seasons": [
+    {
+      "year": 318,
+      "matches": 4759,
+      "goals": 11646,
+      "goalsPerGame": 2.447152763185543,
+      "injuries": 486,
+      "reds": 387,
+      "shootouts": 48,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minRestDays": 3,
+      "saveBytes": 56180683,
+      "resultHash": "4cf8b6f8a68d8ebf76d03268a4b0ccee76804bfb01046fb7000f71b071ff87bb",
+      "movements": [
+        {
+          "id": "crown-league-2-club-10",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-12",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-7",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-club-12",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-club-10",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-club-6",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-2",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-10",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-9",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-3",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-1",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-4",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-7",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-10",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-4",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-5",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "bay-fc",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-7",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-3-club-1",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-9",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-6",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-6",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-3",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-11",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-7",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-13",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-9",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-7",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-15",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-12",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-8",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-15",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-6",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-8",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-12",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-6",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-6",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-18",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-17",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-7",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "pine-fc",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-9",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-3",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-12",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-4",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-12",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-1",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-15",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-20",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-2",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-18",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-club-4",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-15",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-10",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-22",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-24",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-17",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-12",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-8",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-13",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        }
+      ],
+      "abilities": {
+        "closed": {
+          "median": 80.39673005260218,
+          "min": 63.14890946128744,
+          "max": 93.22058052087047
+        },
+        "crown-league": {
+          "median": 76.4339961450278,
+          "min": 58.3499486398345,
+          "max": 89.89741325542322
+        },
+        "crown-league-2": {
+          "median": 67.79864565335372,
+          "min": 55.20359691796183,
+          "max": 82.93183177938725
+        },
+        "crown-league-3": {
+          "median": 58.852144638794925,
+          "min": 46.08183660374368,
+          "max": 73.89284926735333
+        },
+        "silver-league": {
+          "median": 76.46395834384906,
+          "min": 58.1834136458807,
+          "max": 88.56937085302125
+        },
+        "silver-league-2": {
+          "median": 68.11971720381555,
+          "min": 48.885867933388155,
+          "max": 78.8624498156756
+        },
+        "silver-league-3": {
+          "median": 58.74859293842257,
+          "min": 43.75194893984862,
+          "max": 70.2841529395788
+        },
+        "lima-league": {
+          "median": 76.4320916868495,
+          "min": 57.83185763493993,
+          "max": 89.22374891414174
+        },
+        "lima-league-2": {
+          "median": 68.8264255926444,
+          "min": 48.77819845639393,
+          "max": 81.04158358039213
+        },
+        "lima-league-3": {
+          "median": 58.52577230357117,
+          "min": 44.78992698444309,
+          "max": 72.12983297530137
+        },
+        "liberlin-league": {
+          "median": 76.79426787340631,
+          "min": 57.75750268934557,
+          "max": 90.11670744701121
+        },
+        "liberlin-league-2": {
+          "median": 68.30815185350818,
+          "min": 52.7750764228762,
+          "max": 77.60816169310407
+        },
+        "liberlin-league-3": {
+          "median": 58.76447206313383,
+          "min": 44.111705609980625,
+          "max": 71.66043183376455
+        },
+        "sichuan-league": {
+          "median": 76.42896968703015,
+          "min": 58.290739667846005,
+          "max": 89.06098162116602
+        },
+        "sichuan-league-2": {
+          "median": 68.79927422252153,
+          "min": 49.214730415296536,
+          "max": 79.51414350601341
+        },
+        "sichuan-league-3": {
+          "median": 58.65732332503141,
+          "min": 42.25347394365996,
+          "max": 73.86490078953906
+        }
+      },
+      "senior": 6707,
+      "free": 0
+    },
+    {
+      "year": 319,
+      "matches": 4759,
+      "goals": 12024,
+      "goalsPerGame": 2.52658121454087,
+      "injuries": 541,
+      "reds": 419,
+      "shootouts": 51,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minRestDays": 3,
+      "saveBytes": 68156400,
+      "resultHash": "e419ca7ba32d05aaecb63a18de47fb43732fe2c29ee76f6568ec7f9ae5440ab3",
+      "movements": [
+        {
+          "id": "crown-league-2-club-2",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-club-12",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-6",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-10",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-12",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-club-7",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-4",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-1",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-5",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-10",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-9",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-9",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-7",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-5",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "bay-fc",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-10",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-9",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-4",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-11",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-3",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-14",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-9",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-9",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-3-club-6",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-7",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-10",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-15",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-3",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-7",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-6",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-12",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-20",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-11",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-15",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-8",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-6",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-9",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "pine-fc",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-2",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-18",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-13",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-14",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-12",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-15",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-1",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-12",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-3",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-4",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-15",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-10",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-9",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-club-13",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-17",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-20",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-12",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-13",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-8",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-6",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-17",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-24",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        }
+      ],
+      "abilities": {
+        "closed": {
+          "median": 79.58090113300463,
+          "min": 62.4878274274822,
+          "max": 93.5615485164445
+        },
+        "crown-league": {
+          "median": 75.27338051297534,
+          "min": 54.094384654173574,
+          "max": 91.47006516058266
+        },
+        "crown-league-2": {
+          "median": 67.18041625997768,
+          "min": 45.836425484361925,
+          "max": 87.13353213088513
+        },
+        "crown-league-3": {
+          "median": 60.09437798512388,
+          "min": 46.159615498116395,
+          "max": 83.93975678248599
+        },
+        "silver-league": {
+          "median": 73.79764294226712,
+          "min": 46.211508889983605,
+          "max": 90.94387144937753
+        },
+        "silver-league-2": {
+          "median": 66.96060386451389,
+          "min": 45.28420445162034,
+          "max": 87.87558564237845
+        },
+        "silver-league-3": {
+          "median": 59.6617470282217,
+          "min": 45.70905207258662,
+          "max": 77.13746673273592
+        },
+        "lima-league": {
+          "median": 75.8086613646069,
+          "min": 53.524711197179705,
+          "max": 90.22818764924115
+        },
+        "lima-league-2": {
+          "median": 68.3564285248884,
+          "min": 45.08845022010542,
+          "max": 90.42541322058912
+        },
+        "lima-league-3": {
+          "median": 59.45568428803977,
+          "min": 42.925286077940086,
+          "max": 83.39681036005123
+        },
+        "liberlin-league": {
+          "median": 75.61399797260326,
+          "min": 52.604704282431165,
+          "max": 89.83030251566683
+        },
+        "liberlin-league-2": {
+          "median": 68.22734531848556,
+          "min": 46.16775387751814,
+          "max": 89.9478889842346
+        },
+        "liberlin-league-3": {
+          "median": 59.76662394592543,
+          "min": 44.09561399155699,
+          "max": 77.38958591164437
+        },
+        "sichuan-league": {
+          "median": 75.25143073084648,
+          "min": 43.624433585811914,
+          "max": 90.79113708967358
+        },
+        "sichuan-league-2": {
+          "median": 68.75683520740566,
+          "min": 45.64972875662476,
+          "max": 84.19110936956518
+        },
+        "sichuan-league-3": {
+          "median": 59.55688110301886,
+          "min": 43.87029325323905,
+          "max": 81.76613112343647
+        }
+      },
+      "senior": 6702,
+      "free": 16
+    },
+    {
+      "year": 320,
+      "matches": 4759,
+      "goals": 11881,
+      "goalsPerGame": 2.4965328850598865,
+      "injuries": 523,
+      "reds": 407,
+      "shootouts": 59,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minRestDays": 3,
+      "saveBytes": 76880730,
+      "resultHash": "82c11e38e09794148947f45db7e7a42c642f62d7707f6731513e039438070b88",
+      "movements": [
+        {
+          "id": "crown-league-club-7",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-8",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-12",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-club-5",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-fc",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-6",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-9",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-9",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-6",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-5",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-1",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-5",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-8",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-9",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-4",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-4",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-6",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-7",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-6",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-12",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-4",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-14",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-12",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-3-club-1",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-6",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-7",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-3",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-4",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-7",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-15",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-5",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-15",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-6",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-11",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-5",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-12",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-14",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-4",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-9",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-18",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-6",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-12",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-12",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-13",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-1",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-7",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-15",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-12",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-4",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-20",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-19",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-10",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-8",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-9",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-6",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-17",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-23",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-3",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-13",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-22",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        }
+      ],
+      "abilities": {
+        "closed": {
+          "median": 78.95200523526712,
+          "min": 62.20627001523039,
+          "max": 94.06813363277155
+        },
+        "crown-league": {
+          "median": 74.18860585897137,
+          "min": 55.443856864477524,
+          "max": 92.67790440416269
+        },
+        "crown-league-2": {
+          "median": 69.22419875246578,
+          "min": 47.61936398304687,
+          "max": 88.52773778721847
+        },
+        "crown-league-3": {
+          "median": 60.64226402960725,
+          "min": 44.52622802051912,
+          "max": 80.06814521700973
+        },
+        "silver-league": {
+          "median": 75.2629640078632,
+          "min": 38.546925875336285,
+          "max": 92.65157558320931
+        },
+        "silver-league-2": {
+          "median": 67.1401641465311,
+          "min": 45.00385760698863,
+          "max": 85.50983283309188
+        },
+        "silver-league-3": {
+          "median": 60.65673606441403,
+          "min": 47.698610371674484,
+          "max": 79.29738975191795
+        },
+        "lima-league": {
+          "median": 75.64023145399248,
+          "min": 55.028347049744625,
+          "max": 91.55450466551896
+        },
+        "lima-league-2": {
+          "median": 69.30367440221907,
+          "min": 43.92193259409769,
+          "max": 88.82545200150231
+        },
+        "lima-league-3": {
+          "median": 59.912882166605414,
+          "min": 41.75370581999782,
+          "max": 82.13753731230915
+        },
+        "liberlin-league": {
+          "median": 75.76664766397073,
+          "min": 51.88975903954908,
+          "max": 90.37287897502335
+        },
+        "liberlin-league-2": {
+          "median": 69.41274375796426,
+          "min": 40.58337963733789,
+          "max": 89.97169449488824
+        },
+        "liberlin-league-3": {
+          "median": 59.69109317115603,
+          "min": 41.580941287448255,
+          "max": 76.23587220844713
+        },
+        "sichuan-league": {
+          "median": 75.0546676453012,
+          "min": 52.62432736764795,
+          "max": 92.02648093332178
+        },
+        "sichuan-league-2": {
+          "median": 70.06650113115326,
+          "min": 48.837962252416695,
+          "max": 86.65525071058921
+        },
+        "sichuan-league-3": {
+          "median": 59.94654275771659,
+          "min": 44.597613426463354,
+          "max": 78.91797380165613
+        }
+      },
+      "senior": 6453,
+      "free": 260
+    }
+  ],
+  "months": [
+    {
+      "date": "0318-01-31",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1026747
+    },
+    {
+      "date": "0318-02-28",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 973547
+    },
+    {
+      "date": "0318-03-31",
+      "matches": 738,
+      "minEligible": 21,
+      "minKeepers": 2,
+      "minCash": 914647
+    },
+    {
+      "date": "0318-04-30",
+      "matches": 1342,
+      "minEligible": 21,
+      "minKeepers": 1,
+      "minCash": 857647
+    },
+    {
+      "date": "0318-05-31",
+      "matches": 2028,
+      "minEligible": 21,
+      "minKeepers": 1,
+      "minCash": 798747
+    },
+    {
+      "date": "0318-06-30",
+      "matches": 2091,
+      "minEligible": 21,
+      "minKeepers": 1,
+      "minCash": 741747
+    },
+    {
+      "date": "0318-07-31",
+      "matches": 2801,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 682847
+    },
+    {
+      "date": "0318-08-31",
+      "matches": 3427,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 623947
+    },
+    {
+      "date": "0318-09-30",
+      "matches": 3989,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 566947
+    },
+    {
+      "date": "0318-10-31",
+      "matches": 4717,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 508047
+    },
+    {
+      "date": "0318-11-30",
+      "matches": 4759,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 451047
+    },
+    {
+      "date": "0318-12-31",
+      "matches": 4759,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 390053
+    },
+    {
+      "date": "0319-01-31",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1288447
+    },
+    {
+      "date": "0319-02-28",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1233007
+    },
+    {
+      "date": "0319-03-31",
+      "matches": 686,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 1171627
+    },
+    {
+      "date": "0319-04-30",
+      "matches": 1394,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 1112227
+    },
+    {
+      "date": "0319-05-31",
+      "matches": 2028,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 1050847
+    },
+    {
+      "date": "0319-06-30",
+      "matches": 2091,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 991447
+    },
+    {
+      "date": "0319-07-31",
+      "matches": 2745,
+      "minEligible": 20,
+      "minKeepers": 1,
+      "minCash": 930067
+    },
+    {
+      "date": "0319-08-31",
+      "matches": 3343,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 868687
+    },
+    {
+      "date": "0319-09-30",
+      "matches": 3937,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 809287
+    },
+    {
+      "date": "0319-10-31",
+      "matches": 4583,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 746584
+    },
+    {
+      "date": "0319-11-30",
+      "matches": 4759,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 682324
+    },
+    {
+      "date": "0319-12-31",
+      "matches": 4759,
+      "minEligible": 19,
+      "minKeepers": 1,
+      "minCash": 615922
+    },
+    {
+      "date": "0320-01-31",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1516572
+    },
+    {
+      "date": "0320-02-29",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1461501
+    },
+    {
+      "date": "0320-03-31",
+      "matches": 738,
+      "minEligible": 15,
+      "minKeepers": 2,
+      "minCash": 1402632
+    },
+    {
+      "date": "0320-04-30",
+      "matches": 1342,
+      "minEligible": 15,
+      "minKeepers": 1,
+      "minCash": 1345662
+    },
+    {
+      "date": "0320-05-31",
+      "matches": 2028,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 1286793
+    },
+    {
+      "date": "0320-06-30",
+      "matches": 2091,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 1229823
+    },
+    {
+      "date": "0320-07-31",
+      "matches": 2801,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 1170954
+    },
+    {
+      "date": "0320-08-31",
+      "matches": 3351,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 1112085
+    },
+    {
+      "date": "0320-09-30",
+      "matches": 3989,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 1040094
+    },
+    {
+      "date": "0320-10-31",
+      "matches": 4717,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 950473
+    },
+    {
+      "date": "0320-11-30",
+      "matches": 4759,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 863743
+    },
+    {
+      "date": "0320-12-31",
+      "matches": 4759,
+      "minEligible": 14,
+      "minKeepers": 1,
+      "minCash": 774122
+    }
+  ],
+  "matches": 14277,
+  "startedAt": "2026-09-16T23:00:25.904Z",
+  "complete": true,
+  "failures": [],
+  "seconds": 1101.3538285
+}

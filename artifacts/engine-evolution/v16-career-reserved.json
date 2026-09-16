@@ -1,0 +1,49 @@
+{
+  "scope": "Consecutive full-world seasons using actual match engine, injuries, suspensions, minutes, development, market and promotion/relegation. No fabricated results or replacement players.",
+  "years": 3,
+  "hashes": {
+    "src/competitions/runtime.js": "c6a64fc6375c41e01657fb353c50e43cd86c27783845caf5f56a64077861ef42",
+    "src/competitions/market.js": "0c59dd8aac89211bbd1d28652a11f93b10065c20b57216eebfbe2fbca2739fc4",
+    "src/competitions/population.js": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+    "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+    "src/football/engine.js": "953db52adfc67d875dd04d490ca4f0cff162f4a7b92a7ca811d69a386340e772",
+    "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237",
+    "src/football/config.js": "d28a2973a2763bc08e051526d86bafdc2c2857567457e05ec637fc8151d4ddbd"
+  },
+  "seasons": [],
+  "months": [
+    {
+      "date": "0318-01-31",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 1026747
+    },
+    {
+      "date": "0318-02-28",
+      "matches": 0,
+      "minEligible": null,
+      "minKeepers": null,
+      "minCash": 973547
+    },
+    {
+      "date": "0318-03-31",
+      "matches": 738,
+      "minEligible": 21,
+      "minKeepers": 2,
+      "minCash": 914647
+    },
+    {
+      "date": "0318-04-30",
+      "matches": 1342,
+      "minEligible": 21,
+      "minKeepers": 1,
+      "minCash": 857647
+    }
+  ],
+  "matches": 1342,
+  "startedAt": "2026-09-16T23:17:47.122Z",
+  "complete": false,
+  "failures": [],
+  "seconds": 117.935156375
+}

@@ -1,0 +1,20 @@
+{
+  "scope": "All recorded half-year registration, transaction, retirement and financial metrics after independent runs from the initial world. Full-state equality is separately tested in v16-market-performance.json.",
+  "through": "0324-12-31",
+  "rows": 14,
+  "identical": true,
+  "sourceHashes": {
+    "before": {
+      "src/competitions/market.js": "d3ade86fef1afc39aff766d898bec6c2190dabeeb1dfc7b89dcb56f93955558b",
+      "src/competitions/population.js": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+      "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+      "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237"
+    },
+    "after": {
+      "src/competitions/market.js": "a5631f7227e5acb9a72f948ec6cf122c3397399e3cdfcd611572c426058fa803",
+      "src/competitions/population.js": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+      "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+      "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237"
+    }
+  }
+}
