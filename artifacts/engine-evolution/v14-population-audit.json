@@ -1,0 +1,237 @@
+{
+  "scope": "Population lifecycle only; no matches, player growth or transfers. Detects recruitment gaps for V15; not a long-term football balance verdict.",
+  "years": 12,
+  "sourceHash": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+  "seconds": 1.518622791,
+  "rows": [
+    {
+      "year": 318,
+      "active": 7907,
+      "retired": 0,
+      "youth": 1200,
+      "free": 0,
+      "senior": 6707,
+      "minRoster": 25,
+      "maxRoster": 29,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": null
+    },
+    {
+      "year": 319,
+      "active": 9034,
+      "retired": 73,
+      "youth": 2385,
+      "free": 0,
+      "senior": 6649,
+      "minRoster": 23,
+      "maxRoster": 28,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1200,
+        "retired": 73,
+        "promoted": 15,
+        "released": 0
+      }
+    },
+    {
+      "year": 320,
+      "active": 10096,
+      "retired": 221,
+      "youth": 3552,
+      "free": 0,
+      "senior": 6544,
+      "minRoster": 23,
+      "maxRoster": 28,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1210,
+        "retired": 148,
+        "promoted": 43,
+        "released": 0
+      }
+    },
+    {
+      "year": 321,
+      "active": 11082,
+      "retired": 436,
+      "youth": 4668,
+      "free": 0,
+      "senior": 6414,
+      "minRoster": 23,
+      "maxRoster": 27,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1201,
+        "retired": 215,
+        "promoted": 85,
+        "released": 0
+      }
+    },
+    {
+      "year": 322,
+      "active": 11969,
+      "retired": 753,
+      "youth": 5300,
+      "free": 334,
+      "senior": 6335,
+      "minRoster": 23,
+      "maxRoster": 27,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1204,
+        "retired": 317,
+        "promoted": 238,
+        "released": 334
+      }
+    },
+    {
+      "year": 323,
+      "active": 12794,
+      "retired": 1136,
+      "youth": 5473,
+      "free": 1024,
+      "senior": 6297,
+      "minRoster": 23,
+      "maxRoster": 25,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1208,
+        "retired": 383,
+        "promoted": 345,
+        "released": 690
+      }
+    },
+    {
+      "year": 324,
+      "active": 13613,
+      "retired": 1529,
+      "youth": 5292,
+      "free": 2026,
+      "senior": 6295,
+      "minRoster": 23,
+      "maxRoster": 26,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1212,
+        "retired": 393,
+        "promoted": 391,
+        "released": 1002
+      }
+    },
+    {
+      "year": 325,
+      "active": 14386,
+      "retired": 1965,
+      "youth": 5113,
+      "free": 2976,
+      "senior": 6297,
+      "minRoster": 23,
+      "maxRoster": 26,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1209,
+        "retired": 436,
+        "promoted": 438,
+        "released": 950
+      }
+    },
+    {
+      "year": 326,
+      "active": 15181,
+      "retired": 2383,
+      "youth": 4982,
+      "free": 3883,
+      "senior": 6316,
+      "minRoster": 23,
+      "maxRoster": 26,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1213,
+        "retired": 418,
+        "promoted": 437,
+        "released": 907
+      }
+    },
+    {
+      "year": 327,
+      "active": 15990,
+      "retired": 2787,
+      "youth": 4895,
+      "free": 4744,
+      "senior": 6351,
+      "minRoster": 23,
+      "maxRoster": 27,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1213,
+        "retired": 404,
+        "promoted": 439,
+        "released": 861
+      }
+    },
+    {
+      "year": 328,
+      "active": 16796,
+      "retired": 3199,
+      "youth": 4829,
+      "free": 5566,
+      "senior": 6401,
+      "minRoster": 23,
+      "maxRoster": 28,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1218,
+        "retired": 412,
+        "promoted": 462,
+        "released": 822
+      }
+    },
+    {
+      "year": 329,
+      "active": 17573,
+      "retired": 3634,
+      "youth": 4792,
+      "free": 6359,
+      "senior": 6422,
+      "minRoster": 23,
+      "maxRoster": 27,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1212,
+        "retired": 435,
+        "promoted": 456,
+        "released": 793
+      }
+    },
+    {
+      "year": 330,
+      "active": 18374,
+      "retired": 4041,
+      "youth": 4729,
+      "free": 7196,
+      "senior": 6449,
+      "minRoster": 23,
+      "maxRoster": 28,
+      "shortRosters": 0,
+      "noGoalkeeper": 0,
+      "change": {
+        "intake": 1208,
+        "retired": 407,
+        "promoted": 434,
+        "released": 837
+      }
+    }
+  ]
+}

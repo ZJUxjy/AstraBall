@@ -1,0 +1,42 @@
+# Subtest: 名单索引随新增、升队和归属变化更新，恢复不依赖内存缓存
+not ok 86 - 名单索引随新增、升队和归属变化更新，恢复不依赖内存缓存
+  ---
+  duration_ms: 301.304708
+  type: 'test'
+  location: '/Users/xu/Code/AstraBall/.worktrees/engine-evolution/tests/population.test.mjs:49:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+    
+      [
+        {
+    -     age: 19,
+    -     attributes: {
+    -       acceleration: 90,
+    -       aerialReach: 91,
+    -       aggression: 74,
+    -       agility: 75,
+    -       anticipation: 53,
+    -       balance: 75,
+    -       bravery: 76,
+    -       command: 88,
+    -       composure: 76,
+    -       concentration: 78,
+    -       corners: 36,
+    -       crossing: 55,
+    -       decisions: 72,
+    -       dribbling: 59,
+    -       finishing: 52,
+... full object diff omitted; cached transfer order differed after JSON restore ...
+  ...
+1..98
+# tests 98
+# suites 0
+# pass 97
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 68734.076459

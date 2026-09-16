@@ -1,3 +1,4 @@
+import {promotePlayer,ensurePopulation} from './population.js';
 import {advanceDevelopment,setPlayerTraining} from './development.js';
 import {appointManager,beginCoachedMatch,updateCoachedMatch,isManagedFixture,seasonGoal,savePreparation} from './career.js';
 import {createSeason,validateSave,followingSeason,pendingMatches,playFixture,finishDate} from './runtime.js';
@@ -6,11 +7,11 @@ function database(){return dbPromise??=new Promise((resolve,reject)=>{const r=in
 async function read(store,key){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(store),r=tx.objectStore(store).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Error('读取赛季存档失败'));});}
 async function write(s,archive){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(['seasons','meta'],'readwrite');if(archive)tx.objectStore('seasons').put(archive);tx.objectStore('seasons').put(s);tx.objectStore('meta').put(s.year,'current');tx.oncomplete=resolve;tx.onerror=tx.onabort=()=>reject(Error('保存失败，赛季未推进。请检查浏览器存储空间后重试。'));});}
 export function peekSeason(){return current;}
-export async function loadSeason(){if(current)return current;return loading??=(async()=>{const year=await read('meta','current');if(year!=null){const saved=await read('seasons',year);current=validateSave(saved);}else current=createSeason();return current;})().catch(error=>{loading=null;throw error;});}
+export async function loadSeason(){if(current)return current;return loading??=(async()=>{const year=await read('meta','current');if(year!=null){const saved=await read('seasons',year);current=validateSave(saved);}else current=createSeason();ensurePopulation(current);return current;})().catch(error=>{loading=null;throw error;});}
 export async function archivedYears(){const db=await database();return new Promise((resolve,reject)=>{const r=db.transaction('seasons').objectStore('seasons').getAllKeys();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Error('读取赛季档案失败'));});}
 export async function readSeason(year){const s=await loadSeason();return year===s.year?s:validateSave(await read('seasons',year));}
 // Only one tab may advance this save. Reload inside the lock to avoid stale writes.
-async function mutate(fn){if(busy)throw Error('赛季正在推进');busy=true;try{const run=async()=>{const year=await read('meta','current');if(year!=null)current=validateSave(await read('seasons',year));else await loadSeason();const work=structuredClone(current),result=await fn(work);await write(result||work,result?work:null);current=result||work;return current;};return navigator.locks?await navigator.locks.request('astraball-season-write',run):await run();}finally{busy=false;}}
+async function mutate(fn){if(busy)throw Error('赛季正在推进');busy=true;try{const run=async()=>{const year=await read('meta','current');if(year!=null)current=validateSave(await read('seasons',year));else await loadSeason();const work=structuredClone(current);ensurePopulation(work);const result=await fn(work);await write(result||work,result?work:null);current=result||work;return current;};return navigator.locks?await navigator.locks.request('astraball-season-write',run):await run();}finally{busy=false;}}
 export async function advanceDay(date,{onProgress=()=>{},shouldStop=()=>false}={}){return mutate(async work=>{
  if(date<work.date||date>`${String(work.year).padStart(4,'0')}-12-31`)throw Error('请选择本赛季内的未来日期');
  if(work.activeMatch)throw Error('请先回到执教比赛，完成当前比赛');
@@ -29,3 +30,5 @@ export async function startOfficial(settings){let state;const season=await mutat
 export async function tickOfficial(update){let state;const season=await mutate(work=>{state=updateCoachedMatch(work,update);});return {season,state};}
 export async function saveOfficialPreparation(settings){return mutate(work=>{savePreparation(work,settings);});}
 export async function savePlayerTraining(id,plan){return mutate(work=>{setPlayerTraining(work,id,plan);});}
+
+export async function savePromotion(id){return mutate(work=>{promotePlayer(work,id);});}

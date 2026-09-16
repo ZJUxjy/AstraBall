@@ -1,0 +1,23 @@
+{
+  "baselineCommit": "bf24b475fc2577b1d024f2eb8ec564d5f1f28e3e",
+  "baselineWorkingTreeClean": true,
+  "comparedFiles": 149,
+  "originalDirectoryDifferences": [
+    "README.md",
+    "docs/football/球员成长与校准.md",
+    "index.html",
+    "package.json",
+    "src/app.js",
+    "src/competitions/development.js",
+    "src/competitions/hub.js",
+    "src/competitions/manager-ui.js",
+    "src/competitions/runtime.js",
+    "src/competitions/store.js",
+    "src/football.css",
+    "src/football/development-ui.js",
+    "src/football/players.js",
+    "src/football/ui.js"
+  ],
+  "interpretation": "Original directory has independent playerRegistry/youth edits, not identical to initial baseline. This task only wrote engine-evolution; no merge or overwrite of those edits.",
+  "distinctRuntimeInodes": true
+}

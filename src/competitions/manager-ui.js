@@ -18,7 +18,7 @@ function selection(s){
  const divisions=leagueSystems.find(x=>x.id===system).levels;
  if(!divisions.some(d=>d.id===division))division=divisions[0].id;
  const ids=s.members[division];if(!ids.includes(selected))selected=ids[0];
- const t=footballTeams.find(t=>t.id===selected),c=club(selected),goal=seasonGoal(s,selected);
+ const t=seasonTeam(s,selected),c=club(selected),goal=seasonGoal(s,selected);
  return `<header class="football-title"><div><small>${s.year} 赛季 · 俱乐部经理兼主教练</small><h1>接手俱乐部</h1></div><a class="football-link" href="#world/all">查看世界 ↗</a></header>
  <div class="manager-selection"><section class="manager-panel"><h2>选择球队</h2><div class="manager-selects"><label>赛事体系<select data-system>${options(leagueSystems.map(x=>[x.id,x.name]),system)}</select></label><label>联赛级别<select data-division>${options(divisions.map(x=>[x.id,x.name]),division)}</select></label><label>俱乐部<select data-club>${options(ids.map(id=>[id,name(id)]),selected)}</select></label></div></section>
  <section class="manager-panel manager-club"><span class="manager-kicker">${esc(getDivision(division).name)}</span><h2>${esc(t.name)}</h2><p>${esc(cities.find(x=>x.id===c.city)?.name||'')} · ${c.founded} 年成立</p><div class="manager-stats"><div><strong>${t.roster.length}</strong><span>一线队球员</span></div><div><strong>${Math.round(averageQuality(t))}</strong><span>首发平均能力</span></div></div><div class="manager-objective"><span>赛季目标</span><strong>${goal.label}</strong></div><div class="manager-actions"><button class="football-primary" data-manager="appoint" ${busy?'disabled':''}>接手${esc(t.name)}</button><a class="football-link" href="#squad/${t.id}">查看阵容 ↗</a></div></section></div>`;

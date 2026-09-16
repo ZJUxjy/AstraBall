@@ -6,9 +6,9 @@ import {LEGACY_ENGINES} from '../src/football/legacy.js';
 import {createMatch,stepMatch,applyCommand,getResult,snapshotMatch,restoreMatch} from '../src/football/engine.js';
 import {generateTeam} from '../src/football/players.js';
 const input={home:generateTeam({id:'legacy-h'}),away:generateTeam({id:'legacy-a'}),seed:55821};
-test('V6—V12 未完赛快照在新版本继续，事件与各自旧引擎逐字一致',()=>{
+test('V6—V13 未完赛快照在新版本继续，事件与各自旧引擎逐字一致',()=>{
  for(const [version,engine] of Object.entries(LEGACY_ENGINES)){
-  const original=engine.createMatch({...input,ai:[false,Number(version)>=10]});for(let i=0;i<160;i++)engine.stepMatch(original);
+  const original=engine.createMatch({...input,ai:[false,Number(version)>=10]});original.version=Number(version);for(let i=0;i<160;i++)engine.stepMatch(original);
   const resumed=restoreMatch(JSON.parse(JSON.stringify(engine.snapshotMatch(original))));
   const out=original.teams[0].slots.at(-1).id,incoming=original.teams[0].roster.find(p=>!original.teams[0].used.has(p.id)).id;
   const command={type:'substitution',side:0,out,in:incoming};engine.applyCommand(original,command);applyCommand(resumed,command);
