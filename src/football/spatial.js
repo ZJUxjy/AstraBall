@@ -33,11 +33,23 @@ export function updateSpace(state,seconds){
   for(const slot of team.slots){
    const p=team.roster.find(p=>p.id===slot.id),record=team.lines[slot.id],anchor=anchorFor(team,slot);
    const goalkeeper=slot.position==='GK';
-   let x=goalkeeper?clamp(ball[0]*.12,4,12):anchor[0]+(ball[0]-52)*.45+(attacking?6:-7)+line+intent;
+   const backLine=['CB','LB','RB','DM'].includes(slot.position);
+   let x=goalkeeper?clamp(ball[0]*.12,4,12):anchor[0]+(ball[0]-52)*.45+(attacking?6:-7)+line*(backLine?1:.25)+intent;
    let y=goalkeeper?34+(ball[1]-34)*.12:34+(anchor[1]-34)*width+(ball[1]-34)*.15;
+   // Goal-side marking prevents a deep block drifting all the way onto its goal line.
+   if(!attacking&&!goalkeeper&&backLine&&ball[0]<38&&Math.abs(anchor[1]-ball[1])<22){
+    x=Math.max(x,ball[0]-4);y+=(ball[1]-y)*.35;
+   }
    if(attacking&&state.holder===slot.id){x=ball[0];y=ball[1];}
    const offset=roleOffset(slot,team.tactics,attacking,ball),fam=roleFamiliarity(p,slot.position);
+   const transition=state.turnoverAt!=null&&state.elapsed-state.turnoverAt<14;
+   if(attacking&&transition&&['ST','LW','RW','AM'].includes(slot.position))x+=6+p.attributes.pace*.055;
    if(!goalkeeper&&state.holder!==slot.id){x+=offset[0];y+=offset[1];if(attacking)x-=(1-fam.attack)*9;}
+   // Attackers wait on the shoulder, then run beyond the line after release.
+   if(attacking&&!goalkeeper&&state.holder!==slot.id){
+    const defenders=state.teams[1-side].slots.map(slot=>105-state.teams[1-side].lines[slot.id].position[0]).sort((a,b)=>b-a);
+    const legal=Math.max(52.5,ball[0],(defenders[1]??105)-1);x=Math.min(x,legal-(slot.position==='ST'&&team.tactics.striker==='link'?5:0));
+   }
    const target=[clamp(x,3,99),clamp(y,3,65)],gap=distance(record.position,target);
    const maxTravel=seconds*(2.5+p.attributes.pace*.035)*(.55+.45*record.condition/100);
    const fraction=gap?Math.min(1,maxTravel/gap,1-Math.exp(-seconds/7)):1;

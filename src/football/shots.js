@@ -8,5 +8,5 @@ export function shotQuality({x=88,y=34,pressure=.5,kind='open',counter=false}={}
  return clamp(sigmoid(TUNE.xgIntercept-distance*.085+angle*1.45-pressure*.55+(counter?.28:0)-(kind==='header'?.45:0)-(kind==='freeKick'?.4:0)),.008,.7);
 }
 export function goalProbability(xG,finishing,keeping,{weakFoot=100,header=false}={}){
- return clamp(sigmoid(logit(xG)+clamp((finishing-65)*.018-(keeping-65)*.018-(100-weakFoot)*.003,-1.4,1.4)),.003,header?.70:.94);
+ return clamp(sigmoid(logit(xG)+clamp((finishing-65)*TUNE.finishingScale-(keeping-65)*TUNE.keepingScale-(100-weakFoot)*.003,-1.4,1.4)),.003,header?.70:.94);
 }

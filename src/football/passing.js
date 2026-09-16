@@ -11,7 +11,8 @@ export function passOptions(state,actor,{forward=false,back=false,crossing=false
  return team.slots.filter(slot=>slot.id!==actor.id).map(slot=>{
   const p=team.roster.find(p=>p.id===slot.id),start=team.lines[p.id].position;
   const fam=roleFamiliarity(p,slot.position);
-  const run=through?clamp((p.attributes.offBall*fam.attack+p.attributes.pace)/22,2,8):0;
+  const runner=['ST','LW','RW','AM'].includes(slot.position);
+  const run=forward&&runner&&start[0]>50?clamp((p.attributes.offBall*fam.attack+p.attributes.pace)/13,3,14)*(through?1:.35):0;
   const target=[clamp(start[0]+run,4,98),start[1]],length=distance(from,target),progress=target[0]-from[0];
   const offside=start[0]>Math.max(52.5,from[0],line)+1;
   const openness=1-localPressure(state,side,target);

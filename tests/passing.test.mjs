@@ -8,7 +8,7 @@ const input={home:generateTeam({id:'a'}),away:generateTeam({id:'b'}),seed:23981}
 test('传球落点对应接应者站位或可达前插，距离与事件坐标一致',()=>{
  const result=simulateMatch(input),passes=result.events.filter(e=>e.type==='pass');assert.ok(passes.length>100);
  for(const e of passes){const target=e.side?[105-e.to[0],68-e.to[1]]:e.to;
-  assert.ok(Math.hypot(target[0]-e.receiverStart[0],target[1]-e.receiverStart[1])<=8.000001);
+  assert.ok(Math.hypot(target[0]-e.receiverStart[0],target[1]-e.receiverStart[1])<=14.000001);
   assert.ok(Math.abs(Math.hypot(e.to[0]-e.from[0],e.to[1]-e.from[1])-e.passLength)<1e-8);
  }
 });

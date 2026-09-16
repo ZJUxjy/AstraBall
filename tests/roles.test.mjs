@@ -13,7 +13,7 @@ test('边后卫套上与中锋回撤改变进攻站位，错位收缩防守覆�
  const make=t=>createMatch({home:generateTeam({id:'a'}),away:generateTeam({id:'b'}),homeTactics:t,seed:2});
  const hold=make({fullbacks:'hold',striker:'link'}),run=make({fullbacks:'overlap',striker:'run'});
  for(const s of [hold,run]){s.side=0;s.x=80;s.y=34;for(let i=0;i<20;i++)updateSpace(s,5);}
- const x=(s,i)=>s.teams[0].lines[s.teams[0].slots[i].id].position[0];assert.ok(x(run,1)>x(hold,1)+15);assert.ok(x(run,9)>x(hold,9)+8);
+ const x=(s,i)=>s.teams[0].lines[s.teams[0].slots[i].id].position[0];assert.ok(x(run,1)>x(hold,1)+15);assert.ok(x(run,9)>x(hold,9)+4);
  const t=run.teams[0],slot=t.slots[2],p=t.roster.find(p=>p.id===slot.id),point=t.lines[p.id].position.map((v,i)=>v+(i?0:8));const before=coverage(t,point).find(c=>c.id===p.id).influence;p.position='ST';p.secondary=[];assert.ok(coverage(t,point).find(c=>c.id===p.id).influence<before);
 });
 test('进攻侧重真实改变传球目标分布，左右方向使用本队坐标',()=>{

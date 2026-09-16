@@ -26,3 +26,12 @@ test('局部防守人数和体能影响压力；换人继承场上位置，改�
  applyCommand(s,{type:'substitution',side:0,out:out.id,in:into.id});assert.deepEqual(home.lines[into.id].position,position);
  applyCommand(s,{type:'tactics',side:0,tactics:{formation:'3-5-2'}});assert.equal(new Set(home.slots.map(p=>p.anchorIndex)).size,11);
 });
+test('高防线前的接应者等待合法出球位置，低位防守保持近身覆盖',()=>{
+ const s=make();s.side=0;s.x=60;s.y=34;s.teams[1].tactics.line='high';
+ for(let i=0;i<30;i++)updateSpace(s,5);
+ const second=s.teams[1].slots.map(slot=>105-s.teams[1].lines[slot.id].position[0]).sort((a,b)=>b-a)[1];
+ for(const slot of s.teams[0].slots.filter(slot=>['ST','LW','RW'].includes(slot.position)))assert.ok(s.teams[0].lines[slot.id].position[0]<=Math.max(s.x,second)+1);
+ s.x=90;s.teams[1].tactics.line='deep';for(let i=0;i<30;i++)updateSpace(s,5);
+ const defenders=s.teams[1].slots.filter(slot=>slot.position==='CB').map(slot=>s.teams[1].lines[slot.id].position);
+ assert.ok(defenders.every(xy=>xy[0]>8&&xy[0]<18));assert.ok(localPressure(s,0,[90,34])>.6);
+});

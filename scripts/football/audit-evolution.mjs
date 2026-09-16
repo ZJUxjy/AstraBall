@@ -14,7 +14,7 @@ for(const [name,q1,q2,t1,t2] of [
 ]){
  const totals={goals:0,shots:0,xG:0,passes:0,completed:0,fouls:0,corners:0,red:0,draws:0,teamOneWins:0,teamOneGoals:0,teamTwoGoals:0};
  for(let i=0;i<n;i++){
-  const a=generateTeam({id:'A',quality:q1,seed:`evo:${Math.floor(i/20)}`}),b=generateTeam({id:'B',quality:q2,seed:`evo:${Math.floor(i/20)}`}),reverse=i%2===1;
+  const a=generateTeam({id:`A-${Math.floor(i/20)}`,quality:q1,seed:`evo:${Math.floor(i/20)}`}),b=generateTeam({id:`B-${Math.floor(i/20)}`,quality:q2,seed:`evo:${Math.floor(i/20)}`}),reverse=i%2===1;
   const r=simulateMatch({home:reverse?b:a,away:reverse?a:b,homeTactics:reverse?t2:t1,awayTactics:reverse?t1:t2,seed:seed+i,capture:false,ai:[ai,ai]});
   if(r.status!=='finished')throw Error(`unfinished ${name}/${i}`);
   for(const t of r.teams)for(const k of ['goals','shots','xG','passes','completed','fouls','corners','red'])totals[k]+=t.stats[k];

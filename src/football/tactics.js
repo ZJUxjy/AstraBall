@@ -4,7 +4,7 @@ export function tacticalEffects(attack,defense,x){
  const direct=a.passing==='direct',short=a.passing==='short';
  return {
   advance:direct?.16:short?-.065:0,
-  completion:(short?.032:direct?-.05:0)-press*(x<65?1:.4)+(a.tempo==='slow'?.012:a.tempo==='fast'?-.018:0),
+  completion:(short?.02:direct?-.015:0)-press*(x<65?1:.4)+(a.tempo==='slow'?.012:a.tempo==='fast'?-.018:0),
   seconds:a.tempo==='fast'?.83:a.tempo==='slow'?1.2:1,
   shooting:a.mentality==='attacking'?1.24:a.mentality==='defensive'?.76:1,
   exposure:d.mentality==='attacking'?.18:d.mentality==='defensive'?-.12:0,

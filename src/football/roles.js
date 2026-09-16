@@ -24,6 +24,11 @@ export function roleOffset(slot,tactics,attacking,ball){
   const forward=tactics.fullbacks==='overlap'?Math.max(0,(ball[0]-40)*.3):tactics.fullbacks==='hold'?-8:0;
   return [forward,tactics.fullbacks==='overlap'?(slot.position==='LB'?-3:3):0];
  }
- if(slot.position==='ST')return tactics.striker==='link'?[-8,(ball[1]-34)*.1]:[Math.max(0,(ball[0]-55)*.16),0];
+ if(tactics.formation==='4-4-2'&&['LW','RW'].includes(slot.position))return [Math.min(14,Math.max(0,(ball[0]-35)*.4)),0];
+ if(slot.position==='ST')return tactics.striker==='link'?[-5,(ball[1]-34)*.1]:[Math.max(0,(ball[0]-55)*.16),0];
+ // A dropping striker opens a lane for a winger or attacking midfielder.
+ if(tactics.striker==='link'&&['AM','LW','RW'].includes(slot.position)&&ball[0]>50){
+  const run=Math.min(10,(ball[0]-50)*.3);return [run,slot.position==='LW'?run*.5:slot.position==='RW'?-run*.5:0];
+ }
  return [0,0];
 }

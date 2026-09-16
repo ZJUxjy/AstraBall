@@ -4,7 +4,7 @@ import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
 import {rng,clamp,mean,sigmoid,logit} from './random.js';
 import {selectLineup,FORMATIONS,available,familiarity,ATTRIBUTE_KEYS,rating} from './players.js';
-import {ENGINE_VERSION,TUNE} from './config.js';
+import {ENGINE_VERSION,TUNE,skillDifference} from './config.js';
 import {shotQuality,goalProbability} from './shots.js';
 import {tacticalEffects} from './tactics.js';
 import {exertion,conditionEffect} from './fitness.js';
@@ -51,7 +51,7 @@ function ability(state,team,p,keys){const slot=team.slots.find(s=>s.id===p.id);c
 function teamAbility(state,team,keys){const active=outfield(team);const leadership=Math.max(...active.map(p=>p.attributes.leadership));return (mean(active.map(p=>ability(state,team,p,keys)))+(leadership-65)*.025)*Math.sqrt(team.slots.length/11);}
 function emit(s,type,data={}){const e={seq:s.sequence++,type,seconds:s.elapsed,period:s.period,minute:periodBase(s.period)+s.periodClock/60,side:s.side,x:s.side===0?s.x:105-s.x,y:s.side===0?s.y:68-s.y,score:s.teams.map(t=>t.stats.goals),...data};if(s.capture)s.events.push(e);return e;}
 function clock(s,seconds,active=true){const dt=Math.max(0,Math.min(seconds,s.periodEnd-s.periodClock));s.elapsed+=dt;s.periodClock+=dt;if(active)s.teams[s.side].stats.possessionSeconds+=dt;else{s.lostSeconds+=dt;s.periodEnd=Math.max(s.periodClock,(s.period>2?15:45)*60+Math.min(s.period>2?120:480,60+Math.round(s.lostSeconds*.3/60)*60));}for(const t of s.teams)for(const slot of t.slots){const line=t.lines[slot.id];line.seconds+=dt;t.stats.playerSeconds+=dt;line.condition=clamp(line.condition-exertion(player(t,slot.id),t.tactics,dt*(active?1:.35),slot.position),15,100);}}
-function takeBall(s,side,x=25,y=34,holder=null){s.side=side;s.x=clamp(x,5,98);s.y=clamp(y,4,64);s.holder=holder;if(holder&&s.teams[side].lines[holder])s.teams[side].lines[holder].position=[s.x,s.y];s.lastPass=null;}
+function takeBall(s,side,x=25,y=34,holder=null){const previous=s.side;if(previous!==side)s.turnoverAt=holder&&s.teams[side].slots.some(slot=>slot.id===holder&&slot.position!=='GK')?s.elapsed:null;s.side=side;s.x=clamp(x,5,98);s.y=clamp(y,4,64);s.holder=holder;if(holder&&s.teams[side].lines[holder])s.teams[side].lines[holder].position=[s.x,s.y];s.lastPass=null;}
 function choose(s,team,role,exclude){return s.random.pick(outfield(team).filter(p=>p.id!==exclude),p=>{
  const pos=team.slots.find(slot=>slot.id===p.id).position;
  const forward=['ST','LW','RW','AM'].includes(pos),defender=['CB','LB','RB','DM'].includes(pos);
@@ -131,10 +131,10 @@ function playAction(s){
  if(s.random.next()<.11){
   const skill=ability(s,attack,actor,['dribbling','agility','balance','acceleration']);
   const stop=ability(s,defense,defender,['tackling','positioning','strength']);
-  const success=s.random.next()<clamp(.59+(skill-stop)*.004,.15,.91);
+  const success=s.random.next()<clamp(.59+skillDifference(skill-stop,TUNE.duelSkillScale),.15,.91);
   attack.stats.dribbles++;attack.lines[actor.id].dribbles++;
   emit(s,'dribble',{player:actor.id,defender:defender.id,success});
-  if(success){attack.stats.dribblesWon++;attack.lines[actor.id].dribblesWon++;s.x=Math.min(96,s.x+8);attack.lines[actor.id].position=[s.x,s.y];s.lastPass=null;}
+  if(success){attack.stats.dribblesWon++;attack.lines[actor.id].dribblesWon++;s.x=Math.min(96,s.x+8);if(s.x>70)s.y+=Math.sign(34-s.y)*Math.min(5,Math.abs(34-s.y));attack.lines[actor.id].position=[s.x,s.y];s.lastPass=null;}
   else{defense.stats.tackles++;defense.lines[defender.id].tackles++;takeBall(s,1-s.side,105-s.x,68-s.y,defender.id);}return;
  }
  const crossing=s.x>72&&Math.abs(s.y-34)>16&&s.random.next()<.17*effects.width;
@@ -143,7 +143,7 @@ function playAction(s){
  const route=selectPass(s,actor,{forward,back,crossing,through}),receiver=route.player,target=route.target;
  const skill=ability(s,attack,actor,attack.slots.find(slot=>slot.id===actor.id)?.position==='GK'?(forward?['kicking','decisions']:['throwing','decisions']):crossing?['crossing','technique','vision']:through||route.length>30?['longPassing','vision','decisions']:['passing','decisions','technique'])+ability(s,attack,receiver,['firstTouch','offBall','pace'])*.15;
  const pressure=teamAbility(s,defense,['anticipation','positioning','workRate'])*1.15;
- const probability=clamp(TUNE.passBase+(skill-pressure)*.0024+effects.completion+routeModifier(route)-(crossing?.14:forward?.045:0)+(s.side===0&&!s.neutral?TUNE.homeEdge:0),.4,.97);
+ const probability=clamp(TUNE.passBase+skillDifference(skill-pressure)+effects.completion+routeModifier(route)-(crossing?.14:route.progress>5?.045:0)+(s.side===0&&!s.neutral?TUNE.homeEdge:0),.4,.97);
  const offside=route.offside;
  const success=!offside&&s.random.next()<probability;attack.stats.passes++;attack.lines[actor.id].passes++;
  emit(s,'pass',{player:actor.id,receiver:receiver.id,defender:defender.id,success,from:[s.side===0?s.x:105-s.x,s.side===0?s.y:68-s.y],to:s.side===0?target:[105-target[0],68-target[1]],kind:crossing?'cross':through?'through':route.progress>5?'progressive':route.progress<-5?'back':'short',offside,receiverStart:route.start,passLength:route.length,laneRisk:route.laneRisk,openness:route.openness});
