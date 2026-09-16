@@ -1,0 +1,132 @@
+{
+  "6": {
+    "ref": "bf24b47",
+    "commit": "bf24b475fc2577b1d024f2eb8ec564d5f1f28e3e",
+    "hashes": {
+      "engine.js": "fb87e1aae7ba878ee935bf9e71bc69ee83e7d67f712f5d75e516fed25265eeea",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "7024a577f882f7dcac770ad826b08d8cd5966881841ff60015ec059b65cccb06",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a"
+    }
+  },
+  "7": {
+    "ref": "engine-v7",
+    "commit": "a7d0f881ffcbd030214608b06b8162397050093c",
+    "hashes": {
+      "engine.js": "53256ea40f8bd553f825ff9fab7d46b53d7e052752268d8ae146ef4ef46cd137",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "c97341fc92a141e3e2cb900ae0e3164d3cc673d4d8e6b542f18d6745e184a85d",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "69010027726b7fd719595b4af0c54819d204eb1bde97c9d1a211bca9ff72296f"
+    }
+  },
+  "8": {
+    "ref": "engine-v8",
+    "commit": "ed14b42938d402ee4ad1593219748e6430642d09",
+    "hashes": {
+      "engine.js": "a3449ebe208cbb7f62db6d5b7d5d6c82bfc9038ea919d8a270225d903c24aa88",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "05ce18a41347a291a79bee3c0cbdcfafa3d479e3f496508ad12dafc54c841920",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "69010027726b7fd719595b4af0c54819d204eb1bde97c9d1a211bca9ff72296f",
+      "passing.js": "3177f4fd5ba58d0dcfd6ac9775461f428dac2112dcf5915eeea40f526fc535ac"
+    }
+  },
+  "9": {
+    "ref": "engine-v9",
+    "commit": "8894dc3ce8e9e8f9b7e14988d0c7b24cfef1ae4f",
+    "hashes": {
+      "engine.js": "cb10c3aa83617f61d214f8b333fb6a7d75b9e3c066e2b5868d5db7ea385bfb29",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "d72cc6a79a8b8c7e27a85ac3ac8e6e7782a3b085ecf85863698609b9ec98073a",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "24852c7a9f84c67937e37616e0f61a567797f61e18e27f1a1b2685ae906b5a8e",
+      "roles.js": "17924999ca04588d1f1a3da3c585258fda0d4ffa87843df22f616af60adf952e",
+      "passing.js": "48b7611aaa5b50d767c9349de4fb2d1ef8c8f5450d878a6a56ac224377ad9893"
+    }
+  },
+  "10": {
+    "ref": "engine-v10",
+    "commit": "5874a923105fa91f057c81c0131cc037d60c0c9a",
+    "hashes": {
+      "engine.js": "4213b3b6a21a8007c364a9ee5a5ae54bc32432cd4979b216ac04568b364b4a88",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "39b0c95f0c2bb3e3d829fdae1addc9432121a10caed17cfccfc7c2fe79bdf0d7",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "24852c7a9f84c67937e37616e0f61a567797f61e18e27f1a1b2685ae906b5a8e",
+      "roles.js": "17924999ca04588d1f1a3da3c585258fda0d4ffa87843df22f616af60adf952e",
+      "passing.js": "48b7611aaa5b50d767c9349de4fb2d1ef8c8f5450d878a6a56ac224377ad9893",
+      "coach.js": "2fd6ac8cfbc1eb75f3a2429b0b82316beefae7b0d3fa68982d226a27305346f5"
+    }
+  },
+  "11": {
+    "ref": "engine-v11",
+    "commit": "ef6b9df050f12056114e6a8ee946348dde8984a9",
+    "hashes": {
+      "engine.js": "bddf38f432bab52b6c803f1d4248e34128d3794fa079158e9cb496d59dc50bba",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+      "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+      "config.js": "7040897ae8059369ef2069d8091ec77c8921d2eaec3969610b231e9c2119af1e",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "24852c7a9f84c67937e37616e0f61a567797f61e18e27f1a1b2685ae906b5a8e",
+      "roles.js": "17924999ca04588d1f1a3da3c585258fda0d4ffa87843df22f616af60adf952e",
+      "passing.js": "48b7611aaa5b50d767c9349de4fb2d1ef8c8f5450d878a6a56ac224377ad9893",
+      "coach.js": "2ef2d8b837aa69c9e77eeb403abaed5a8e071ef27d9fdd5a65ee4254d2afb87a"
+    }
+  },
+  "12": {
+    "ref": "engine-v12",
+    "commit": "426f75e01a3a36cee28ab4acf890c68b906194b5",
+    "hashes": {
+      "engine.js": "df20cd9e2e4c2dd871eb46300745ae2cb6c6e889c57628541d68388c577d565f",
+      "rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+      "random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+      "fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+      "tactics.js": "996c7188ce74dc6b76cbfa7a94793805a7f8d84c3f0c18a45ea726cc9442c93c",
+      "shots.js": "3b94652b75a4f257dcc243136de5098d63ea1e3931e573dadea300cf8ed71744",
+      "config.js": "fee42cb9c88fed780141bd802d12441533c1f6553daa7f43cdadeeab8fb033e8",
+      "players.js": "15d523416638a9b159ca35aa42b109acf14b77c6142b95e923fbb71025167567",
+      "names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+      "names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+      "spatial.js": "85b8be86c31b51d851f659f89d4a4af5f4850be72ba9a04c7d004233a7752d57",
+      "roles.js": "aa568f5476db3b7a1f5d71ec8bd58b3b57b3d4c3e9839ee6628b20c40cd247f7",
+      "passing.js": "628740193e91a5381cfba541d904798c284c0f66a821b0923e3ffffd2813d86f",
+      "coach.js": "2ef2d8b837aa69c9e77eeb403abaed5a8e071ef27d9fdd5a65ee4254d2afb87a"
+    }
+  }
+}

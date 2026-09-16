@@ -1,0 +1,29 @@
+{
+  "version": 13,
+  "n": 300,
+  "seed": 9600000,
+  "groups": [
+    {
+      "name": "finishing",
+      "low": 0.96,
+      "high": 1.1533333333333333,
+      "difference": 0.19333333333333336,
+      "passed": true
+    },
+    {
+      "name": "goalkeeping",
+      "low": 1.2,
+      "high": 0.9233333333333333,
+      "difference": -0.2766666666666666,
+      "passed": true
+    },
+    {
+      "name": "passing",
+      "low": 306.2733333333333,
+      "high": 343.2633333333333,
+      "difference": 36.99000000000001,
+      "passed": true
+    }
+  ],
+  "matches": 1800
+}

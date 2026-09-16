@@ -1,7 +1,7 @@
 import {createDevelopment,advanceDevelopment,developedPlayer,recordDevelopmentMatch,validateDevelopment} from './development.js';
 import {clubs,YEAR} from '../world.js';
 import {footballTeams} from '../football/data.js';
-import {createMatch,stepMatch,getResult} from '../football/engine.js';
+import {createMatch,stepMatch,getResult,validateMatchSnapshot} from '../football/engine.js';
 import {leagueSystems,getDivision} from './catalog.js';
 import {roundRobin,standings,knockoutBracket,globalQualifiers,globalGroups,moveDivisions,draftOrder} from './season.js';
 import {dateOf,addDays,daysBetween,seasonCalendar,roundDates} from './calendar.js';
@@ -95,4 +95,4 @@ export function settleSeason(s){
  return {tables,nextMembers,movements,champions,qualifiers};
 }
 export function followingSeason(s){if(!s.summary||s.date!==dateOf(s.year,12,31))throw Error('完成全年赛历后才可进入新赛季');const carryDiscipline=Object.fromEntries(Object.entries(s.discipline).filter(([,d])=>d.ban>0).map(([key,d])=>{let [competition,id]=key.split('/');if(getDivision(competition))competition=Object.keys(s.summary.nextMembers).find(d=>s.summary.nextMembers[d].some(t=>teams.get(t).roster.some(p=>p.id===id)))||competition;return [`${competition}/${id}`,{yellow:0,ban:d.ban}];}));const next=createSeason({year:s.year+1,members:s.summary.nextMembers,qualifiers:s.summary.qualifiers,playerState:s.playerState,carryDiscipline,draftRanking:s.summary.tables.closed.map(r=>r.id),manager:s.manager?{...s.manager,goal:null}:null,development:s.development});advanceDevelopment(next,next.date);return next;}
-export function validateSave(s){if(!s||s.version!==SAVE_VERSION||!Number.isInteger(s.year)||s.year<YEAR)throw Error('存档版本不兼容');validateMembers(s.members);validateDevelopment(s.development);if(s.manager&&!teams.has(s.manager.clubId))throw Error('执教俱乐部无效');if(s.activeMatch&&(!s.manager||!s.fixtures?.some(m=>m.id===s.activeMatch.fixtureId&&!m.score)))throw Error('执教比赛存档无效');if(!Array.isArray(s.fixtures)||s.fixtures.length!==4827||new Set(s.fixtures.map(m=>m.id)).size!==s.fixtures.length||!Array.isArray(s.groups)||!s.playerState||!s.discipline||s.date<dateOf(s.year,1,1)||s.date>dateOf(s.year,12,31))throw Error('存档数据不完整');return s;}
+export function validateSave(s){if(s?.activeMatch)validateMatchSnapshot(s.activeMatch.state);if(!s||s.version!==SAVE_VERSION||!Number.isInteger(s.year)||s.year<YEAR)throw Error('存档版本不兼容');validateMembers(s.members);validateDevelopment(s.development);if(s.manager&&!teams.has(s.manager.clubId))throw Error('执教俱乐部无效');if(s.activeMatch&&(!s.manager||!s.fixtures?.some(m=>m.id===s.activeMatch.fixtureId&&!m.score)))throw Error('执教比赛存档无效');if(!Array.isArray(s.fixtures)||s.fixtures.length!==4827||new Set(s.fixtures.map(m=>m.id)).size!==s.fixtures.length||!Array.isArray(s.groups)||!s.playerState||!s.discipline||s.date<dateOf(s.year,1,1)||s.date>dateOf(s.year,12,31))throw Error('存档数据不完整');return s;}

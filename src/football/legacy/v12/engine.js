@@ -1,6 +1,3 @@
-import {LEGACY_ENGINES} from './legacy.js';
-import {validateMatchSnapshot} from './snapshot-validation.js';
-export {validateMatchSnapshot} from './snapshot-validation.js';
 import {prepareCoach,coachLineup,coachCommands} from './coach.js';
 import {positionalAttribute} from './roles.js';
 import {selectPass,routeModifier} from './passing.js';
@@ -153,7 +150,7 @@ function playAction(s){
  if(success){attack.stats.completed++;attack.lines[actor.id].completed++;s.x=target[0];s.y=target[1];s.holder=receiver.id;attack.lines[receiver.id].position=[...target];s.lastPass={id:actor.id,kind:crossing?'cross':through?'through':forward?'progressive':'short'};}
  else{if(offside){attack.stats.offsides++;emit(s,'offside',{player:receiver.id});clock(s,12,false);}else if(s.random.next()<.24){defense.stats.interceptions++;defense.lines[defender.id].interceptions++;}else{emit(s,'restart',{side:1-s.side,kind:'throwIn'});clock(s,4,false);}takeBall(s,1-s.side,105-target[0],68-target[1],defender.id);}
 }
-export function stepMatch(s){if(LEGACY_ENGINES[s.version])return LEGACY_ENGINES[s.version].stepMatch(s);if(s.status!=='playing')return false;if(++s.actions>20000)throw Error('比赛动作数超过安全上限');
+export function stepMatch(s){if(s.status!=='playing')return false;if(++s.actions>20000)throw Error('比赛动作数超过安全上限');
  while(s.plans.length&&s.plans[0].minute<=periodBase(s.period)+Math.min(s.periodClock,(s.period>2?15:45)*60)/60){const plan=s.plans.shift();applyCommand(s,plan.command);}
  for(let side=0;side<2;side++)for(const command of coachCommands(s,side))applyCommand(s,command);
  playAction(s);
@@ -173,7 +170,6 @@ export function stepMatch(s){if(LEGACY_ENGINES[s.version])return LEGACY_ENGINES[
  return s.status==='playing';
 }
 export function applyCommand(s,command){
- if(LEGACY_ENGINES[s.version])return LEGACY_ENGINES[s.version].applyCommand(s,command);
  if(s.status!=='playing')throw Error('比赛已结束');
  const t=s.teams[command.side];if(!t)throw Error('球队无效');
  if(command.type==='tactics'){
@@ -194,12 +190,11 @@ export function applyCommand(s,command){
  if(s.side===command.side){if(s.holder===command.out)s.holder=incoming.id;s.lastPass=null;}
  emit(s,'substitution',{side:command.side,player:command.out,incoming:incoming.id,reason:command.reason||null});
 }
-export function getResult(s){if(LEGACY_ENGINES[s.version])return LEGACY_ENGINES[s.version].getResult(s);return {version:s.version,seed:s.seed,status:s.status,seconds:s.elapsed,score:s.teams.map(t=>t.stats.goals),teams:s.teams.map(t=>({id:t.id,name:t.name,stats:structuredClone(t.stats),players:Object.values(t.lines).map(p=>({...p,minutes:p.seconds/60})),onField:t.slots.map(p=>p.id),subs:t.subs})),events:structuredClone(s.events),shootout:s.shootout,abandonedSide:s.abandonedSide??null};}
+export function getResult(s){return {version:s.version,seed:s.seed,status:s.status,seconds:s.elapsed,score:s.teams.map(t=>t.stats.goals),teams:s.teams.map(t=>({id:t.id,name:t.name,stats:structuredClone(t.stats),players:Object.values(t.lines).map(p=>({...p,minutes:p.seconds/60})),onField:t.slots.map(p=>p.id),subs:t.subs})),events:structuredClone(s.events),shootout:s.shootout,abandonedSide:s.abandonedSide??null};}
 export function simulateMatch(options){const s=createMatch(options);while(s.status==='playing')stepMatch(s);return getResult(s);}
 
 // Save the random cursor and substitution sets alongside the event state.
 export function snapshotMatch(state){
- if(LEGACY_ENGINES[state.version])return LEGACY_ENGINES[state.version].snapshotMatch(state);
  const {random,...data}=state;
  const saved=structuredClone(data);
  saved.randomState=random.snapshot();
@@ -207,8 +202,6 @@ export function snapshotMatch(state){
  return saved;
 }
 export function restoreMatch(saved){
- validateMatchSnapshot(saved);
- if(LEGACY_ENGINES[saved.version])return LEGACY_ENGINES[saved.version].restoreMatch(saved);
  if(saved?.version!==ENGINE_VERSION||!Number.isSafeInteger(saved.randomState)||saved.teams?.length!==2)throw Error('比赛存档无效');
  const state=structuredClone(saved);
  state.random=rng(state.seed,state.randomState);
