@@ -1,3 +1,4 @@
+import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
 import {rng,clamp,mean,sigmoid,logit} from './random.js';
 import {selectLineup,FORMATIONS,available,familiarity,ATTRIBUTE_KEYS,rating} from './players.js';
@@ -41,7 +42,7 @@ function ability(state,team,p,keys){const value=mean(keys.map(k=>p.attributes[k]
 function teamAbility(state,team,keys){const active=outfield(team);const leadership=Math.max(...active.map(p=>p.attributes.leadership));return (mean(active.map(p=>ability(state,team,p,keys)))+(leadership-65)*.025)*Math.sqrt(team.slots.length/11);}
 function emit(s,type,data={}){const e={seq:s.sequence++,type,seconds:s.elapsed,period:s.period,minute:periodBase(s.period)+s.periodClock/60,side:s.side,x:s.side===0?s.x:105-s.x,y:s.side===0?s.y:68-s.y,score:s.teams.map(t=>t.stats.goals),...data};if(s.capture)s.events.push(e);return e;}
 function clock(s,seconds,active=true){const dt=Math.max(0,Math.min(seconds,s.periodEnd-s.periodClock));s.elapsed+=dt;s.periodClock+=dt;if(active)s.teams[s.side].stats.possessionSeconds+=dt;else{s.lostSeconds+=dt;s.periodEnd=Math.max(s.periodClock,(s.period>2?15:45)*60+Math.min(s.period>2?120:480,60+Math.round(s.lostSeconds*.3/60)*60));}for(const t of s.teams)for(const slot of t.slots){const line=t.lines[slot.id];line.seconds+=dt;t.stats.playerSeconds+=dt;line.condition=clamp(line.condition-exertion(player(t,slot.id),t.tactics,dt*(active?1:.35),slot.position),15,100);}}
-function takeBall(s,side,x=25,y=34,holder=null){s.side=side;s.x=clamp(x,5,98);s.y=clamp(y,4,64);s.holder=holder;s.lastPass=null;}
+function takeBall(s,side,x=25,y=34,holder=null){s.side=side;s.x=clamp(x,5,98);s.y=clamp(y,4,64);s.holder=holder;if(holder&&s.teams[side].lines[holder])s.teams[side].lines[holder].position=[s.x,s.y];s.lastPass=null;}
 function choose(s,team,role,exclude){return s.random.pick(outfield(team).filter(p=>p.id!==exclude),p=>{
  const pos=team.slots.find(slot=>slot.id===p.id).position;
  const forward=['ST','LW','RW','AM'].includes(pos),defender=['CB','LB','RB','DM'].includes(pos);
@@ -110,9 +111,10 @@ function injure(s,side){
 function playAction(s){
  if(s.pending==='corner'){corner(s);return;}
  const attack=s.teams[s.side],defense=s.teams[1-s.side],actor=player(attack,s.holder)||choose(s,attack,'pass');
- s.holder=actor.id;updateSpace(s,TUNE.actionSeconds);const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
+ s.holder=actor.id;attack.lines[actor.id].position=[s.x,s.y];const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
  const effects=tacticalEffects(attack,defense,s.x);
- clock(s,TUNE.actionSeconds*effects.seconds*(.65+s.random.next()*.7));
+ const actionSeconds=TUNE.actionSeconds*effects.seconds*(.65+s.random.next()*.7);
+ updateSpace(s,actionSeconds);clock(s,actionSeconds);
  if(s.random.next()<TUNE.foulRate*(.55+defender.attributes.aggression/100)){foul(s,defender);return;}
  if(s.random.next()<TUNE.injuryRate){injure(s,s.random.int(0,1));return;}
  if(s.x>75&&s.random.next()<(s.lastPass?.kind==='cross'?.62:TUNE.shoot*effects.shooting)){shot(s,actor,{kind:s.lastPass?.kind==='cross'?'header':'open'});return;}
@@ -122,21 +124,20 @@ function playAction(s){
   const success=s.random.next()<clamp(.59+(skill-stop)*.004,.15,.91);
   attack.stats.dribbles++;attack.lines[actor.id].dribbles++;
   emit(s,'dribble',{player:actor.id,defender:defender.id,success});
-  if(success){attack.stats.dribblesWon++;attack.lines[actor.id].dribblesWon++;s.x=Math.min(96,s.x+8);s.lastPass=null;}
+  if(success){attack.stats.dribblesWon++;attack.lines[actor.id].dribblesWon++;s.x=Math.min(96,s.x+8);attack.lines[actor.id].position=[s.x,s.y];s.lastPass=null;}
   else{defense.stats.tackles++;defense.lines[defender.id].tackles++;takeBall(s,1-s.side,105-s.x,68-s.y,defender.id);}return;
  }
  const crossing=s.x>72&&Math.abs(s.y-34)>16&&s.random.next()<.17*effects.width;
- const receiver=choose(s,attack,crossing?'shoot':'pass',actor.id),forward=s.random.next()<TUNE.advance+effects.advance,back=!forward&&s.random.next()<.18;
+ const forward=s.random.next()<TUNE.advance+effects.advance,back=!forward&&s.random.next()<.18;
  const through=forward&&s.x>45&&s.random.next()<.18+(attack.tactics.passing==='direct'?.1:0);
- const distance=forward?14+s.random.next()*10+(through?8:0):back?-12:0;
- const target=crossing?[s.random.int(88,97),s.random.int(25,43)]:[clamp(s.x+distance,10,97),clamp(s.y+(s.random.next()-.5)*28*effects.width,5,63)];
- const skill=ability(s,attack,actor,actor.position==='GK'?(forward?['kicking','decisions']:['throwing','decisions']):crossing?['crossing','technique','vision']:through?['longPassing','vision','decisions']:['passing','decisions','technique'])+ability(s,attack,receiver,['firstTouch','offBall','pace'])*.15;
+ const route=selectPass(s,actor,{forward,back,crossing,through}),receiver=route.player,target=route.target;
+ const skill=ability(s,attack,actor,attack.slots.find(slot=>slot.id===actor.id)?.position==='GK'?(forward?['kicking','decisions']:['throwing','decisions']):crossing?['crossing','technique','vision']:through||route.length>30?['longPassing','vision','decisions']:['passing','decisions','technique'])+ability(s,attack,receiver,['firstTouch','offBall','pace'])*.15;
  const pressure=teamAbility(s,defense,['anticipation','positioning','workRate'])*1.15;
- const probability=clamp(TUNE.passBase+(skill-pressure)*.0024+effects.completion-(crossing?.14:forward?.045:0)+(s.side===0&&!s.neutral?TUNE.homeEdge:0),.4,.97);
- const offside=through&&s.random.next()<clamp(.022+effects.behind+(65-ability(s,attack,receiver,['anticipation','offBall','decisions']))*.001,.003,.13);
+ const probability=clamp(TUNE.passBase+(skill-pressure)*.0024+effects.completion+routeModifier(route)-(crossing?.14:forward?.045:0)+(s.side===0&&!s.neutral?TUNE.homeEdge:0),.4,.97);
+ const offside=route.offside;
  const success=!offside&&s.random.next()<probability;attack.stats.passes++;attack.lines[actor.id].passes++;
- emit(s,'pass',{player:actor.id,receiver:receiver.id,defender:defender.id,success,from:[s.side===0?s.x:105-s.x,s.side===0?s.y:68-s.y],to:s.side===0?target:[105-target[0],68-target[1]],kind:crossing?'cross':through?'through':forward?'progressive':back?'back':'short',offside});
- if(success){attack.stats.completed++;attack.lines[actor.id].completed++;s.x=target[0];s.y=target[1];s.holder=receiver.id;s.lastPass={id:actor.id,kind:crossing?'cross':through?'through':forward?'progressive':'short'};}
+ emit(s,'pass',{player:actor.id,receiver:receiver.id,defender:defender.id,success,from:[s.side===0?s.x:105-s.x,s.side===0?s.y:68-s.y],to:s.side===0?target:[105-target[0],68-target[1]],kind:crossing?'cross':through?'through':route.progress>5?'progressive':route.progress<-5?'back':'short',offside,receiverStart:route.start,passLength:route.length,laneRisk:route.laneRisk,openness:route.openness});
+ if(success){attack.stats.completed++;attack.lines[actor.id].completed++;s.x=target[0];s.y=target[1];s.holder=receiver.id;attack.lines[receiver.id].position=[...target];s.lastPass={id:actor.id,kind:crossing?'cross':through?'through':forward?'progressive':'short'};}
  else{if(offside){attack.stats.offsides++;emit(s,'offside',{player:receiver.id});clock(s,12,false);}else if(s.random.next()<.24){defense.stats.interceptions++;defense.lines[defender.id].interceptions++;}else{emit(s,'restart',{side:1-s.side,kind:'throwIn'});clock(s,4,false);}takeBall(s,1-s.side,105-target[0],68-target[1],defender.id);}
 }
 export function stepMatch(s){if(s.status!=='playing')return false;if(++s.actions>20000)throw Error('比赛动作数超过安全上限');
