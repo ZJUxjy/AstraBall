@@ -1,3 +1,4 @@
+import {accrueEconomy,rolloverEconomy} from '../src/competitions/market.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {footballTeams} from '../src/football/data.js';
@@ -7,7 +8,7 @@ import {advanceDevelopment,createDevelopment,developedPlayer,setPlayerTraining} 
 import {createMatch,stepMatch,getResult,DEFAULT_TACTICS} from '../src/football/engine.js';
 import {selectLineup} from '../src/football/players.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
-const nextYear=s=>{s.year++;s.date=`${String(s.year).padStart(4,'0')}-01-01`;return annualPopulation(s);};
+const nextYear=s=>{s.year++;s.date=`${String(s.year).padStart(4,'0')}-01-01`;accrueEconomy(s,s.date);const result=annualPopulation(s);rolloverEconomy(s);return result;};
 
 test('新赛季有独立青训名单，确定性身份和号码不会覆盖原球员',()=>{
  const pop=createPopulation();assert.deepEqual(pop,createPopulation());validatePopulation(pop);
@@ -42,7 +43,7 @@ test('跨年新入队球员只累积加入后的训练天数，分段与恢复�
  validateSave(clone(s));
 });
 test('旧档迁移保留原队员属性，损坏人员归属和年度记录不能读入',()=>{
- const s=createSeason();delete s.population;const before=seasonTeam(s,'sky');validateSave(clone(s));ensurePopulation(s);assert.deepEqual(seasonTeam(s,'sky').roster.map(({id,attributes,age})=>({id,attributes,age})),before.roster.map(({id,attributes,age})=>({id,attributes,age})));
+ const s=createSeason();delete s.population;delete s.economy;const before=seasonTeam(s,'sky');validateSave(clone(s));ensurePopulation(s);assert.deepEqual(seasonTeam(s,'sky').roster.map(({id,attributes,age})=>({id,attributes,age})),before.roster.map(({id,attributes,age})=>({id,attributes,age})));
  for(const corrupt of [p=>p.players[Object.keys(p.players)[0]].club='missing',p=>p.processedYear=317,p=>p.events.push(p.events[0]),p=>p.players[Object.keys(p.players)[0]].unit='retired']){const damaged=clone(s);corrupt(damaged.population);assert.throws(()=>validateSave(damaged));}
 });
 

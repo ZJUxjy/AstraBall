@@ -9,3 +9,6 @@ export const LEGACY_ENGINES={6:v6,7:v7,8:v8,9:v9,10:v10,11:v11,12:v12};
 
 // V13 changes only persistence validation; its match mathematics is V12.
 LEGACY_ENGINES[13]={...v12,restoreMatch(saved){return {...v12.restoreMatch({...saved,version:12}),version:13};}};
+
+// V14 changes the career population only; preserve its in-progress matches.
+LEGACY_ENGINES[14]={...v12,restoreMatch(saved){return {...v12.restoreMatch({...saved,version:12}),version:14};}};
