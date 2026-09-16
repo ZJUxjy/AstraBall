@@ -1,3 +1,4 @@
+import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
 import {rng,clamp,mean,sigmoid,logit} from './random.js';
 import {selectLineup,FORMATIONS,available,familiarity,ATTRIBUTE_KEYS,rating} from './players.js';
 import {ENGINE_VERSION,TUNE} from './config.js';
@@ -28,7 +29,8 @@ export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},home
  const random=rng(`match:${seed}`);
  const kickoff=random.int(0,1);
  for(const t of teams)for(const p of t.roster)t.lines[p.id].form=random.normal()*(100-p.personality.consistency)*.035+(p.personality.bigMatches-50)*clamp(importance)*.04;
- return {version:ENGINE_VERSION,seed,plans:structuredClone(plans).sort((a,b)=>a.minute-b.minute),teams,random,neutral,knockout,capture,events:[],elapsed:0,period:1,periodClock:0,lostSeconds:0,periodEnd:47*60,status:'playing',kickoff,side:kickoff,x:40,y:34,holder:null,lastPass:null,sequence:0,actions:0,shootout:null};
+ const state={version:ENGINE_VERSION,seed,plans:structuredClone(plans).sort((a,b)=>a.minute-b.minute),teams,random,neutral,knockout,capture,events:[],elapsed:0,period:1,periodClock:0,lostSeconds:0,periodEnd:47*60,status:'playing',kickoff,side:kickoff,x:40,y:34,holder:null,lastPass:null,sequence:0,actions:0,shootout:null};
+ initializeSpace(state);return state;
 }
 const player=(team,id)=>team.roster.find(p=>p.id===id);
 const field=team=>team.slots.map(s=>player(team,s.id));
@@ -50,7 +52,7 @@ function choose(s,team,role,exclude){return s.random.pick(outfield(team).filter(
 function shot(s,shooter,{kind='open',assist=s.lastPass}={}){
  const attack=s.teams[s.side],defense=s.teams[1-s.side],gk=keeper(defense),line=attack.lines[shooter.id];
  const tactics=tacticalEffects(attack,defense,s.x);
- const pressure=clamp(teamAbility(s,defense,['marking','positioning','concentration'])/130+tactics.defensivePressure-tactics.exposure,.1,.9);
+ const pressure=clamp(localPressure(s,s.side,[s.x,s.y])*.7+teamAbility(s,defense,['marking','positioning','concentration'])/430+tactics.defensivePressure*.3-tactics.exposure*.3,.1,.9);
  if(kind==='penalty')attack.stats.penalties++;
  const xG=shotQuality({x:s.x,y:s.y,pressure,kind,counter:assist?.kind==='through'&&defense.tactics.line==='high'});
  const fin=ability(s,attack,shooter,kind==='penalty'?['penalties','composure']:kind==='freeKick'?['freeKicks','technique']:kind==='header'?['heading','jumping','bravery']:s.x<82?['longShots','technique','composure']:['finishing','composure']),gkSkill=ability(s,defense,gk,s.x>93?['oneOnOnes','reflexes','rushingOut']:['reflexes','handling','agility']);
@@ -108,7 +110,7 @@ function injure(s,side){
 function playAction(s){
  if(s.pending==='corner'){corner(s);return;}
  const attack=s.teams[s.side],defense=s.teams[1-s.side],actor=player(attack,s.holder)||choose(s,attack,'pass');
- s.holder=actor.id;const defender=choose(s,defense,'defend');
+ s.holder=actor.id;updateSpace(s,TUNE.actionSeconds);const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
  const effects=tacticalEffects(attack,defense,s.x);
  clock(s,TUNE.actionSeconds*effects.seconds*(.65+s.random.next()*.7));
  if(s.random.next()<TUNE.foulRate*(.55+defender.attributes.aggression/100)){foul(s,defender);return;}
@@ -161,9 +163,9 @@ export function applyCommand(s,command){
  if(command.type==='tactics'){
   const tactics=validateTactics({...t.tactics,...command.tactics});
   if(tactics.formation!==t.tactics.formation){
-   const remaining=[...t.slots];const slots=FORMATIONS[tactics.formation].slice(0,t.slots.length).map(position=>{
+   const remaining=[...t.slots];const slots=FORMATIONS[tactics.formation].slice(0,t.slots.length).map((position,anchorIndex)=>{
     remaining.sort((a,b)=>rating(player(t,b.id),position)*familiarity(player(t,b.id),position)-rating(player(t,a.id),position)*familiarity(player(t,a.id),position));
-    return {id:remaining.shift().id,position};});t.slots=slots;
+    return {id:remaining.shift().id,position,anchorIndex};});t.slots=slots;
   }
   t.tactics=tactics;emit(s,'tactics',{side:command.side,tactics:{...tactics}});return;
  }
@@ -171,7 +173,7 @@ export function applyCommand(s,command){
  const index=t.slots.findIndex(p=>p.id===command.out),incoming=player(t,command.in);
  const sameWindow=t.lastSubTime===s.elapsed,halfTime=s.period===2&&s.periodClock===0;
  if(index<0||!incoming||!available(incoming)||t.used.has(incoming.id)||t.subs>=5||!sameWindow&&!halfTime&&t.windows>=3)throw Error('换人不符合规则');
- const outgoing=t.slots[index];t.slots[index]={id:incoming.id,position:outgoing.position};
+ const outgoing=t.slots[index];t.slots[index]={id:incoming.id,position:outgoing.position,anchorIndex:outgoing.anchorIndex};t.lines[incoming.id].position=[...t.lines[command.out].position];
  t.used.add(incoming.id);t.subs++;if(!sameWindow&&!halfTime)t.windows++;t.lastSubTime=s.elapsed;
  if(s.side===command.side){if(s.holder===command.out)s.holder=incoming.id;s.lastPass=null;}
  emit(s,'substitution',{side:command.side,player:command.out,incoming:incoming.id});
