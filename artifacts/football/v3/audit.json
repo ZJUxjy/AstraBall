@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "count": 1000,
+  "seedRange": [
+    10000,
+    10999
+  ],
+  "milliseconds": 6085,
+  "averages": {
+    "goals": 2.58,
+    "shots": 40.667,
+    "onTarget": 15.074,
+    "xG": 3.139,
+    "passes": 1017.023,
+    "completed": 861.853,
+    "fouls": 0,
+    "yellow": 0,
+    "red": 0,
+    "corners": 0,
+    "homeWins": 0.461,
+    "draws": 0.266,
+    "awayWins": 0.273,
+    "zeroZero": 0.068,
+    "highScores": 0.022,
+    "passCompletion": 0.8474,
+    "shotAccuracy": 0.3707,
+    "goalVariance": 2.5976
+  },
+  "hashes": {
+    "config.js": "1820700202c3b65360b2c52b463c8215ef8a4368183212ce28e8d9f3c8d90564",
+    "engine.js": "9521e407f1ebcacbbcd87d70d17e4faeddde8f7ad455b5627a522a03a09a24f5",
+    "players.js": "e608b6dcc3c9149b9e7b301b22c96e167d2a20f79ff7797414fb3315cb296cd5",
+    "random.js": "cf2129653a74d8ebea9922d5941bc8105cfe52d42647f761d6ac056d01550391",
+    "shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+    "tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34"
+  }
+}

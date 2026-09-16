@@ -1,0 +1,291 @@
+{
+  "project": "faker-js/faker",
+  "version": "v9.9.0",
+  "license": "MIT",
+  "curatedEntries": 381,
+  "matchedUpstreamEntries": 298,
+  "supplemental": [
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Allen",
+      "zh": "艾伦"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Baker",
+      "zh": "贝克"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Bennett",
+      "zh": "班尼特"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Brooks",
+      "zh": "布鲁克斯"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Clark",
+      "zh": "克拉克"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Cooper",
+      "zh": "库珀"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Evans",
+      "zh": "埃文斯"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Foster",
+      "zh": "福斯特"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Gray",
+      "zh": "格雷"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Hill",
+      "zh": "希尔"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Lewis",
+      "zh": "刘易斯"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Morgan",
+      "zh": "摩根"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Reed",
+      "zh": "里德"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Scott",
+      "zh": "斯科特"
+    },
+    {
+      "locale": "en",
+      "part": "last",
+      "original": "Wilson",
+      "zh": "威尔逊"
+    },
+    {
+      "locale": "fr",
+      "part": "first",
+      "original": "Hugo",
+      "zh": "雨果"
+    },
+    {
+      "locale": "fr",
+      "part": "first",
+      "original": "Mathieu",
+      "zh": "马蒂厄"
+    },
+    {
+      "locale": "fr",
+      "part": "first",
+      "original": "Théo",
+      "zh": "泰奥"
+    },
+    {
+      "locale": "es",
+      "part": "first",
+      "original": "Alonso",
+      "zh": "阿隆索"
+    },
+    {
+      "locale": "es",
+      "part": "last",
+      "original": "Martín",
+      "zh": "马丁"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "Adriano",
+      "zh": "阿德里亚诺"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "André",
+      "zh": "安德烈"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "Bruno",
+      "zh": "布鲁诺"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "Diego",
+      "zh": "迭戈"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "Fernando",
+      "zh": "费尔南多"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "José",
+      "zh": "若泽"
+    },
+    {
+      "locale": "pt_BR",
+      "part": "first",
+      "original": "Luiz",
+      "zh": "路易斯"
+    },
+    {
+      "locale": "ru",
+      "part": "first",
+      "original": "Антон",
+      "zh": "安东"
+    },
+    {
+      "locale": "ru",
+      "part": "last",
+      "original": "Семёнов",
+      "zh": "谢苗诺夫"
+    },
+    {
+      "locale": "ru",
+      "part": "last",
+      "original": "Фёдоров",
+      "zh": "费奥多罗夫"
+    },
+    {
+      "locale": "ar",
+      "part": "first",
+      "original": "إبراهيم",
+      "zh": "易卜拉欣"
+    },
+    {
+      "locale": "ar",
+      "part": "first",
+      "original": "إسماعيل",
+      "zh": "伊斯梅尔"
+    },
+    {
+      "locale": "ar",
+      "part": "first",
+      "original": "حسين",
+      "zh": "侯赛因"
+    },
+    {
+      "locale": "ar",
+      "part": "first",
+      "original": "كريم",
+      "zh": "卡里姆"
+    },
+    {
+      "locale": "ar",
+      "part": "first",
+      "original": "يوسف",
+      "zh": "优素福"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/locales/en/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/en/person/first_name.ts",
+      "sha256": "9955b375be46ff1787f84e5c0e20b9675c083517b05eabc54ef1a947a5f41cae"
+    },
+    {
+      "path": "src/locales/en/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/en/person/last_name.ts",
+      "sha256": "0df0a5723c4b896935f384d6e5af686a8f0a6b4024662abdb1129cc9db1d68af"
+    },
+    {
+      "path": "src/locales/de/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/de/person/first_name.ts",
+      "sha256": "a0958aa84cae8ce78db7d8fee41884d9722b1b71e1fb4235a329cbce2198366a"
+    },
+    {
+      "path": "src/locales/de/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/de/person/last_name.ts",
+      "sha256": "6ee4b498176480c339744d7ac66682df5ffa67515cc7cc665cf8436d7b5da539"
+    },
+    {
+      "path": "src/locales/fr/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/fr/person/first_name.ts",
+      "sha256": "7563db42bec16fdf4bf43575899c1ccc34569f0b0abb38da0ef2664f44c581ee"
+    },
+    {
+      "path": "src/locales/fr/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/fr/person/last_name.ts",
+      "sha256": "7f4c33c0bbbf8f97723fae69be6ca8aac19fe1bb528eb260e20ee2a6c300dcf2"
+    },
+    {
+      "path": "src/locales/es/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/es/person/first_name.ts",
+      "sha256": "2d458c133cbaea08c6dfee1b1b7e1597de0eb10ed5426ef794656a680e9abb55"
+    },
+    {
+      "path": "src/locales/es/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/es/person/last_name.ts",
+      "sha256": "3dd24c6bd1d0622ba3564777b673aaa64ac07fbdabe6d7b11dde701911a5dcb9"
+    },
+    {
+      "path": "src/locales/pt_BR/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/pt_BR/person/first_name.ts",
+      "sha256": "35ed0398c71913fb383a072d5c0fff1374a576ccfe34b5c33c4b328ed86a3e00"
+    },
+    {
+      "path": "src/locales/pt_BR/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/pt_BR/person/last_name.ts",
+      "sha256": "7e9f7aaaf30ac2ac94a357e461f68bf48e2c2b5f94a0b147b71982c882eb0ad0"
+    },
+    {
+      "path": "src/locales/ru/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/ru/person/first_name.ts",
+      "sha256": "257fa846ae9e9ef2c9022bd5b5960d30a5daa1eec79ac7791c05fc1fec3cfe96"
+    },
+    {
+      "path": "src/locales/ru/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/ru/person/last_name.ts",
+      "sha256": "dd064ca4b1506cd9d226fe2fbf95c8c0f2c827bae7ad91e106dec8f340e49c41"
+    },
+    {
+      "path": "src/locales/ar/person/first_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/ar/person/first_name.ts",
+      "sha256": "cd151c7f8b7cb42f829703c6507abc4238f3ae5dd80d7e15177fff3fb37b8dda"
+    },
+    {
+      "path": "src/locales/ar/person/last_name.ts",
+      "url": "https://raw.githubusercontent.com/faker-js/faker/v9.9.0/src/locales/ar/person/last_name.ts",
+      "sha256": "ac1a72d4372de3e812e0ea328a8cd1744d800be8ec000356c3447f9ad7eb4a50"
+    }
+  ]
+}

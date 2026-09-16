@@ -1,0 +1,1033 @@
+{
+  "seasons": [
+    {
+      "year": 318,
+      "matches": 4759,
+      "goals": 13216,
+      "goalsPerGame": 2.7770540029417945,
+      "injuries": 537,
+      "reds": 386,
+      "shootouts": 30,
+      "minRestDays": 3,
+      "saveBytes": 15760895,
+      "resultHash": "3badd250d3b9cf61fd77e44b299cda934176735876ec8fec5b3f1355bb167b7e",
+      "promotions": [
+        {
+          "id": "crown-league-2-club-12",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-6",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-9",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-7",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-10",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-3-club-4",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-4",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-2",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-10",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-1",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-4",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-3-club-16",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-1",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-8",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-9",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-6",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-8",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-15",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-9",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-12",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-7",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-6",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-5",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-3-club-15",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-6",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-7",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-15",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-8",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-14",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-3-club-19",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        }
+      ],
+      "relegations": [
+        {
+          "id": "crown-league-club-5",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-club-3",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-fc",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-11",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-3",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-5",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-7",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-6",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-2",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-12",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-9",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-8",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-13",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-4",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-club-15",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-5",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-15",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-10",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-14",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-16",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-club-11",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-4",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-16",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-13",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-7",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-11",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-club-10",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-11",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-14",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-1",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        }
+      ],
+      "champions": [
+        {
+          "competition": "closed",
+          "id": "closed-club-10"
+        },
+        {
+          "competition": "crown-league",
+          "id": "crown-league-club-10"
+        },
+        {
+          "competition": "crown-league-2",
+          "id": "crown-league-2-club-12"
+        },
+        {
+          "competition": "crown-league-3",
+          "id": "crown-league-3-club-7"
+        },
+        {
+          "competition": "silver-league",
+          "id": "silver-league-club-12"
+        },
+        {
+          "competition": "silver-league-2",
+          "id": "silver-league-2-club-4"
+        },
+        {
+          "competition": "silver-league-3",
+          "id": "silver-league-3-club-1"
+        },
+        {
+          "competition": "lima-league",
+          "id": "lima-league-club-8"
+        },
+        {
+          "competition": "lima-league-2",
+          "id": "lima-league-2-club-1"
+        },
+        {
+          "competition": "lima-league-3",
+          "id": "lima-league-3-club-6"
+        },
+        {
+          "competition": "liberlin-league",
+          "id": "liberlin-league-club-18"
+        },
+        {
+          "competition": "liberlin-league-2",
+          "id": "liberlin-league-2-club-9"
+        },
+        {
+          "competition": "liberlin-league-3",
+          "id": "liberlin-league-3-club-6"
+        },
+        {
+          "competition": "sichuan-league",
+          "id": "sichuan-league-club-12"
+        },
+        {
+          "competition": "sichuan-league-2",
+          "id": "sichuan-league-2-club-6"
+        },
+        {
+          "competition": "sichuan-league-3",
+          "id": "sichuan-league-3-club-8"
+        },
+        {
+          "competition": "crown-league-cup",
+          "id": "crown-fc"
+        },
+        {
+          "competition": "liberlin-league-cup",
+          "id": "liberlin-league-club-9"
+        },
+        {
+          "competition": "lima-league-cup",
+          "id": "lima-league-2-club-16"
+        },
+        {
+          "competition": "sichuan-league-cup",
+          "id": "sichuan-league-club-17"
+        },
+        {
+          "competition": "silver-league-cup",
+          "id": "silver-league-club-11"
+        },
+        {
+          "competition": "global-cup",
+          "id": "lima-league-club-3"
+        },
+        {
+          "competition": "closed-playoffs",
+          "id": "closed-club-13"
+        },
+        {
+          "competition": "crown-league-2-playoffs",
+          "id": "crown-league-2-club-9"
+        },
+        {
+          "competition": "crown-league-3-playoffs",
+          "id": "crown-league-3-club-4"
+        },
+        {
+          "competition": "liberlin-league-2-playoffs",
+          "id": "liberlin-league-2-club-7"
+        },
+        {
+          "competition": "liberlin-league-3-playoffs",
+          "id": "liberlin-league-3-club-15"
+        },
+        {
+          "competition": "lima-league-2-playoffs",
+          "id": "lima-league-2-club-9"
+        },
+        {
+          "competition": "lima-league-3-playoffs",
+          "id": "lima-league-3-club-15"
+        },
+        {
+          "competition": "sichuan-league-2-playoffs",
+          "id": "sichuan-league-2-club-15"
+        },
+        {
+          "competition": "sichuan-league-3-playoffs",
+          "id": "sichuan-league-3-club-19"
+        },
+        {
+          "competition": "silver-league-2-playoffs",
+          "id": "silver-league-2-club-10"
+        },
+        {
+          "competition": "silver-league-3-playoffs",
+          "id": "silver-league-3-club-16"
+        }
+      ]
+    },
+    {
+      "year": 319,
+      "matches": 4759,
+      "goals": 13495,
+      "goalsPerGame": 2.8356797646564402,
+      "injuries": 537,
+      "reds": 416,
+      "shootouts": 30,
+      "minRestDays": 3,
+      "saveBytes": 15771472,
+      "resultHash": "5e0dee27428e976690ef15913c0069c96a18d879590d699bc92c7116385d0947",
+      "promotions": [
+        {
+          "id": "crown-fc",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-club-3",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-club-5",
+          "from": "crown-league-2",
+          "to": "crown-league",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-11",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-3",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "crown-league-2-club-5",
+          "from": "crown-league-3",
+          "to": "crown-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-6",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-2",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-club-7",
+          "from": "silver-league-2",
+          "to": "silver-league",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-12",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-8",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "silver-league-2-club-9",
+          "from": "silver-league-3",
+          "to": "silver-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-15",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-16",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-club-4",
+          "from": "lima-league-2",
+          "to": "lima-league",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-10",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-2-club-15",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "lima-league-3-club-4",
+          "from": "lima-league-3",
+          "to": "lima-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-11",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-16",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-club-14",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-4",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-16",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "liberlin-league-2-club-13",
+          "from": "liberlin-league-3",
+          "to": "liberlin-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-club-7",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-club-11",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-9",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-11",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-1",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        },
+        {
+          "id": "sichuan-league-2-club-14",
+          "from": "sichuan-league-3",
+          "to": "sichuan-league-2",
+          "kind": "up"
+        }
+      ],
+      "relegations": [
+        {
+          "id": "crown-league-2-club-9",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-12",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-2-club-6",
+          "from": "crown-league",
+          "to": "crown-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-10",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-7",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "crown-league-3-club-4",
+          "from": "crown-league-2",
+          "to": "crown-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-club-5",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-10",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-4",
+          "from": "silver-league",
+          "to": "silver-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-2-club-11",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-3-club-16",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "silver-league-3-club-4",
+          "from": "silver-league-2",
+          "to": "silver-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-8",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-9",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-2-club-1",
+          "from": "lima-league",
+          "to": "lima-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-6",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-15",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "lima-league-3-club-8",
+          "from": "lima-league-2",
+          "to": "lima-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "pine-fc",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-9",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-7",
+          "from": "liberlin-league",
+          "to": "liberlin-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-2-club-6",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-15",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "liberlin-league-3-club-5",
+          "from": "liberlin-league-2",
+          "to": "liberlin-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-6",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-7",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-2-club-15",
+          "from": "sichuan-league",
+          "to": "sichuan-league-2",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-8",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-14",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        },
+        {
+          "id": "sichuan-league-3-club-19",
+          "from": "sichuan-league-2",
+          "to": "sichuan-league-3",
+          "kind": "down"
+        }
+      ],
+      "champions": [
+        {
+          "competition": "closed",
+          "id": "closed-club-7"
+        },
+        {
+          "competition": "crown-league",
+          "id": "crown-league-club-9"
+        },
+        {
+          "competition": "crown-league-2",
+          "id": "crown-fc"
+        },
+        {
+          "competition": "crown-league-3",
+          "id": "crown-league-2-club-11"
+        },
+        {
+          "competition": "silver-league",
+          "id": "silver-league-club-10"
+        },
+        {
+          "competition": "silver-league-2",
+          "id": "silver-league-club-6"
+        },
+        {
+          "competition": "silver-league-3",
+          "id": "silver-league-2-club-12"
+        },
+        {
+          "competition": "lima-league",
+          "id": "lima-league-club-6"
+        },
+        {
+          "competition": "lima-league-2",
+          "id": "lima-league-club-15"
+        },
+        {
+          "competition": "lima-league-3",
+          "id": "lima-league-2-club-10"
+        },
+        {
+          "competition": "liberlin-league",
+          "id": "liberlin-league-club-10"
+        },
+        {
+          "competition": "liberlin-league-2",
+          "id": "liberlin-league-club-11"
+        },
+        {
+          "competition": "liberlin-league-3",
+          "id": "liberlin-league-2-club-4"
+        },
+        {
+          "competition": "sichuan-league",
+          "id": "sichuan-league-club-12"
+        },
+        {
+          "competition": "sichuan-league-2",
+          "id": "sichuan-league-club-7"
+        },
+        {
+          "competition": "sichuan-league-3",
+          "id": "sichuan-league-2-club-11"
+        },
+        {
+          "competition": "crown-league-cup",
+          "id": "crown-league-club-11"
+        },
+        {
+          "competition": "liberlin-league-cup",
+          "id": "pine-fc"
+        },
+        {
+          "competition": "lima-league-cup",
+          "id": "lima-league-club-13"
+        },
+        {
+          "competition": "sichuan-league-cup",
+          "id": "sichuan-league-club-6"
+        },
+        {
+          "competition": "silver-league-cup",
+          "id": "silver-league-club-7"
+        },
+        {
+          "competition": "global-cup",
+          "id": "sichuan-league-club-5"
+        },
+        {
+          "competition": "closed-playoffs",
+          "id": "closed-club-4"
+        },
+        {
+          "competition": "crown-league-2-playoffs",
+          "id": "crown-league-club-5"
+        },
+        {
+          "competition": "crown-league-3-playoffs",
+          "id": "crown-league-2-club-5"
+        },
+        {
+          "competition": "liberlin-league-2-playoffs",
+          "id": "liberlin-league-club-14"
+        },
+        {
+          "competition": "liberlin-league-3-playoffs",
+          "id": "liberlin-league-2-club-13"
+        },
+        {
+          "competition": "lima-league-2-playoffs",
+          "id": "lima-league-club-4"
+        },
+        {
+          "competition": "lima-league-3-playoffs",
+          "id": "lima-league-3-club-4"
+        },
+        {
+          "competition": "sichuan-league-2-playoffs",
+          "id": "sichuan-league-2-club-9"
+        },
+        {
+          "competition": "sichuan-league-3-playoffs",
+          "id": "sichuan-league-2-club-14"
+        },
+        {
+          "competition": "silver-league-2-playoffs",
+          "id": "silver-league-club-7"
+        },
+        {
+          "competition": "silver-league-3-playoffs",
+          "id": "silver-league-2-club-9"
+        }
+      ]
+    }
+  ],
+  "matches": 9518,
+  "startedAt": "2026-09-16T11:26:19.154Z",
+  "completedAt": "2026-09-16T11:27:49.543Z",
+  "hashes": {
+    "src/competitions/runtime.js": "5bbf38f4aad7dceb0986d6b13b34a6de21cf342187a0deb6a597ae1bb11259bb",
+    "src/competitions/calendar.js": "901b5a9945ab364be67e93477764a6fd8afe2d1b0ec21219122bda40658d18a6",
+    "src/competitions/season.js": "63c3a2fc9eeffd671d379ddaed7bba4ce595744442d7c2b80b754f86b57aa9a7",
+    "src/football/engine.js": "78a6f6df5c9751b69c43ea685b3df0b147f178dd97ecf08257f0566dd9a7f992"
+  }
+}

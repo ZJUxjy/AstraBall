@@ -1,0 +1,394 @@
+{
+  "model": "development-v1",
+  "purpose": "游戏成长节奏校准；并非职业球员实证拟合",
+  "players": 60,
+  "scenarios": 6,
+  "playerYears": 7200,
+  "summary": {
+    "regular": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 62.36,
+        "physical": 53.2
+      },
+      "21": {
+        "ability": 72.34,
+        "physical": 57.83
+      },
+      "24": {
+        "ability": 77.04,
+        "physical": 59.21
+      },
+      "27": {
+        "ability": 78.77,
+        "physical": 59.41
+      },
+      "30": {
+        "ability": 79.04,
+        "physical": 58.04
+      },
+      "33": {
+        "ability": 77.85,
+        "physical": 53.2
+      },
+      "36": {
+        "ability": 74.27,
+        "physical": 44.13
+      }
+    },
+    "bench": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 61.46,
+        "physical": 52.65
+      },
+      "21": {
+        "ability": 68.57,
+        "physical": 55.93
+      },
+      "24": {
+        "ability": 71.65,
+        "physical": 56.81
+      },
+      "27": {
+        "ability": 73.25,
+        "physical": 56.98
+      },
+      "30": {
+        "ability": 73.62,
+        "physical": 55.61
+      },
+      "33": {
+        "ability": 72.44,
+        "physical": 50.74
+      },
+      "36": {
+        "ability": 68.83,
+        "physical": 41.62
+      }
+    },
+    "overload": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 57.57,
+        "physical": 50.3
+      },
+      "21": {
+        "ability": 63.82,
+        "physical": 53.17
+      },
+      "24": {
+        "ability": 68.21,
+        "physical": 54.42
+      },
+      "27": {
+        "ability": 70.53,
+        "physical": 54.68
+      },
+      "30": {
+        "ability": 71.2,
+        "physical": 53.3
+      },
+      "33": {
+        "ability": 70.09,
+        "physical": 48.4
+      },
+      "36": {
+        "ability": 66.47,
+        "physical": 39.22
+      }
+    },
+    "injury": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 62.36,
+        "physical": 53.2
+      },
+      "21": {
+        "ability": 70.83,
+        "physical": 56.75
+      },
+      "24": {
+        "ability": 76.13,
+        "physical": 58.3
+      },
+      "27": {
+        "ability": 78.14,
+        "physical": 58.54
+      },
+      "30": {
+        "ability": 78.51,
+        "physical": 57.17
+      },
+      "33": {
+        "ability": 77.34,
+        "physical": 52.31
+      },
+      "36": {
+        "ability": 73.75,
+        "physical": 43.22
+      }
+    },
+    "professional": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 64.81,
+        "physical": 54.68
+      },
+      "21": {
+        "ability": 75.79,
+        "physical": 59.82
+      },
+      "24": {
+        "ability": 79.62,
+        "physical": 60.97
+      },
+      "27": {
+        "ability": 80.69,
+        "physical": 61.09
+      },
+      "30": {
+        "ability": 80.7,
+        "physical": 59.73
+      },
+      "33": {
+        "ability": 79.46,
+        "physical": 54.91
+      },
+      "36": {
+        "ability": 75.89,
+        "physical": 45.88
+      }
+    },
+    "uncommitted": {
+      "16": {
+        "ability": 52.79,
+        "physical": 47.41
+      },
+      "18": {
+        "ability": 60.51,
+        "physical": 52.07
+      },
+      "21": {
+        "ability": 69.23,
+        "physical": 56.1
+      },
+      "24": {
+        "ability": 74.17,
+        "physical": 57.53
+      },
+      "27": {
+        "ability": 76.35,
+        "physical": 57.78
+      },
+      "30": {
+        "ability": 76.85,
+        "physical": 56.41
+      },
+      "33": {
+        "ability": 75.71,
+        "physical": 51.55
+      },
+      "36": {
+        "ability": 72.11,
+        "physical": 42.44
+      }
+    }
+  },
+  "comparison": {
+    "regular24": 77.04,
+    "bench24": 71.65,
+    "overload24": 68.21,
+    "injury21": 70.83,
+    "regular21": 72.34,
+    "professional24": 79.62,
+    "uncommitted24": 74.17
+  },
+  "positional": {
+    "CM": {
+      "16": {
+        "ability": 52.83,
+        "physical": 46.15
+      },
+      "18": {
+        "ability": 61.79,
+        "physical": 50.98
+      },
+      "21": {
+        "ability": 71.46,
+        "physical": 54.9
+      },
+      "24": {
+        "ability": 76.37,
+        "physical": 56.11
+      },
+      "27": {
+        "ability": 78.31,
+        "physical": 56.28
+      },
+      "30": {
+        "ability": 78.74,
+        "physical": 54.79
+      },
+      "33": {
+        "ability": 77.86,
+        "physical": 49.78
+      },
+      "36": {
+        "ability": 75.02,
+        "physical": 40.62
+      }
+    },
+    "ST": {
+      "16": {
+        "ability": 53.15,
+        "physical": 48.67
+      },
+      "18": {
+        "ability": 62,
+        "physical": 54.3
+      },
+      "21": {
+        "ability": 71.39,
+        "physical": 58.88
+      },
+      "24": {
+        "ability": 76.14,
+        "physical": 60.31
+      },
+      "27": {
+        "ability": 78.04,
+        "physical": 60.51
+      },
+      "30": {
+        "ability": 78.36,
+        "physical": 58.98
+      },
+      "33": {
+        "ability": 77.09,
+        "physical": 53.86
+      },
+      "36": {
+        "ability": 73.62,
+        "physical": 44.5
+      }
+    },
+    "CB": {
+      "16": {
+        "ability": 52.53,
+        "physical": 46.13
+      },
+      "18": {
+        "ability": 62.4,
+        "physical": 53.28
+      },
+      "21": {
+        "ability": 72.37,
+        "physical": 59.04
+      },
+      "24": {
+        "ability": 77.02,
+        "physical": 60.8
+      },
+      "27": {
+        "ability": 78.74,
+        "physical": 61.08
+      },
+      "30": {
+        "ability": 79.04,
+        "physical": 59.88
+      },
+      "33": {
+        "ability": 77.88,
+        "physical": 55.22
+      },
+      "36": {
+        "ability": 74.58,
+        "physical": 46.23
+      }
+    },
+    "LW": {
+      "16": {
+        "ability": 52.7,
+        "physical": 48.33
+      },
+      "18": {
+        "ability": 62.94,
+        "physical": 54.24
+      },
+      "21": {
+        "ability": 72.62,
+        "physical": 58.92
+      },
+      "24": {
+        "ability": 76.84,
+        "physical": 60.35
+      },
+      "27": {
+        "ability": 78.32,
+        "physical": 60.59
+      },
+      "30": {
+        "ability": 78.25,
+        "physical": 59.35
+      },
+      "33": {
+        "ability": 76.07,
+        "physical": 54.66
+      },
+      "36": {
+        "ability": 70.86,
+        "physical": 45.68
+      }
+    },
+    "GK": {
+      "16": {
+        "ability": 52.76,
+        "physical": 47.77
+      },
+      "18": {
+        "ability": 62.67,
+        "physical": 53.18
+      },
+      "21": {
+        "ability": 73.83,
+        "physical": 57.39
+      },
+      "24": {
+        "ability": 78.83,
+        "physical": 58.46
+      },
+      "27": {
+        "ability": 80.44,
+        "physical": 58.57
+      },
+      "30": {
+        "ability": 80.82,
+        "physical": 57.23
+      },
+      "33": {
+        "ability": 80.35,
+        "physical": 52.49
+      },
+      "36": {
+        "ability": 77.27,
+        "physical": 43.62
+      }
+    }
+  }
+}

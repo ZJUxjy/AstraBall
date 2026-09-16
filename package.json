@@ -1,0 +1,21 @@
+{
+  "name": "astraball-world",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check src/app.js && node --check src/world.js && node --check src/atlas.js && node --check src/map-input.js && node --check src/geography/catalog.js && node --check src/geography/generate.js && node --check server.mjs && node --check src/geography/geometry.js && node --check src/geography/topology.js && node --check scripts/import-azgaar.mjs && node scripts/football/check.mjs",
+    "import:map": "node scripts/import-azgaar.mjs",
+    "test:football": "node --test tests/football.test.mjs",
+    "audit:football": "node scripts/football/audit.mjs",
+    "validate:football": "node scripts/football/validate.mjs",
+    "audit:world": "node scripts/football/audit-world.mjs",
+    "audit:season": "node scripts/football/audit-season.mjs",
+    "audit:development": "node scripts/football/audit-development.mjs"
+  },
+  "devDependencies": {
+    "delaunator": "^5.1.0"
+  }
+}

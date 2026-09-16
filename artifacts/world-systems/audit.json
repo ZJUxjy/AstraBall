@@ -1,0 +1,255 @@
+{
+  "seed": 318,
+  "divisions": [
+    {
+      "id": "closed",
+      "teams": 16,
+      "rounds": 30,
+      "matches": 240,
+      "goals": 623,
+      "first": "closed-club-7"
+    },
+    {
+      "id": "crown-league",
+      "teams": 12,
+      "rounds": 22,
+      "matches": 132,
+      "goals": 368,
+      "first": "crown-league-club-4"
+    },
+    {
+      "id": "crown-league-2",
+      "teams": 12,
+      "rounds": 22,
+      "matches": 132,
+      "goals": 374,
+      "first": "crown-league-2-club-7"
+    },
+    {
+      "id": "crown-league-3",
+      "teams": 16,
+      "rounds": 30,
+      "matches": 240,
+      "goals": 691,
+      "first": "crown-league-3-club-16"
+    },
+    {
+      "id": "silver-league",
+      "teams": 12,
+      "rounds": 22,
+      "matches": 132,
+      "goals": 307,
+      "first": "silver-league-club-10"
+    },
+    {
+      "id": "silver-league-2",
+      "teams": 12,
+      "rounds": 22,
+      "matches": 132,
+      "goals": 347,
+      "first": "silver-league-2-club-7"
+    },
+    {
+      "id": "silver-league-3",
+      "teams": 16,
+      "rounds": 30,
+      "matches": 240,
+      "goals": 677,
+      "first": "silver-league-3-club-15"
+    },
+    {
+      "id": "lima-league",
+      "teams": 16,
+      "rounds": 30,
+      "matches": 240,
+      "goals": 628,
+      "first": "lima-league-club-8"
+    },
+    {
+      "id": "lima-league-2",
+      "teams": 16,
+      "rounds": 30,
+      "matches": 240,
+      "goals": 665,
+      "first": "lima-league-2-club-1"
+    },
+    {
+      "id": "lima-league-3",
+      "teams": 20,
+      "rounds": 38,
+      "matches": 380,
+      "goals": 1039,
+      "first": "lima-league-3-club-18"
+    },
+    {
+      "id": "liberlin-league",
+      "teams": 18,
+      "rounds": 34,
+      "matches": 306,
+      "goals": 824,
+      "first": "liberlin-league-club-11"
+    },
+    {
+      "id": "liberlin-league-2",
+      "teams": 18,
+      "rounds": 34,
+      "matches": 306,
+      "goals": 860,
+      "first": "liberlin-league-2-club-3"
+    },
+    {
+      "id": "liberlin-league-3",
+      "teams": 20,
+      "rounds": 38,
+      "matches": 380,
+      "goals": 987,
+      "first": "liberlin-league-3-club-20"
+    },
+    {
+      "id": "sichuan-league",
+      "teams": 20,
+      "rounds": 38,
+      "matches": 380,
+      "goals": 1006,
+      "first": "sichuan-league-club-17"
+    },
+    {
+      "id": "sichuan-league-2",
+      "teams": 20,
+      "rounds": 38,
+      "matches": 380,
+      "goals": 1041,
+      "first": "sichuan-league-2-club-18"
+    },
+    {
+      "id": "sichuan-league-3",
+      "teams": 24,
+      "rounds": 46,
+      "matches": 552,
+      "goals": 1571,
+      "first": "sichuan-league-3-club-14"
+    }
+  ],
+  "cups": [
+    {
+      "id": "crown-league-cup",
+      "champion": "crown-league-club-10",
+      "matches": 39
+    },
+    {
+      "id": "silver-league-cup",
+      "champion": "silver-league-club-10",
+      "matches": 39
+    },
+    {
+      "id": "lima-league-cup",
+      "champion": "lima-league-club-10",
+      "matches": 51
+    },
+    {
+      "id": "liberlin-league-cup",
+      "champion": "liberlin-league-club-6",
+      "matches": 55
+    },
+    {
+      "id": "sichuan-league-cup",
+      "champion": "sichuan-league-club-9",
+      "matches": 63
+    }
+  ],
+  "playoffs": [
+    {
+      "id": "closed",
+      "champion": "closed-club-10",
+      "matches": 7
+    },
+    {
+      "id": "crown-league-2",
+      "champion": "crown-league-2-club-1",
+      "matches": 3
+    },
+    {
+      "id": "crown-league-3",
+      "champion": "crown-league-3-club-14",
+      "matches": 3
+    },
+    {
+      "id": "silver-league-2",
+      "champion": "silver-league-2-club-10",
+      "matches": 3
+    },
+    {
+      "id": "silver-league-3",
+      "champion": "silver-league-3-club-11",
+      "matches": 3
+    },
+    {
+      "id": "lima-league-2",
+      "champion": "lima-league-2-club-13",
+      "matches": 3
+    },
+    {
+      "id": "lima-league-3",
+      "champion": "lima-league-3-club-8",
+      "matches": 3
+    },
+    {
+      "id": "liberlin-league-2",
+      "champion": "liberlin-league-2-club-12",
+      "matches": 3
+    },
+    {
+      "id": "liberlin-league-3",
+      "champion": "liberlin-league-3-club-14",
+      "matches": 3
+    },
+    {
+      "id": "sichuan-league-2",
+      "champion": "sichuan-league-2-club-14",
+      "matches": 3
+    },
+    {
+      "id": "sichuan-league-3",
+      "champion": "sichuan-league-3-club-10",
+      "matches": 3
+    }
+  ],
+  "matches": 4759,
+  "players": 6707,
+  "cultures": {
+    "pt_BR": 587,
+    "zh": 1909,
+    "de": 765,
+    "ru": 667,
+    "fr": 734,
+    "ar": 511,
+    "en": 797,
+    "es": 727,
+    "authored": 10
+  },
+  "globalCup": {
+    "teams": 32,
+    "groups": 8,
+    "matches": 63,
+    "champion": "closed-club-7"
+  },
+  "hashes": {
+    "src/world.js": "4a69098fee054d3a7799507cf1c32b726d98d7321394645a0bc0e766f657d67d",
+    "src/football/config.js": "7024a577f882f7dcac770ad826b08d8cd5966881841ff60015ec059b65cccb06",
+    "src/football/data.js": "5d9916906d2ba4ebbbe13791c9c50871ed20411537e45f173705b13ef4ea3ab8",
+    "src/football/engine.js": "78a6f6df5c9751b69c43ea685b3df0b147f178dd97ecf08257f0566dd9a7f992",
+    "src/football/fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+    "src/football/names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+    "src/football/names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+    "src/football/players.js": "00649f1986dd849b06443c515d4020d08341f64f2d1d8fa69dee1cb8f4295dfd",
+    "src/football/random.js": "cf2129653a74d8ebea9922d5941bc8105cfe52d42647f761d6ac056d01550391",
+    "src/football/rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+    "src/football/shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+    "src/football/tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+    "src/football/ui.js": "e30675190976b02901d0136ec916867ba8bdcf58bc1bbae0854c660cfcde069e",
+    "src/competitions/catalog.js": "4b8246f325a629dc567d9809eeff66383018e3765ef20294e043394df598ed47",
+    "src/competitions/clubs.js": "c751067ff8a366c5798fe8d2d9ddc7b024f08644c88b339a940a20d8f08f976c",
+    "src/competitions/season.js": "63c3a2fc9eeffd671d379ddaed7bba4ce595744442d7c2b80b754f86b57aa9a7",
+    "src/competitions/ui.js": "fd58e3cc06e90615864e00e739ae7e68d98db3b37691bd7aad8ad73aea9cd094"
+  }
+}

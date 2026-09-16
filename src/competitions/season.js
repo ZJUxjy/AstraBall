@@ -1,0 +1,69 @@
+import {rng} from '../football/random.js';
+import {leagueSystems,GLOBAL_CUP} from './catalog.js';
+const unique=ids=>{if(!Array.isArray(ids)||ids.length<2||new Set(ids).size!==ids.length||ids.some(id=>typeof id!=='string'||!id))throw Error('参赛队身份无效');};
+export function roundRobin(ids,{legs=2,seed='318',prefix='league'}={}){
+ unique(ids);if(![1,2].includes(legs))throw Error('仅支持单、双循环');
+ const random=rng(seed),ring=[...ids];for(let i=ring.length-1;i>0;i--){const j=random.int(0,i);[ring[i],ring[j]]=[ring[j],ring[i]];}
+ if(ring.length%2)ring.push(null);const first=[];
+ for(let r=0;r<ring.length-1;r++){
+  for(let i=0;i<ring.length/2;i++){let [home,away]=[ring[i],ring[ring.length-1-i]];if((r+i)%2)[home,away]=[away,home];if(home&&away)first.push({id:`${prefix}-r${r+1}-${i}`,round:r+1,home,away,score:null});}
+  ring.splice(1,0,ring.pop());
+ }
+ return legs===1?first:[...first,...first.map(m=>({...m,id:`${m.id}-return`,round:m.round+ring.length-1,home:m.away,away:m.home}))];
+}
+export function standings(ids,fixtures,{seed='318'}={}){
+ unique(ids);const draw=roundRobin(ids,{legs:1,seed}).flatMap(m=>[m.home,m.away]);const lots=[...new Set(draw)],table=new Map(ids.map(id=>[id,{id,played:0,won:0,drawn:0,lost:0,gf:0,ga:0,gd:0,points:0,fairPlay:0,lot:lots.indexOf(id)}]));
+ const done=[],seen=new Set();
+ for(const m of fixtures){if(m.score==null)continue;if(seen.has(m.id))throw Error('重复比赛');seen.add(m.id);const [h,a]=[table.get(m.home),table.get(m.away)];if(!h||!a||h===a||m.score.length!==2||!m.score.every(n=>Number.isInteger(n)&&n>=0))throw Error('比赛结果无效');
+  const [x,y]=m.score;h.played++;a.played++;h.gf+=x;h.ga+=y;a.gf+=y;a.ga+=x;
+  if(x===y){h.drawn++;a.drawn++;h.points++;a.points++;}else{const win=x>y?h:a,lose=x>y?a:h;win.won++;lose.lost++;win.points+=3;}
+  const cards=m.fairPlay||[0,0];if(cards.length!==2||!cards.every(n=>Number.isFinite(n)&&n>=0))throw Error('公平竞赛分无效');h.fairPlay+=cards[0];a.fairPlay+=cards[1];done.push(m);
+ }
+ const rows=[...table.values()];rows.forEach(r=>r.gd=r.gf-r.ga);
+ // Mini-league uses the full group tied on points, goal difference and goals scored.
+ for(const r of rows){const tied=new Set(rows.filter(t=>t.points===r.points&&t.gd===r.gd&&t.gf===r.gf).map(t=>t.id));r.h2hPoints=0;r.h2hGD=0;
+  for(const m of done.filter(m=>tied.has(m.home)&&tied.has(m.away))){if(m.home!==r.id&&m.away!==r.id)continue;const [x,y]=m.home===r.id?m.score:[m.score[1],m.score[0]];r.h2hPoints+=x>y?3:x===y?1:0;r.h2hGD+=x-y;}}
+ return rows.sort((a,b)=>b.points-a.points||b.gd-a.gd||b.gf-a.gf||b.h2hPoints-a.h2hPoints||b.h2hGD-a.h2hGD||a.fairPlay-b.fairPlay||a.lot-b.lot).map((r,i)=>({...r,rank:i+1}));
+}
+export function knockoutBracket(ids,{seed='318',prefix='cup',shuffle=true}={}){
+ unique(ids);let order=[...ids];if(shuffle){const r=rng(seed);for(let i=order.length-1;i>0;i--){const j=r.int(0,i);[order[i],order[j]]=[order[j],order[i]];}}
+ const size=2**Math.ceil(Math.log2(order.length));let seeds=[1,2];while(seeds.length<size){const sum=seeds.length*2+1;seeds=seeds.flatMap(n=>[n,sum-n]);}
+ let slots=seeds.map(n=>order[n-1]||null),round=1,result=[];
+ while(slots.length>1){const next=[];for(let i=0;i<slots.length;i+=2){const id=`${prefix}-r${round}-${i/2+1}`,home=slots[i],away=slots[i+1],bye=!home||!away;result.push({id,round,home,away,bye,winner:bye?(home||away):null});next.push(bye?(home||away):`winner:${id}`);}slots=next;round++;}
+ return result;
+}
+export function promotedTeams(table,{playoffWinner}={}){
+ if(table.length<6||new Set(table.map(r=>r.id)).size!==table.length)throw Error('排名表无效');const eligible=table.slice(2,6).map(r=>r.id);if(!eligible.includes(playoffWinner))throw Error('附加赛冠军须来自第 3—6 名');return [...table.slice(0,2).map(r=>r.id),playoffWinner];
+}
+export function moveDivisions(levels,tables,playoffWinners){
+ if(levels.length!==tables.length)throw Error('缺少级别排名');for(let i=0;i<levels.length;i++){if(tables[i].length!==levels[i].teams||new Set(tables[i].map(r=>r.id)).size!==levels[i].teams)throw Error('排名人数无效');}
+ const next=tables.map(t=>t.map(r=>r.id));if(new Set(next.flat()).size!==next.flat().length)throw Error('球队跨级重复');
+ for(let i=0;i<levels.length-1;i++){const up=promotedTeams(tables[i+1],{playoffWinner:playoffWinners[i+1]}),down=tables[i].slice(-levels[i].relegation).map(r=>r.id);if(up.length!==down.length)throw Error('升降级名额不平衡');next[i]=next[i].filter(id=>!down.includes(id)).concat(up);next[i+1]=next[i+1].filter(id=>!up.includes(id)).concat(down);}
+ return next;
+}
+export function globalQualifiers(rankings){return leagueSystems.flatMap(s=>{const list=rankings[s.id];if(!list||list.length<s.globalSlots)throw Error(`缺少 ${s.name} 排名`);return list.slice(0,s.globalSlots).map((row,i)=>({id:row.id,system:s.id,rank:i+1}));});}
+export function globalGroups(qualifiers){
+ if(qualifiers.length!==GLOBAL_CUP.teams||new Set(qualifiers.map(q=>q.id)).size!==qualifiers.length)throw Error('全球杯须有 32 支不同球队');
+ const sorted=[...qualifiers].sort((a,b)=>a.rank-b.rank||a.system.localeCompare(b.system)),groups=Array.from({length:8},()=>[]);
+ function place(index){if(index===32)return true;const q=sorted[index],pot=Math.floor(index/8);for(let offset=0;offset<8;offset++){const g=groups[(index+offset)%8];if(g.length!==pot||g.filter(t=>t.system===q.system).length>=2)continue;g.push(q);if(place(index+1))return true;g.pop();}return false;}
+ if(!place(0))throw Error('资格配置无法完成分组');return groups.map((teams,i)=>({id:String.fromCharCode(65+i),teams}));
+}
+export function draftOrder(reverseStandings,{seed='318'}={}){
+ unique(reverseStandings);if(reverseStandings.length!==16)throw Error('选秀须有 16 队');const r=rng(seed),pool=reverseStandings.slice(0,8).map((id,i)=>({id,weight:leagueSystems[0].draft.lotteryWeights[i]})),first=[];
+ for(let i=0;i<3;i++){const p=r.pick(pool,p=>p.weight);first.push(p.id);pool.splice(pool.indexOf(p),1);}first.push(...pool.map(p=>p.id),...reverseStandings.slice(8));
+ return [first,reverseStandings,reverseStandings].flatMap((list,round)=>list.map((club,i)=>({round:round+1,overall:round*16+i+1,club})));
+}
+
+// Runs a complete bracket through an injected match engine; never invents a tie winner.
+export function playKnockout(ids,{simulate,seed='318',prefix='cup',shuffle=true,higherSeedHome=false}={}){
+ if(typeof simulate!=='function')throw Error('须提供比赛引擎');const bracket=knockoutBracket(ids,{seed,prefix,shuffle}),winners=new Map(),matches=[];
+ const resolve=id=>id?.startsWith('winner:')?winners.get(id.slice(7)):id,finalRound=bracket.at(-1).round;
+ for(const m of bracket){let home=resolve(m.home),away=resolve(m.away);if(m.bye){winners.set(m.id,home||away);matches.push({...m,home,away,winner:home||away});continue;}
+  if(!home||!away)throw Error('前轮胜者缺失');if(higherSeedHome&&ids.indexOf(home)>ids.indexOf(away))[home,away]=[away,home];
+  const result=simulate({home,away,seed:`${seed}:${m.id}`,knockout:true,neutral:m.round===finalRound});
+  if(result.status!=='finished'||!Array.isArray(result.score)||result.score.length!==2||!result.score.every(n=>Number.isInteger(n)&&n>=0))throw Error('淘汰赛结果无效，需赛事裁决');
+  const [h,a]=result.score;let side=h>a?0:a>h?1:result.shootout?.winner;if(side!==0&&side!==1)throw Error('淘汰赛平局未决胜');
+  const winner=side===0?home:away;winners.set(m.id,winner);matches.push({...m,home,away,winner,score:result.score,shootout:result.shootout||null,neutral:m.round===finalRound});
+ }
+ return {champion:winners.get(bracket.at(-1).id),matches};
+}

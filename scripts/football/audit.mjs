@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {performance} from 'node:perf_hooks';
+import {simulateMatch,ENGINE_VERSION} from '../../src/football/engine.js';
+import {generateTeam} from '../../src/football/players.js';
+const count=Number(process.env.MATCHES||400),start=Number(process.env.SEED||10000),tag=process.env.TAG||`v${ENGINE_VERSION}`;
+const home=generateTeam({id:'h',quality:68,seed:'audit'}),away=generateTeam({id:'a',quality:68,seed:'audit'});
+const totals={goals:0,shots:0,onTarget:0,xG:0,passes:0,completed:0,fouls:0,yellow:0,red:0,corners:0,homeWins:0,draws:0,awayWins:0,zeroZero:0,highScores:0};
+const samples=[],t0=performance.now();
+for(let i=0;i<count;i++){const result=simulateMatch({home,away,seed:start+i,capture:false});const [h,a]=result.score;totals[h>a?'homeWins':h===a?'draws':'awayWins']++;if(h+a===0)totals.zeroZero++;if(h+a>=7)totals.highScores++;
+ for(const team of result.teams){for(const key of ['goals','shots','onTarget','xG','passes','completed','fouls','yellow','red','corners'])totals[key]+=team.stats[key];
+  for(const key of ['goals','shots','onTarget','passes','completed','fouls','yellow','red'])if(Math.abs(team.players.reduce((v,p)=>v+p[key],0)-team.stats[key])>1e-7)throw Error(`统计不守恒 ${key}`);
+  if(team.stats.goals>team.stats.onTarget||team.stats.onTarget>team.stats.shots)throw Error('射门记账错误');
+ }samples.push(h+a);
+}
+const avg=Object.fromEntries(Object.entries(totals).map(([k,v])=>[k,+(v/count).toFixed(4)]));avg.passCompletion=+(totals.completed/totals.passes).toFixed(4);avg.shotAccuracy=+(totals.onTarget/totals.shots).toFixed(4);avg.goalVariance=+(samples.reduce((s,n)=>s+(n-avg.goals)**2,0)/count).toFixed(4);
+const files=fs.readdirSync('src/football').filter(f=>f.endsWith('.js')&&!['data.js','ui.js'].includes(f));const hashes=Object.fromEntries(files.map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(`src/football/${f}`)).digest('hex')]));
+const report={version:ENGINE_VERSION,count,seedRange:[start,start+count-1],milliseconds:Math.round(performance.now()-t0),averages:avg,hashes};
+fs.mkdirSync(`artifacts/football/${tag}`,{recursive:true});fs.writeFileSync(`artifacts/football/${tag}/audit.json`,JSON.stringify(report,null,2)+'\n');
+for(const file of files)fs.copyFileSync(`src/football/${file}`,`artifacts/football/${tag}/${file}`);
+console.log(JSON.stringify(report,null,2));

@@ -1,0 +1,34 @@
+// Colonisation years use the Gregorian month/week structure, in planet standard time.
+export const dateOf=(year,month,day)=>`${String(year).padStart(4,'0')}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+export const addDays=(date,n)=>new Date(Date.parse(`${date}T12:00:00Z`)+n*86400000).toISOString().slice(0,10);
+export const daysBetween=(a,b)=>Math.round((Date.parse(`${b}T12:00:00Z`)-Date.parse(`${a}T12:00:00Z`))/86400000);
+export function seasonCalendar(year){
+ const slots=[];
+ for(let day=dateOf(year,3,1);day<=dateOf(year,11,1);day=addDays(day,1)){
+  const weekday=new Date(`${day}T12:00:00Z`).getUTCDay();
+  if(day.slice(5,7)!=='06'&&[3,6].includes(weekday))slots.push(day);
+ }
+ // Reserve full dates for domestic cups. No club can be booked in two competitions.
+ const cupIndices=[5,14,23,35,44],cup=cupIndices.map(i=>slots[i]);cup.push(dateOf(year,11,29));
+ const league=slots.filter((_,i)=>!cupIndices.includes(i));
+ if(league.length<46)throw Error('赛历不足 46 轮');
+ return {league,cup,playoffs:[dateOf(year,11,8),dateOf(year,11,15),dateOf(year,11,22)],
+  global:[3,7,11,16,20,24,28].map(d=>dateOf(year,6,d)),
+  events:[
+   {date:dateOf(year,1,1),end:dateOf(year,2,28),name:'冬季注册窗口',kind:'window'},
+   {date:dateOf(year,1,20),name:'星冠选秀日',kind:'draft'},
+   {date:dateOf(year,2,1),end:dateOf(year,2,28),name:'季前备战',kind:'break'},
+   {date:slots[0],name:'联赛开幕',kind:'league'},
+   {date:dateOf(year,6,1),end:dateOf(year,6,30),name:'全球冠军杯 · 国内休赛',kind:'global'},
+   {date:dateOf(year,7,1),end:dateOf(year,7,31),name:'夏季注册窗口',kind:'window'},
+   {date:league.at(-1),name:'常规赛末轮',kind:'league'},
+   {date:dateOf(year,11,8),end:dateOf(year,11,22),name:'季后赛与升级附加赛',kind:'playoff'},
+   {date:dateOf(year,11,29),name:'地区杯决赛',kind:'cup'},
+   {date:dateOf(year,12,1),name:'赛季结算',kind:'settlement'},
+   {date:dateOf(year,12,2),end:dateOf(year,12,31),name:'休赛期',kind:'break'},
+  ]};
+}
+export function roundDates(slots,rounds){
+ if(rounds>slots.length||rounds<2)throw Error('轮次数量超出赛历');
+ return Array.from({length:rounds},(_,i)=>slots[Math.round(i*(slots.length-1)/(rounds-1))]);
+}
