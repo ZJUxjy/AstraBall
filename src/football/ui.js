@@ -1,3 +1,4 @@
+import {prepareCoach} from './coach.js';
 import {FORMATION_ANCHORS,toAbsolute} from './spatial.js';
 import {roleFamiliarity} from './roles.js';
 import {playerGrowthPanel} from './development-ui.js';
@@ -58,7 +59,8 @@ export async function mountFootball(){root=document.querySelector('#football-roo
    official=coachPreview(season);official.serial=season.activeMatch?.serial;
    setup.home=official.input.home.id;setup.away=official.input.away.id;
    setup.tactics=[{...DEFAULT_TACTICS},{...DEFAULT_TACTICS}];setup.tactics[official.side]=official.tactics;
-   setup.lineups=[selectLineup(official.input.home),selectLineup(official.input.away)];setup.lineups[official.side]=official.lineup;
+   const inputs=[official.input.home,official.input.away];
+   setup.lineups=inputs.map((t,side)=>{if(side===official.side)return official.lineup;const coach=prepareCoach(t,inputs[1-side]);setup.tactics[side]={...DEFAULT_TACTICS,...coach.tactics};return coach.lineup;});
    state=season.activeMatch?restoreMatch(season.activeMatch.state):null;
   }catch(error){if(token===generation)root.innerHTML=`<h1>执教比赛</h1><p role="alert">${esc(error.message)}</p><a class="football-primary" href="#manager">返回经理首页</a>`;return;}
  }else{

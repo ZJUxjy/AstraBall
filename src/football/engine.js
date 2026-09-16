@@ -1,3 +1,4 @@
+import {prepareCoach,coachLineup} from './coach.js';
 import {positionalAttribute} from './roles.js';
 import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
@@ -24,9 +25,16 @@ function teamContext(input,tactics,lineup){
  const lines=Object.fromEntries(team.roster.map(p=>[p.id,{...lineStats(p.id),condition:p.condition}]));
  return {...team,tactics:settings,slots,lines,stats:teamStats(),used:new Set(slots.map(s=>s.id)),subs:0,windows:0,lastSubTime:-1};
 }
-export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,neutral=false,knockout=false,capture=true,plans=[],importance=0}={}){
+export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,neutral=false,knockout=false,capture=true,plans=[],importance=0,ai=[false,false]}={}){
  if(home?.id===away?.id)throw Error('不能与自己比赛');
- const teams=[teamContext(home,homeTactics,homeLineup),teamContext(away,awayTactics,awayLineup)];
+ if(!Array.isArray(ai)||ai.length!==2||ai.some(v=>typeof v!=='boolean'))throw Error('教练控制设置无效');
+ const inputs=[home,away],settings=[homeTactics,awayTactics],lineups=[homeLineup,awayLineup];
+ const teams=inputs.map((input,side)=>{
+  const coach=ai[side]?prepareCoach(input,inputs[1-side]):null;
+  const tactics=validateTactics({...coach?.tactics,...settings[side]});
+  const team=teamContext(input,tactics,lineups[side]||(coach?coachLineup(input,tactics.formation):undefined));
+  team.coach=coach?{style:coach.style,baseTactics:{...tactics},nextReview:15,subReviews:[],lastDecision:null}:null;return team;
+ });
  const ids=teams.flatMap(t=>t.roster.map(p=>p.id));if(new Set(ids).size!==ids.length)throw Error('两队球员 ID 不得相同');
  const random=rng(`match:${seed}`);
  const kickoff=random.int(0,1);

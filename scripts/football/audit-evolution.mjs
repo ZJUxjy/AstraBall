@@ -5,7 +5,8 @@ import {simulateMatch} from '../../src/football/engine.js';
 import {generateTeam} from '../../src/football/players.js';
 import {ENGINE_VERSION} from '../../src/football/config.js';
 const n=Number(process.env.MATCHES||100),seed=Number(process.env.SEED||2100000),start=performance.now();
-const report={version:ENGINE_VERSION,matchesPerCase:n,seed,cases:[],hashes:{}};
+const ai=process.env.AI==='1';
+const report={ai,version:ENGINE_VERSION,matchesPerCase:n,seed,cases:[],hashes:{}};
 for(const [name,q1,q2,t1,t2] of [
  ['balanced',68,68,{},{}],['gap10',73,63,{},{}],['gap20',78,58,{},{}],['gap34',86,52,{},{}],
  ['short',68,68,{passing:'short'},{}],['direct',68,68,{passing:'direct'},{}],
@@ -14,7 +15,7 @@ for(const [name,q1,q2,t1,t2] of [
  const totals={goals:0,shots:0,xG:0,passes:0,completed:0,fouls:0,corners:0,red:0,draws:0,teamOneWins:0,teamOneGoals:0,teamTwoGoals:0};
  for(let i=0;i<n;i++){
   const a=generateTeam({id:'A',quality:q1,seed:`evo:${Math.floor(i/20)}`}),b=generateTeam({id:'B',quality:q2,seed:`evo:${Math.floor(i/20)}`}),reverse=i%2===1;
-  const r=simulateMatch({home:reverse?b:a,away:reverse?a:b,homeTactics:reverse?t2:t1,awayTactics:reverse?t1:t2,seed:seed+i,capture:false});
+  const r=simulateMatch({home:reverse?b:a,away:reverse?a:b,homeTactics:reverse?t2:t1,awayTactics:reverse?t1:t2,seed:seed+i,capture:false,ai:[ai,ai]});
   if(r.status!=='finished')throw Error(`unfinished ${name}/${i}`);
   for(const t of r.teams)for(const k of ['goals','shots','xG','passes','completed','fouls','corners','red'])totals[k]+=t.stats[k];
   totals.draws+=Number(r.score[0]===r.score[1]);totals.teamOneWins+=Number(r.score[reverse?1:0]>r.score[reverse?0:1]);totals.teamOneGoals+=r.score[reverse?1:0];totals.teamTwoGoals+=r.score[reverse?0:1];
