@@ -1,0 +1,5 @@
+node_modules/
+.worktrees/
+.DS_Store
+# Local audit checkpoints and generated experiment output are retained on disk.
+/artifacts/

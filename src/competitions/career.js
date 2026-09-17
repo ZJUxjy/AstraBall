@@ -51,7 +51,7 @@ export function beginCoachedMatch(s,{fixtureId,tactics,lineup}={}){
  const preview=coachPreview(s),side=preview.side;
  if(fixtureId&&fixtureId!==preview.fixture.id)throw Error('赛程已更新，请返回经理首页');
  tactics=validateTactics(tactics||preview.tactics);lineup=lineup||preferredLineup(side?preview.input.away:preview.input.home,tactics,s.manager.lineup);
- const state=createMatch({...preview.input,[side?'awayTactics':'homeTactics']:tactics,[side?'awayLineup':'homeLineup']:lineup});
+ const state=createMatch({...preview.input,[side?'awayTactics':'homeTactics']:tactics,[side?'awayLineup':'homeLineup']:lineup,[side?'awayAI':'homeAI']:false});
  s.activeMatch={fixtureId:preview.fixture.id,serial:0,state:snapshotMatch(state)};
  s.manager.tactics=structuredClone(tactics);s.manager.lineup=structuredClone(lineup);s.revision++;
  return state;
@@ -62,7 +62,7 @@ export function savePreparation(s,{fixtureId,tactics,lineup}){
  if(preview.fixture.id!==fixtureId)throw Error('赛程已更新，请返回经理首页');
  const side=preview.side;
  // Use the same eligibility and formation validation as kickoff.
- createMatch({...preview.input,[side?'awayTactics':'homeTactics']:tactics,[side?'awayLineup':'homeLineup']:lineup});
+ createMatch({...preview.input,[side?'awayTactics':'homeTactics']:tactics,[side?'awayLineup':'homeLineup']:lineup,[side?'awayAI':'homeAI']:false});
  s.manager.tactics=validateTactics(tactics);s.manager.lineup=structuredClone(lineup);s.revision++;
 }
 export function updateCoachedMatch(s,{fixtureId,serial,steps=0,command}={}){

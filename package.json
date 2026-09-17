@@ -13,7 +13,12 @@
     "validate:football": "node scripts/football/validate.mjs",
     "audit:world": "node scripts/football/audit-world.mjs",
     "audit:season": "node scripts/football/audit-season.mjs",
-    "audit:development": "node scripts/football/audit-development.mjs"
+    "audit:development": "node scripts/football/audit-development.mjs",
+    "audit:youth": "node scripts/football/audit-youth.mjs",
+    "audit:body": "node scripts/football/audit-body.mjs",
+    "audit:specialties": "node scripts/football/audit-specialties.mjs",
+    "audit:academy-world": "node scripts/football/audit-academy-world.mjs --years 20",
+    "audit:academy-career": "node scripts/football/audit-academy-world.mjs --career-years 3"
   },
   "devDependencies": {
     "delaunator": "^5.1.0"

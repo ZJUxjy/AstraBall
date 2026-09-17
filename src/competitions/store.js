@@ -1,6 +1,8 @@
 import {advanceDevelopment,setPlayerTraining} from './development.js';
 import {appointManager,beginCoachedMatch,updateCoachedMatch,isManagedFixture,seasonGoal,savePreparation} from './career.js';
 import {createSeason,validateSave,followingSeason,pendingMatches,playFixture,finishDate} from './runtime.js';
+import {setYouthPath,observeYouth} from './youth.js';
+import {setAcademyPlan} from './academy.js';
 let current=null,dbPromise=null,loading=null,busy=false;
 function database(){return dbPromise??=new Promise((resolve,reject)=>{const r=indexedDB.open('astraball-seasons',1);r.onupgradeneeded=()=>{r.result.createObjectStore('seasons',{keyPath:'year'});r.result.createObjectStore('meta');};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Error('无法打开本地赛季存档'));});}
 async function read(store,key){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction(store),r=tx.objectStore(store).get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Error('读取赛季存档失败'));});}
@@ -29,3 +31,16 @@ export async function startOfficial(settings){let state;const season=await mutat
 export async function tickOfficial(update){let state;const season=await mutate(work=>{state=updateCoachedMatch(work,update);});return {season,state};}
 export async function saveOfficialPreparation(settings){return mutate(work=>{savePreparation(work,settings);});}
 export async function savePlayerTraining(id,plan){return mutate(work=>{setPlayerTraining(work,id,plan);});}
+export async function saveYouthPath(id,path,options={}){return mutate(work=>{
+ if(work.activeMatch)throw Error('请先完成正在执教的比赛');
+ advanceDevelopment(work,work.date);setYouthPath(work,id,path,options);
+});}
+export async function saveYouthObservation(id){return mutate(work=>{
+ if(work.activeMatch)throw Error('请先完成正在执教的比赛');
+ advanceDevelopment(work,work.date);observeYouth(work,id);
+});}
+
+export async function saveAcademyPlan(plan){return mutate(work=>{
+ if(work.activeMatch)throw Error('请先完成正在执教的比赛');
+ advanceDevelopment(work,work.date);setAcademyPlan(work,plan);
+});}

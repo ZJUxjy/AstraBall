@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+import {isDeepStrictEqual,parseArgs} from 'node:util';
+const {values}=parseArgs({options:{input:{type:'string',default:'artifacts/academy-world/world-opportunity-v2'}}});
+const read=dir=>JSON.parse(gunzipSync(fs.readFileSync(`${dir}/checkpoint.json.gz`))),baseline=read('artifacts/academy-world/world-final'),current=read(values.input);
+if(baseline.report.status!=='completed'||current.report.status!=='completed'||current.report.seasons.length!==20)throw Error('Need completed old and new twenty-season checkpoints');
+const fields=['id','position','secondary','age','ageReferenceDate','attributes','potential','growthProfile','bodyProfile','personality','foot','weakFoot'];
+const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value;
+const data=save=>Object.values(save.season.playerRegistry.players).sort((a,b)=>a.id.localeCompare(b.id)).map(p=>Object.fromEntries(fields.map(field=>[field,p[field]])));
+const old=data(baseline),now=data(current),byId=new Map(old.map(p=>[p.id,p])),mismatches=[];
+for(const p of now)if(!isDeepStrictEqual(p,byId.get(p.id)))mismatches.push({id:p.id,fields:fields.filter(field=>!isDeepStrictEqual(p[field],byId.get(p.id)?.[field]))});
+const digest=rows=>createHash('sha256').update(JSON.stringify(canonical(rows))).digest('hex');
+const result={baselineSourceHash:baseline.report.sourceHash,newSourceHash:current.report.sourceHash,fields,excluded:'Mutable shirt number, registration/ownership, current height/weight and development.records are not initial endowment fields.',baselinePlayers:old.length,newPlayers:now.length,sameIds:old.length===now.length&&now.every(p=>byId.has(p.id)),mismatches,baselineEndowmentHash:digest(old),newEndowmentHash:digest(now)};
+result.exact=result.sameIds&&!mismatches.length&&result.baselineEndowmentHash===result.newEndowmentHash;
+fs.writeFileSync(`${values.input}/endowment-parity.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));if(!result.exact)process.exitCode=1;

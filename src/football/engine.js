@@ -5,25 +5,27 @@ import {shotQuality,goalProbability} from './shots.js';
 import {tacticalEffects} from './tactics.js';
 import {exertion,conditionEffect} from './fitness.js';
 import {periodBase,penaltyShootout} from './rules.js';
+import {planAITeam,selectAISubstitutions} from './ai-team.js';
 export {ENGINE_VERSION};
 export const DEFAULT_TACTICS={formation:'4-3-3',passing:'mixed',pressing:'balanced',tempo:'normal',line:'normal',width:'normal',mentality:'balanced'};
 export const TACTIC_VALUES={formation:Object.keys(FORMATIONS),passing:['short','mixed','direct'],pressing:['low','balanced','high'],tempo:['slow','normal','fast'],line:['deep','normal','high'],width:['narrow','normal','wide'],mentality:['defensive','balanced','attacking']};
 export function validateTactics(value={}){for(const [k,v] of Object.entries(value))if(!TACTIC_VALUES[k]?.includes(v))throw Error(`战术无效：${k}`);return {...DEFAULT_TACTICS,...value};}
 function lineStats(id){return {id,seconds:0,goals:0,assists:0,shots:0,onTarget:0,xG:0,xA:0,passes:0,completed:0,tackles:0,interceptions:0,dribbles:0,dribblesWon:0,saves:0,goalsAgainst:0,fouls:0,yellow:0,red:0,condition:100};}
 function teamStats(){return {goals:0,shots:0,onTarget:0,xG:0,passes:0,completed:0,dribbles:0,dribblesWon:0,tackles:0,interceptions:0,corners:0,fouls:0,yellow:0,red:0,offsides:0,possessionSeconds:0,playerSeconds:0,penalties:0};}
-function teamContext(input,tactics,lineup){
+function teamContext(input,tactics,lineup,aiManaged=false){
  const team=structuredClone(input),ids=new Set();if(!team?.id||!Array.isArray(team.roster))throw Error('球队数据无效');
  for(const p of team.roster){if(!p.id||ids.has(p.id))throw Error('球员 ID 重复');ids.add(p.id);for(const k of ATTRIBUTE_KEYS)if(!Number.isFinite(p.attributes?.[k])||p.attributes[k]<1||p.attributes[k]>99)throw Error(`球员属性无效：${p.id}/${k}`);for(const k of ['morale','sharpness','weakFoot'])if(!Number.isFinite(p[k])||p[k]<0||p[k]>100)throw Error('球员状态无效');for(const k of ['consistency','bigMatches','injuryProneness','adaptability'])if(!Number.isFinite(p.personality?.[k]))throw Error('球员性格数据无效');if(!Number.isFinite(p.condition)||p.condition<0||p.condition>100)throw Error('体能无效');}
- const settings=validateTactics(tactics),slots=structuredClone(lineup??selectLineup(team,settings.formation));
+ const aiPlan=aiManaged&&!lineup?planAITeam(team,{formation:tactics?.formation}):null;
+ const settings=validateTactics({...aiPlan&&{formation:aiPlan.formation},...tactics}),slots=structuredClone(lineup??aiPlan?.lineup??selectLineup(team,settings.formation));
  if(slots.map(s=>s.position).sort().join(',')!==[...FORMATIONS[settings.formation]].sort().join(','))throw Error('首发位置必须符合所选阵型');
  if(slots.length!==11||new Set(slots.map(s=>s.id)).size!==11||slots.filter(s=>s.position==='GK').length!==1)throw Error('首发必须有 11 名不同球员和 1 名门将');
  for(const s of slots){const p=team.roster.find(p=>p.id===s.id);if(!p||!available(p)||!FORMATIONS[settings.formation].includes(s.position))throw Error('首发球员或位置无效');}
  const lines=Object.fromEntries(team.roster.map(p=>[p.id,{...lineStats(p.id),condition:p.condition}]));
- return {...team,tactics:settings,slots,lines,stats:teamStats(),used:new Set(slots.map(s=>s.id)),subs:0,windows:0,lastSubTime:-1};
+ return {...team,tactics:settings,slots,lines,stats:teamStats(),used:new Set(slots.map(s=>s.id)),subs:0,windows:0,lastSubTime:-1,aiManaged:Boolean(aiManaged),aiReviews:0};
 }
-export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,neutral=false,knockout=false,capture=true,plans=[],importance=0}={}){
+export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,homeAI=false,awayAI=false,neutral=false,knockout=false,capture=true,plans=[],importance=0}={}){
  if(home?.id===away?.id)throw Error('不能与自己比赛');
- const teams=[teamContext(home,homeTactics,homeLineup),teamContext(away,awayTactics,awayLineup)];
+ const teams=[teamContext(home,homeTactics,homeLineup,homeAI),teamContext(away,awayTactics,awayLineup,awayAI)];
  const ids=teams.flatMap(t=>t.roster.map(p=>p.id));if(new Set(ids).size!==ids.length)throw Error('两队球员 ID 不得相同');
  const random=rng(`match:${seed}`);
  const kickoff=random.int(0,1);
@@ -137,8 +139,19 @@ function playAction(s){
  if(success){attack.stats.completed++;attack.lines[actor.id].completed++;s.x=target[0];s.y=target[1];s.holder=receiver.id;s.lastPass={id:actor.id,kind:crossing?'cross':through?'through':forward?'progressive':'short'};}
  else{if(offside){attack.stats.offsides++;emit(s,'offside',{player:receiver.id});clock(s,12,false);}else if(s.random.next()<.24){defense.stats.interceptions++;defense.lines[defender.id].interceptions++;}else{emit(s,'restart',{side:1-s.side,kind:'throwIn'});clock(s,4,false);}takeBall(s,1-s.side,105-target[0],68-target[1],defender.id);}
 }
+function manageAI(s){
+ const minute=periodBase(s.period)+Math.min(s.periodClock,(s.period>2?15:45)*60)/60,times=[60,72,82];
+ for(let side=0;side<2;side++){
+  const t=s.teams[side];if(!t.aiManaged)continue;
+  while((t.aiReviews||0)<times.length&&minute>=times[t.aiReviews||0]){
+   const review=t.aiReviews||0;t.aiReviews=review+1;
+   for(const change of selectAISubstitutions(t,{minute,maxChanges:review===2?1:2,scoreDifference:t.stats.goals-s.teams[1-side].stats.goals}))applyCommand(s,{type:'substitution',side,...change});
+  }
+ }
+}
 export function stepMatch(s){if(s.status!=='playing')return false;if(++s.actions>20000)throw Error('比赛动作数超过安全上限');
  while(s.plans.length&&s.plans[0].minute<=periodBase(s.period)+Math.min(s.periodClock,(s.period>2?15:45)*60)/60){const plan=s.plans.shift();applyCommand(s,plan.command);}
+ manageAI(s);
  playAction(s);
  if(s.status!=='playing')return false;
  if(s.periodClock>=s.periodEnd){emit(s,'periodEnd');
@@ -189,6 +202,9 @@ export function snapshotMatch(state){
 }
 export function restoreMatch(saved){
  if(saved?.version!==ENGINE_VERSION||!Number.isSafeInteger(saved.randomState)||saved.teams?.length!==2)throw Error('比赛存档无效');
+ for(const team of saved.teams){
+  if(team.aiManaged!==undefined&&typeof team.aiManaged!=='boolean'||team.aiReviews!==undefined&&(!Number.isInteger(team.aiReviews)||team.aiReviews<0||team.aiReviews>3))throw Error('AI换人存档无效');
+ }
  const state=structuredClone(saved);
  state.random=rng(state.seed,state.randomState);
  delete state.randomState;
