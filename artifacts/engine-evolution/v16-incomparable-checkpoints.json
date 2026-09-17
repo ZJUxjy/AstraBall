@@ -1,0 +1,9 @@
+{
+  "scope": "Checkpoint observer missed the matching year because the optimized run had already advanced. These different-year hashes are not a model equivalence test.",
+  "yearA": 324,
+  "yearB": 325,
+  "beforeHash": "f8417fbca7af5070bc3c3e1113705eeead4d67e2f27fe8be388f69eee6423a72",
+  "afterHash": "fd4e2c502787f113be43b52b86dd71d124ac9a8d9a38d3d496e24d580383bdcb",
+  "identical": false,
+  "comparable": false
+}

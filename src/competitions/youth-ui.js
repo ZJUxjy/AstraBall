@@ -1,3 +1,4 @@
+import {clubPlayers} from './population.js';
 import {clubs,academies} from '../world.js';
 import {ATTRIBUTE_GROUPS,POSITIONS,rating} from '../football/players.js';
 import {bodyDevelopmentMarkup,workloadMarkup} from '../football/development-ui.js';
@@ -43,6 +44,7 @@ function detail(s,p,tab){
  <details class="youth-player-history" open><summary>生涯记录</summary>${historyMarkup(s,p.id)}</details>${p.club?`<a class="football-link" href="#squad/${esc(p.club)}/${esc(p.id)}">完整球员档案 ↗</a>`:''}</article>`;
 }
 export function youthContent(s,{tab='academy',selectedId,search='',pageIndex=0}={}){
+ if(s.population&&s.manager){const club=s.manager.clubId,players=clubPlayers(s,club,{unit:'youth'}).map(p=>developedPlayer(s,p));return `<header class="football-title"><h1>青年队</h1><a class="football-link" href="#manager">经理首页 ↗</a></header><section class="youth-list">${players.map(p=>`<a class="youth-row" href="#squad/${esc(club)}/${esc(p.id)}"><span><strong>${esc(p.name)}</strong><small>${p.age} 岁 · ${POSITIONS[p.position]}</small></span><b>${rating(p)}</b></a>`).join('')||'<p>暂无青年球员</p>'}</section>`;}
  if(!s.manager)return '<header class="football-title"><h1>青训中心</h1></header><section class="youth-detail"><h2>尚未接手俱乐部</h2><a class="football-primary" href="#manager">前往经理首页</a></section>';
  const own=s.manager.clubId,displayTabs=tabs.map(([key,label])=>[key,key==='academy'&&clubs.find(c=>c.id===own)?.league==='closed'?'关联学院':label]),all=youthPlayers(s,own).map(p=>developedPlayer(s,p)),global=Object.keys(s.playerRegistry?.players||{}).map(id=>registeredPlayer(s,id)).filter(Boolean).map(p=>developedPlayer(s,p));
  const sets={academy:all.filter(p=>['academy','youth'].includes(registration(s,p.id).status)&&p.club===own),senior:all.filter(p=>registration(s,p.id).status==='senior'&&p.club===own),loan:all.filter(p=>registration(s,p.id).status==='loan'&&registration(s,p.id).ownerClubId===own),candidates:global.filter(p=>['free','released'].includes(registration(s,p.id).status)),draft:global.filter(p=>registration(s,p.id).pathway==='royal'),history:global.filter(p=>{const r=registration(s,p.id);return r.academyClubId===own||r.ownerClubId===own||r.clubId===own||r.rightsClubId===own;})};

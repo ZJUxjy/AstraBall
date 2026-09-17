@@ -139,4 +139,4 @@ export function generateYouthPlayer({id,seed='academy',age=16,potential,position
  p.bodyProfile=createBodyProfile(p,{age,seed});Object.assign(p,bodyAtAge(p,age));return p;
 }
 export function publicProfile(p){const {personality,potential,developmentAge,growthProfile,bodyProfile,...visible}=structuredClone(p);return visible;}
-export function averageQuality(team){return mean(selectLineup(team).map(s=>rating(team.roster.find(p=>p.id===s.id),s.position)));}
+export function averageQuality(team){if(team.roster.filter(available).length<11)return team.roster.filter(available).map(p=>rating(p)).sort((a,b)=>b-a).slice(0,11).reduce((n,v)=>n+v,0)/11;return mean(selectLineup(team).map(s=>rating(team.roster.find(p=>p.id===s.id),s.position)));}

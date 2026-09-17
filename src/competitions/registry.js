@@ -30,13 +30,15 @@ export function migrateYouthBodies(s,date=s.date){
 
 function registered(s,p){
  const r=s.playerRegistry?.registrations?.[p.id];
- return r?{...p,...(r.number===undefined?{}:{number:r.number}),club:r.clubId??null,registrationStatus:r.status,retired:r.status==='retired'}:p;
+ return r?{...p,...(r.marketMeta||{}),...(['free','retired'].includes(r.status)?{lastClub:r.history?.findLast(h=>h.clubId)?.clubId||p.club}:{}),...(r.number===undefined?{}:{number:r.number}),club:r.clubId??null,registrationStatus:r.status,retired:r.status==='retired'}:p;
 }
 export function registeredPlayers(s,{includeRetired=false}={}){
+ if(s.population)return Object.values(s.population.players).filter(p=>includeRetired||!p.retired);
  return [...originals,...Object.values(s.playerRegistry?.players||{})].map(p=>registered(s,p)).filter(p=>includeRetired||!p.retired);
 }
-export function registeredPlayer(s,id){const p=s.playerRegistry?.players?.[id]||originalById.get(id);return p?registered(s,p):null;}
+export function registeredPlayer(s,id){if(s.population)return s.population.players[id]||null;const p=s.playerRegistry?.players?.[id]||originalById.get(id);return p?registered(s,p):null;}
 export function registeredRoster(s,clubId){
+ if(s.population)return Object.values(s.population.players).filter(p=>p.club===clubId&&p.unit==='senior'&&!p.retired);
  const local=footballTeams.find(t=>t.id===clubId)?.roster||[],localIds=new Set(local.map(p=>p.id));
  const registrations=s.playerRegistry?.registrations||{},result=[];
  const append=p=>{

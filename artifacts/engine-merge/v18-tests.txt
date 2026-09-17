@@ -1,0 +1,1274 @@
+
+> astraball-world@0.1.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: 重点名额限两名本队青年，离队立即释放名额，历史仍可校验
+ok 1 - 重点名额限两名本队青年，离队立即释放名额，历史仍可校验
+  ---
+  duration_ms: 399.569916
+  type: 'test'
+  ...
+# Subtest: 重点培养次日生效，资源倍率不修改隐藏潜力
+ok 2 - 重点培养次日生效，资源倍率不修改隐藏潜力
+  ---
+  duration_ms: 351.360417
+  type: 'test'
+  ...
+# Subtest: 同位置青年竞争有限分钟，选人不读取潜力且受伤者不能抢占名额
+ok 3 - 同位置青年竞争有限分钟，选人不读取潜力且受伤者不能抢占名额
+  ---
+  duration_ms: 314.331
+  type: 'test'
+  ...
+# Subtest: 轮换策略改变年轻球员机会，所有阵容每场分钟上限一致
+ok 4 - 轮换策略改变年轻球员机会，所有阵容每场分钟上限一致
+  ---
+  duration_ms: 1586.681
+  type: 'test'
+  ...
+# Subtest: 青年比赛按日严格结算，整段、分段和存档续跑一致
+ok 5 - 青年比赛按日严格结算，整段、分段和存档续跑一致
+  ---
+  duration_ms: 2712.224916
+  type: 'test'
+  ...
+# Subtest: 青训安排拒绝损坏策略和跨队历史，旧存档默认可读
+ok 6 - 青训安排拒绝损坏策略和跨队历史，旧存档默认可读
+  ---
+  duration_ms: 221.734208
+  type: 'test'
+  ...
+# Subtest: 真实330快照中84.467分零分钟前腰在4231获得本职首发
+ok 7 - 真实330快照中84.467分零分钟前腰在4231获得本职首发
+  ---
+  duration_ms: 49.417
+  type: 'test'
+  ...
+# Subtest: 连续出场只在能力接近时轮换，明显更强球员不会随机失去首发
+ok 8 - 连续出场只在能力接近时轮换，明显更强球员不会随机失去首发
+  ---
+  duration_ms: 5.176292
+  type: 'test'
+  ...
+# Subtest: 机会评估复用实际角色方案，不因候选PA或调用顺序改变，弱替补不承诺分钟
+ok 9 - 机会评估复用实际角色方案，不因候选PA或调用顺序改变，弱替补不承诺分钟
+  ---
+  duration_ms: 8.617708
+  type: 'test'
+  ...
+# Subtest: AI常规换人补充相近实力的新鲜球员，不换健康门将、不超5人3窗口
+ok 10 - AI常规换人补充相近实力的新鲜球员，不换健康门将、不超5人3窗口
+  ---
+  duration_ms: 118.40275
+  type: 'test'
+  ...
+# Subtest: 换人评估没有随机数，弱替补与受伤替补不会被常规换上
+ok 11 - 换人评估没有随机数，弱替补与受伤替补不会被常规换上
+  ---
+  duration_ms: 5.94075
+  type: 'test'
+  ...
+# Subtest: AI常规换人与角色首发在中途存档后逐事件一致
+ok 12 - AI常规换人与角色首发在中途存档后逐事件一致
+  ---
+  duration_ms: 206.711042
+  type: 'test'
+  ...
+# Subtest: 正式比赛默认由AI选角色，经理指定阵型首发与常规换人权不被覆盖
+ok 13 - 正式比赛默认由AI选角色，经理指定阵型首发与常规换人权不被覆盖
+  ---
+  duration_ms: 355.02425
+  type: 'test'
+  ...
+# Subtest: AI换人存档拒绝损坏字段，旧存档缺失字段继续保持手动控制
+ok 14 - AI换人存档拒绝损坏字段，旧存档缺失字段继续保持手动控制
+  ---
+  duration_ms: 77.023542
+  type: 'test'
+  ...
+# Subtest: 能力对抗连续单调且边际递减，射门和门将作用方向保持
+ok 15 - 能力对抗连续单调且边际递减，射门和门将作用方向保持
+  ---
+  duration_ms: 1.111125
+  type: 'test'
+  ...
+# Subtest: 强弱组不通过赛后比分修正，事件与个人进球逐场一致
+ok 16 - 强弱组不通过赛后比分修正，事件与个人进球逐场一致
+  ---
+  duration_ms: 2026.528292
+  type: 'test'
+  ...
+# Subtest: 全年赛历覆盖十二个月；46轮、杯赛、全球杯留有独立日期
+ok 17 - 全年赛历覆盖十二个月；46轮、杯赛、全球杯留有独立日期
+  ---
+  duration_ms: 107.605625
+  type: 'test'
+  ...
+# Subtest: 固定种子生成、轮次末日对齐、赛程主客与双循环完整
+ok 18 - 固定种子生成、轮次末日对齐、赛程主客与双循环完整
+  ---
+  duration_ms: 109.552458
+  type: 'test'
+  ...
+# Subtest: 未来附加赛不虚构球队；不能跳赛或重复计分，非法赛果不提交
+ok 19 - 未来附加赛不虚构球队；不能跳赛或重复计分，非法赛果不提交
+  ---
+  duration_ms: 4724.501917
+  type: 'test'
+  ...
+# Subtest: 完整赛季各队无撞期、休息至少三天；所有冠军、晋级与降级闭合
+ok 20 - 完整赛季各队无撞期、休息至少三天；所有冠军、晋级与降级闭合
+  ---
+  duration_ms: 39447.068334
+  type: 'test'
+  ...
+# Subtest: 跨季使用真实升降级名单、上一年资格和逆战绩选秀顺位，连续两季不丢球队
+ok 21 - 跨季使用真实升降级名单、上一年资格和逆战绩选秀顺位，连续两季不丢球队
+  ---
+  duration_ms: 87050.565875
+  type: 'test'
+  ...
+# Subtest: 存档中断恢复结果一致，旧版本和损坏名单被拒绝
+ok 22 - 存档中断恢复结果一致，旧版本和损坏名单被拒绝
+  ---
+  duration_ms: 59820.598209
+  type: 'test'
+  ...
+# Subtest: 黄牌累计停赛按赛事执行，伤病恢复与体能跨比赛保留
+ok 23 - 黄牌累计停赛按赛事执行，伤病恢复与体能跨比赛保留
+  ---
+  duration_ms: 1394.136125
+  type: 'test'
+  ...
+# Subtest: 执教俱乐部、默认目标与旧存档兼容，禁止重复任职
+ok 24 - 执教俱乐部、默认目标与旧存档兼容，禁止重复任职
+  ---
+  duration_ms: 349.716583
+  type: 'test'
+  ...
+# Subtest: 比赛中途保存随机游标、换人资格和战术，恢复后逐事件结果一致
+ok 25 - 比赛中途保存随机游标、换人资格和战术，恢复后逐事件结果一致
+  ---
+  duration_ms: 243.431917
+  type: 'test'
+  ...
+# Subtest: 主客场正式执教只可指挥本队，过期页面、跳赛与重复赛果被拒绝
+ok 26 - 主客场正式执教只可指挥本队，过期页面、跳赛与重复赛果被拒绝
+  ---
+  duration_ms: 678.737791
+  type: 'test'
+  ...
+# Subtest: 伤病和赛事停赛禁止进入正式首发，补位保留其余健康球员
+ok 27 - 伤病和赛事停赛禁止进入正式首发，补位保留其余健康球员
+  ---
+  duration_ms: 2434.251583
+  type: 'test'
+  ...
+# Subtest: 托管完整赛季：杯赛动态晋级不跳过本队，跨年保留执教与阵容
+ok 28 - 托管完整赛季：杯赛动态晋级不跳过本队，跨年保留执教与阵容
+  ---
+  duration_ms: 43013.188
+  type: 'test'
+  ...
+# Subtest: 赛前布置独立保存，刷新可恢复；比赛开始后不能改写首发
+ok 29 - 赛前布置独立保存，刷新可恢复；比赛开始后不能改写首发
+  ---
+  duration_ms: 1662.945584
+  type: 'test'
+  ...
+# Subtest: 俱乐部风格稳定且多样，赛前布置根据实力与体能变化
+ok 30 - 俱乐部风格稳定且多样，赛前布置根据实力与体能变化
+  ---
+  duration_ms: 74.71125
+  type: 'test'
+  ...
+# Subtest: AI 选人考虑疲劳与资格，手动首发和战术优先
+ok 31 - AI 选人考虑疲劳与资格，手动首发和战术优先
+  ---
+  duration_ms: 26.197209
+  type: 'test'
+  ...
+# Subtest: 正式比赛双方默认 AI，接手球队后只保留对手 AI
+ok 32 - 正式比赛双方默认 AI，接手球队后只保留对手 AI
+  ---
+  duration_ms: 215.835458
+  type: 'test'
+  ...
+# Subtest: 临场 AI 追分、守成、减员调整，不抽取随机数或改动人工队
+ok 33 - 临场 AI 追分、守成、减员调整，不抽取随机数或改动人工队
+  ---
+  duration_ms: 8.191875
+  type: 'test'
+  ...
+# Subtest: 主动换人遵守五人三窗口并选择新鲜替补，重复事件不重复换人
+ok 34 - 主动换人遵守五人三窗口并选择新鲜替补，重复事件不重复换人
+  ---
+  duration_ms: 9.263958
+  type: 'test'
+  ...
+# Subtest: AI 状态中途恢复与实时/批量一致，人工一方不会收到 AI 指令
+ok 35 - AI 状态中途恢复与实时/批量一致，人工一方不会收到 AI 指令
+  ---
+  duration_ms: 225.279458
+  type: 'test'
+  ...
+# Subtest: V6—V17 未完赛快照在新版本继续，事件与各自旧引擎逐字一致
+ok 36 - V6—V17 未完赛快照在新版本继续，事件与各自旧引擎逐字一致
+  ---
+  duration_ms: 1930.671
+  type: 'test'
+  ...
+# Subtest: 冻结的旧引擎与归档哈希一致，避免新校准污染老比赛
+ok 37 - 冻结的旧引擎与归档哈希一致，避免新校准污染老比赛
+  ---
+  duration_ms: 2.3865
+  type: 'test'
+  ...
+# Subtest: 拒绝损坏的位置、名单、统计及随机游标，不静默重抽比赛
+ok 38 - 拒绝损坏的位置、名单、统计及随机游标，不静默重抽比赛
+  ---
+  duration_ms: 7.143042
+  type: 'test'
+  ...
+# Subtest: V17 历史执行路径保持 V12 已校准的比赛动作与统计
+ok 39 - V17 历史执行路径保持 V12 已校准的比赛动作与统计
+  ---
+  duration_ms: 2718.790209
+  type: 'test'
+  ...
+# Subtest: V18 人工控制下的比赛计算仍与已校准V12逐事件一致
+ok 40 - V18 人工控制下的比赛计算仍与已校准V12逐事件一致
+  ---
+  duration_ms: 2302.691167
+  type: 'test'
+  ...
+# Subtest: 四区六体系十六级别全员齐备，行政边界与分区注册相符
+ok 41 - 四区六体系十六级别全员齐备，行政边界与分区注册相符
+  ---
+  duration_ms: 2.989041
+  type: 'test'
+  ...
+# Subtest: 每级双循环：轮次和场次正确，每轮只出场一次，每对恰好交换主客
+ok 42 - 每级双循环：轮次和场次正确，每轮只出场一次，每对恰好交换主客
+  ---
+  duration_ms: 5.913125
+  type: 'test'
+  ...
+# Subtest: 积分榜只统计已完成比赛，积分进失球守恒，公平分与同分排序确定
+ok 43 - 积分榜只统计已完成比赛，积分进失球守恒，公平分与同分排序确定
+  ---
+  duration_ms: 0.823625
+  type: 'test'
+  ...
+# Subtest: 上下级交换人数守恒，原始排名不变，附加赛资格严格
+ok 44 - 上下级交换人数守恒，原始排名不变，附加赛资格严格
+  ---
+  duration_ms: 0.51325
+  type: 'test'
+  ...
+# Subtest: 地区杯轮空与淘汰场次正确，参赛者只出现一次且不会自动夺冠
+ok 45 - 地区杯轮空与淘汰场次正确，参赛者只出现一次且不会自动夺冠
+  ---
+  duration_ms: 15.995541
+  type: 'test'
+  ...
+# Subtest: 全球杯32席来源闭合，8组每组4队且同体系最多2队，共48场小组赛
+ok 46 - 全球杯32席来源闭合，8组每组4队且同体系最多2队，共48场小组赛
+  ---
+  duration_ms: 5.811791
+  type: 'test'
+  ...
+# Subtest: 选秀48签按规则分轮，前三抽签无重复，后二轮保持逆战绩
+ok 47 - 选秀48签按规则分轮，前三抽签无重复，后二轮保持逆战绩
+  ---
+  duration_ms: 2.866917
+  type: 'test'
+  ...
+# Subtest: 八种姓名语系稳定、成组组合与原文完整，继承姓氏，非法参数拒绝
+ok 48 - 八种姓名语系稳定、成组组合与原文完整，继承姓氏，非法参数拒绝
+  ---
+  duration_ms: 20.373375
+  type: 'test'
+  ...
+# Subtest: 出生地区命名比例有差异，球队内不重名，能力不由姓名语系决定
+ok 49 - 出生地区命名比例有差异，球队内不重名，能力不由姓名语系决定
+  ---
+  duration_ms: 40.662541
+  type: 'test'
+  ...
+# Subtest: 姓名改变不扰动竞技属性、体型和性格随机序列
+ok 50 - 姓名改变不扰动竞技属性、体型和性格随机序列
+  ---
+  duration_ms: 0.979917
+  type: 'test'
+  ...
+# Subtest: 淘汰赛实际推进轮空、加时/点球与高顺位主场，禁止未决平局
+ok 51 - 淘汰赛实际推进轮空、加时/点球与高顺位主场，禁止未决平局
+  ---
+  duration_ms: 0.360042
+  type: 'test'
+  ...
+# Subtest: 青训起点可重复，潜力不因训练无限增加，连续成长会推进年龄
+ok 52 - 青训起点可重复，潜力不因训练无限增加，连续成长会推进年龄
+  ---
+  duration_ms: 30.190125
+  type: 'test'
+  ...
+# Subtest: 出场和职业态度影响兑现程度，过量负荷不能刷出更快成长
+ok 53 - 出场和职业态度影响兑现程度，过量负荷不能刷出更快成长
+  ---
+  duration_ms: 58.452167
+  type: 'test'
+  ...
+# Subtest: 技术专项有明确收益，门将属性和侵略性不随外场训练同步上涨
+ok 54 - 技术专项有明确收益，门将属性和侵略性不随外场训练同步上涨
+  ---
+  duration_ms: 5.844834
+  type: 'test'
+  ...
+# Subtest: 伤停按缺席天数影响训练；临近潜力不越界，老将身体先退化
+ok 55 - 伤停按缺席天数影响训练；临近潜力不越界，老将身体先退化
+  ---
+  duration_ms: 3.958708
+  type: 'test'
+  ...
+# Subtest: 赛历分段推进、整段推进、JSON 恢复一致，同日期不重复成长
+ok 56 - 赛历分段推进、整段推进、JSON 恢复一致，同日期不重复成长
+  ---
+  duration_ms: 3784.157917
+  type: 'test'
+  ...
+# Subtest: 训练计划只影响之后的训练日，不能给其他球队或比赛中的球员改计划
+ok 57 - 训练计划只影响之后的训练日，不能给其他球队或比赛中的球员改计划
+  ---
+  duration_ms: 581.215833
+  type: 'test'
+  ...
+# Subtest: 正式出场记录与成长属性进入比赛输入，旧存档从当前日期起算
+ok 58 - 正式出场记录与成长属性进入比赛输入，旧存档从当前日期起算
+  ---
+  duration_ms: 2686.577708
+  type: 'test'
+  ...
+# Subtest: 跨年按日期增加年龄、保留能力和培养计划，并留下年度记录
+ok 59 - 跨年按日期增加年龄、保留能力和培养计划，并留下年度记录
+  ---
+  duration_ms: 2342.714083
+  type: 'test'
+  ...
+# Subtest: 合并新档只有主项目青训届次，合同转会写回同一注册表且JSON恢复一致
+ok 60 - 合并新档只有主项目青训届次，合同转会写回同一注册表且JSON恢复一致
+  ---
+  duration_ms: 431.901917
+  type: 'test'
+  ...
+# Subtest: 地方青训提拔与租借共用合同预算，归队保留母队合同与成长身份
+ok 61 - 地方青训提拔与租借共用合同预算，归队保留母队合同与成长身份
+  ---
+  duration_ms: 49021.194167
+  type: 'test'
+  ...
+# Subtest: 青训页面不能绕过职业合同预算，失败不改变注册与账本
+ok 62 - 青训页面不能绕过职业合同预算，失败不改变注册与账本
+  ---
+  duration_ms: 198.178459
+  type: 'test'
+  ...
+# Subtest: 主项目V6未完赛AI比赛在合并后仍按原执行路径完成
+ok 63 - 主项目V6未完赛AI比赛在合并后仍按原执行路径完成
+  ---
+  duration_ms: 40.537458
+  type: 'test'
+  ...
+# Subtest: 注册表生涯分段推进和JSON恢复保持财务、青训、成长一致
+ok 64 - 注册表生涯分段推进和JSON恢复保持财务、青训、成长一致
+  ---
+  duration_ms: 17294.337666
+  type: 'test'
+  ...
+# Subtest: 合同市场不能跳过皇家学院选秀直接取得青年所有权
+ok 65 - 合同市场不能跳过皇家学院选秀直接取得青年所有权
+  ---
+  duration_ms: 121.721667
+  type: 'test'
+  ...
+# Subtest: 旧worktree青年页面读取原人口名单，不建立另一套青训注册表
+ok 66 - 旧worktree青年页面读取原人口名单，不建立另一套青训注册表
+  ---
+  duration_ms: 516.634459
+  type: 'test'
+  ...
+# Subtest: 转会后退役档案归属最近俱乐部，读取不改写注册历史
+ok 67 - 转会后退役档案归属最近俱乐部，读取不改写注册历史
+  ---
+  duration_ms: 26.779667
+  type: 'test'
+  ...
+# Subtest: 迁移旧档仍留青训的超龄球员时，不创建结束早于开始的合同
+ok 68 - 迁移旧档仍留青训的超龄球员时，不创建结束早于开始的合同
+  ---
+  duration_ms: 158.597292
+  type: 'test'
+  ...
+# Subtest: 球员属性、身份、位置分布稳定，公开档案不泄露潜力和性格数值
+ok 69 - 球员属性、身份、位置分布稳定，公开档案不泄露潜力和性格数值
+  ---
+  duration_ms: 7.642459
+  type: 'test'
+  ...
+# Subtest: 同种子完全一致，逐步执行、批量执行和不捕获事件比分统计一致
+ok 70 - 同种子完全一致，逐步执行、批量执行和不捕获事件比分统计一致
+  ---
+  duration_ms: 363.152042
+  type: 'test'
+  ...
+# Subtest: 比分、射门、扑救、个人统计和出场时长守恒
+ok 71 - 比分、射门、扑救、个人统计和出场时长守恒
+  ---
+  duration_ms: 1894.523833
+  type: 'test'
+  ...
+# Subtest: 非法名单拒绝，输入不被修改，生涯发展保持身份和属性边界
+ok 72 - 非法名单拒绝，输入不被修改，生涯发展保持身份和属性边界
+  ---
+  duration_ms: 5.846625
+  type: 'test'
+  ...
+# Subtest: 射门距离、角度、受压与机会质量有正确方向，门将和终结影响转化而非 xG
+ok 73 - 射门距离、角度、受压与机会质量有正确方向，门将和终结影响转化而非 xG
+  ---
+  duration_ms: 0.83475
+  type: 'test'
+  ...
+# Subtest: 战术生效：短传提高成功率与传球量，快节奏增加动作，阵型进入首发
+ok 74 - 战术生效：短传提高成功率与传球量，快节奏增加动作，阵型进入首发
+  ---
+  duration_ms: 12670.146208
+  type: 'test'
+  ...
+# Subtest: 换人保留人数、累计区间分钟，禁止重返和超过次数；门将换人正确归账
+ok 75 - 换人保留人数、累计区间分钟，禁止重返和超过次数；门将换人正确归账
+  ---
+  duration_ms: 41.569583
+  type: 'test'
+  ...
+# Subtest: 高压战术消耗更大，耐力有作用；即时指令不抽取随机数
+ok 76 - 高压战术消耗更大，耐力有作用；即时指令不抽取随机数
+  ---
+  duration_ms: 3.994792
+  type: 'test'
+  ...
+# Subtest: 点球大战独立于比赛比分、每轮轮换，提前决胜正确
+ok 77 - 点球大战独立于比赛比分、每轮轮换，提前决胜正确
+  ---
+  duration_ms: 2.354917
+  type: 'test'
+  ...
+# Subtest: 淘汰赛完成常规、加时和点球；红牌不能通过换人补回
+ok 78 - 淘汰赛完成常规、加时和点球；红牌不能通过换人补回
+  ---
+  duration_ms: 5747.899792
+  type: 'test'
+  ...
+# Subtest: 五人/三次换人窗口限制和阵型重排不增加场上人数
+ok 79 - 五人/三次换人窗口限制和阵型重排不增加场上人数
+  ---
+  duration_ms: 2.3895
+  type: 'test'
+  ...
+# Subtest: 低于七人时中止，不补回红牌、不伪造比分；更换阵型保留减员
+ok 80 - 低于七人时中止，不补回红牌、不伪造比分；更换阵型保留减员
+  ---
+  duration_ms: 2.040459
+  type: 'test'
+  ...
+# Subtest: 同一窗口可换五人，换下的替补也只能累计实际在场时间
+ok 81 - 同一窗口可换五人，换下的替补也只能累计实际在场时间
+  ---
+  duration_ms: 2.273083
+  type: 'test'
+  ...
+# Subtest: 非有限属性、重复首发、错误阵型和非法战术都拒绝
+ok 82 - 非有限属性、重复首发、错误阵型和非法战术都拒绝
+  ---
+  duration_ms: 1.961
+  type: 'test'
+  ...
+# Subtest: 半场换人不占比赛中窗口，仍占五人名额
+ok 83 - 半场换人不占比赛中窗口，仍占五人名额
+  ---
+  duration_ms: 30.667167
+  type: 'test'
+  ...
+# Subtest: 减员后改阵不会复活罚下球员，也不产生空首发
+ok 84 - 减员后改阵不会复活罚下球员，也不产生空首发
+  ---
+  duration_ms: 2.658375
+  type: 'test'
+  ...
+# Subtest: 世界球员连接竞技档案，全部球队名单可用且身份唯一
+ok 85 - 世界球员连接竞技档案，全部球队名单可用且身份唯一
+  ---
+  duration_ms: 155.651083
+  type: 'test'
+  ...
+# Subtest: 实际游戏名单均可模拟，对局事件与个人进球一致
+ok 86 - 实际游戏名单均可模拟，对局事件与个人进球一致
+  ---
+  duration_ms: 9799.413958
+  type: 'test'
+  ...
+# Subtest: 固定样例地形保持稳定，种子改变城市细节但保留实体身份
+ok 87 - 固定样例地形保持稳定，种子改变城市细节但保留实体身份
+  ---
+  duration_ms: 151.086042
+  type: 'test'
+  ...
+# Subtest: 行政区和重要城市完整，人口精确汇总且不重复计入城市
+ok 88 - 行政区和重要城市完整，人口精确汇总且不重复计入城市
+  ---
+  duration_ms: 0.366833
+  type: 'test'
+  ...
+# Subtest: 城市都在自身省份和大陆内，原有人物机构保持归属和年代一致
+ok 89 - 城市都在自身省份和大陆内，原有人物机构保持归属和年代一致
+  ---
+  duration_ms: 12.886791
+  type: 'test'
+  ...
+# Subtest: 湖泊全部位于所属大区内
+ok 90 - 湖泊全部位于所属大区内
+  ---
+  duration_ms: 10.144459
+  type: 'test'
+  ...
+# Subtest: 离岸岛屿完整归属一个省，宓寮省不切分大陆，换种子不改变归属
+ok 91 - 离岸岛屿完整归属一个省，宓寮省不切分大陆，换种子不改变归属
+  ---
+  duration_ms: 198.871709
+  type: 'test'
+  ...
+# Subtest: 省域完整覆盖各大区陆地，内部没有重叠或孔洞
+ok 92 - 省域完整覆盖各大区陆地，内部没有重叠或孔洞
+  ---
+  duration_ms: 486.943625
+  type: 'test'
+  ...
+# Subtest: 四区在主体大陆接壤，大都会面积小于总陆域的百分之一
+ok 93 - 四区在主体大陆接壤，大都会面积小于总陆域的百分之一
+  ---
+  duration_ms: 558.892083
+  type: 'test'
+  ...
+# Subtest: 地形来自真实 Azgaar 样例，保留高程与独立河网
+ok 94 - 地形来自真实 Azgaar 样例，保留高程与独立河网
+  ---
+  duration_ms: 7.876875
+  type: 'test'
+  ...
+# Subtest: 全部城市的交通图连通，路线端点和球面距离有效
+ok 95 - 全部城市的交通图连通，路线端点和球面距离有效
+  ---
+  duration_ms: 0.862084
+  type: 'test'
+  ...
+# Subtest: 细化后的共享边界完全重合，边线不交叉，省域不自交
+ok 96 - 细化后的共享边界完全重合，边线不交叉，省域不自交
+  ---
+  duration_ms: 61.960792
+  type: 'test'
+  ...
+# Subtest: 地图层级深链接和旧链接均可打开，人口单位展示正确
+ok 97 - 地图层级深链接和旧链接均可打开，人口单位展示正确
+  ---
+  duration_ms: 8.511042
+  type: 'test'
+  ...
+# Subtest: two-finger pixel scrolling pans both axes without changing zoom
+ok 98 - two-finger pixel scrolling pans both axes without changing zoom
+  ---
+  duration_ms: 1.043583
+  type: 'test'
+  ...
+# Subtest: pinch preserves the world point under an off-centre cursor, including at zoom limits
+ok 99 - pinch preserves the world point under an off-centre cursor, including at zoom limits
+  ---
+  duration_ms: 0.21075
+  type: 'test'
+  ...
+# Subtest: fine pinch events accumulate consistently without depending on render frequency
+ok 100 - fine pinch events accumulate consistently without depending on render frequency
+  ---
+  duration_ms: 0.08325
+  type: 'test'
+  ...
+# Subtest: line/page wheels zoom; extreme deltas are bounded; reversing at a limit responds immediately
+ok 101 - line/page wheels zoom; extreme deltas are bounded; reversing at a limit responds immediately
+  ---
+  duration_ms: 1.390875
+  type: 'test'
+  ...
+# Subtest: 初始合同和预算确定性，旧档按当前日期迁移，财务账本可验证
+ok 102 - 初始合同和预算确定性，旧档按当前日期迁移，财务账本可验证
+  ---
+  duration_ms: 2307.104708
+  type: 'test'
+  ...
+# Subtest: 转会一次性更新归属、双方资金、工资和正式比赛输入，重复签约不扣款
+ok 103 - 转会一次性更新归属、双方资金、工资和正式比赛输入，重复签约不扣款
+  ---
+  duration_ms: 1037.163459
+  type: 'test'
+  ...
+# Subtest: 窗口、预算和用户出售授权在写入前检查，失败保持原档
+ok 104 - 窗口、预算和用户出售授权在写入前检查，失败保持原档
+  ---
+  duration_ms: 1045.567791
+  type: 'test'
+  ...
+# Subtest: 经理可接受明确买方报价；续约与解约保留交易记录和精确补偿
+ok 105 - 经理可接受明确买方报价；续约与解约保留交易记录和精确补偿
+  ---
+  duration_ms: 696.604125
+  type: 'test'
+  ...
+# Subtest: 青年升队签职业合同并检查预算，旧成长计划继续跟随本人
+ok 106 - 青年升队签职业合同并检查预算，旧成长计划继续跟随本人
+  ---
+  duration_ms: 742.402375
+  type: 'test'
+  ...
+# Subtest: 分段日历、整段日历和 JSON 恢复的 AI 交易、工资与成长完全相同
+ok 107 - 分段日历、整段日历和 JSON 恢复的 AI 交易、工资与成长完全相同
+  ---
+  duration_ms: 5157.368917
+  type: 'test'
+  ...
+# Subtest: 跨年合同到期进入自由市场，AI 续约和新资金只结算一次
+ok 108 - 跨年合同到期进入自由市场，AI 续约和新资金只结算一次
+  ---
+  duration_ms: 1149.7375
+  type: 'test'
+  ...
+# Subtest: 损坏账本、合同归属和重复交易记录被拒绝
+ok 109 - 损坏账本、合同归属和重复交易记录被拒绝
+  ---
+  duration_ms: 1012.317333
+  type: 'test'
+  ...
+# Subtest: 已续约青年满二十一岁仍保留有效合同，实际到期后才释放
+ok 110 - 已续约青年满二十一岁仍保留有效合同，实际到期后才释放
+  ---
+  duration_ms: 3271.906084
+  type: 'test'
+  ...
+# Subtest: 合同到期导致一线队不足十一人时仍能进入经理页面和重建阵容
+ok 111 - 合同到期导致一线队不足十一人时仍能进入经理页面和重建阵容
+  ---
+  duration_ms: 978.541417
+  type: 'test'
+  ...
+# Subtest: 同日到期的工资先解除承诺，再按门将和位置深度分配续约预算
+ok 112 - 同日到期的工资先解除承诺，再按门将和位置深度分配续约预算
+  ---
+  duration_ms: 925.472333
+  type: 'test'
+  ...
+# Subtest: 自由球员跨联赛签约仍执行剩余联赛停赛，杯赛纪律独立保留
+ok 113 - 自由球员跨联赛签约仍执行剩余联赛停赛，杯赛纪律独立保留
+  ---
+  duration_ms: 500.748917
+  type: 'test'
+  ...
+# Subtest: 拨款覆盖固定工资容量而不随当前工资滚动膨胀，升降级按级别缩放
+ok 114 - 拨款覆盖固定工资容量而不随当前工资滚动膨胀，升降级按级别缩放
+  ---
+  duration_ms: 943.7645
+  type: 'test'
+  ...
+# Subtest: AI 一线队已有二十七人时仍优先补缺失门将
+ok 115 - AI 一线队已有二十七人时仍优先补缺失门将
+  ---
+  duration_ms: 980.493417
+  type: 'test'
+  ...
+# Subtest: 引援预算预筛不改变完整交易结果：新档、自由球员与紧张工资额度
+ok 116 - 引援预算预筛不改变完整交易结果：新档、自由球员与紧张工资额度
+  ---
+  duration_ms: 14359.826583
+  type: 'test'
+  ...
+# Subtest: AI 续约为未填满的一线队预留工资，避免有现金却无法补员
+ok 117 - AI 续约为未填满的一线队预留工资，避免有现金却无法补员
+  ---
+  duration_ms: 560.175958
+  type: 'test'
+  ...
+# Subtest: 合同到期后定期补查青年队，关闭转会窗口也能在预算内提拔现有球员
+ok 118 - 合同到期后定期补查青年队，关闭转会窗口也能在预算内提拔现有球员
+  ---
+  duration_ms: 584.944125
+  type: 'test'
+  ...
+# Subtest: 青年提拔先填门将缺口，外场球员不能先占用最后的可用工资
+ok 119 - 青年提拔先填门将缺口，外场球员不能先占用最后的可用工资
+  ---
+  duration_ms: 596.209708
+  type: 'test'
+  ...
+# Subtest: 传球落点对应接应者站位或可达前插，距离与事件坐标一致
+ok 120 - 传球落点对应接应者站位或可达前插，距离与事件坐标一致
+  ---
+  duration_ms: 190.872625
+  type: 'test'
+  ...
+# Subtest: 防守者封堵线路增加风险，落点空当和距离参与成功率
+ok 121 - 防守者封堵线路增加风险，落点空当和距离参与成功率
+  ---
+  duration_ms: 5.09025
+  type: 'test'
+  ...
+# Subtest: 越位使用出球时接应者和倒数第二名防守者位置，门将不固定为最后一人
+ok 122 - 越位使用出球时接应者和倒数第二名防守者位置，门将不固定为最后一人
+  ---
+  duration_ms: 2.65575
+  type: 'test'
+  ...
+# Subtest: 新赛季有独立青训名单，确定性身份和号码不会覆盖原球员
+ok 123 - 新赛季有独立青训名单，确定性身份和号码不会覆盖原球员
+  ---
+  duration_ms: 1385.356458
+  type: 'test'
+  ...
+# Subtest: 年度补员和退役只执行一次，JSON 恢复与连续结算一致
+ok 124 - 年度补员和退役只执行一次，JSON 恢复与连续结算一致
+  ---
+  duration_ms: 2998.520958
+  type: 'test'
+  ...
+# Subtest: 提拔限制年龄、归属和比赛状态，升队后正式首发与成长分钟使用同一身份
+ok 125 - 提拔限制年龄、归属和比赛状态，升队后正式首发与成长分钟使用同一身份
+  ---
+  duration_ms: 1028.520042
+  type: 'test'
+  ...
+# Subtest: 跨年新入队球员只累积加入后的训练天数，分段与恢复不改变成长
+ok 126 - 跨年新入队球员只累积加入后的训练天数，分段与恢复不改变成长
+  ---
+  duration_ms: 2913.016708
+  type: 'test'
+  ...
+# Subtest: 旧档迁移保留原队员属性，损坏人员归属和年度记录不能读入
+ok 127 - 旧档迁移保留原队员属性，损坏人员归属和年度记录不能读入
+  ---
+  duration_ms: 1355.215084
+  type: 'test'
+  ...
+# Subtest: 名单索引随新增、升队和归属变化更新，恢复不依赖内存缓存
+ok 128 - 名单索引随新增、升队和归属变化更新，恢复不依赖内存缓存
+  ---
+  duration_ms: 1079.953834
+  type: 'test'
+  ...
+# Subtest: 缺少赛历不视为缺少机会；评估须有比赛和足够留队时间
+ok 129 - 缺少赛历不视为缺少机会；评估须有比赛和足够留队时间
+  ---
+  duration_ms: 107.527958
+  type: 'test'
+  ...
+# Subtest: 旧队分钟不掩盖新队坐板凳，只比较本次注册后的本队赛历
+ok 130 - 旧队分钟不掩盖新队坐板凳，只比较本次注册后的本队赛历
+  ---
+  duration_ms: 57.213666
+  type: 'test'
+  ...
+# Subtest: 外租目标必须提供更好的真实角色竞争机会且不读取潜力
+ok 131 - 外租目标必须提供更好的真实角色竞争机会且不读取潜力
+  ---
+  duration_ms: 251.765625
+  type: 'test'
+  ...
+# Subtest: 已签约成材球员可向更高级别流动，保留身份历史并限制重复转会
+ok 132 - 已签约成材球员可向更高级别流动，保留身份历史并限制重复转会
+  ---
+  duration_ms: 3413.581792
+  type: 'test'
+  ...
+# Subtest: 高总评替补也按实际零出场外租，不再被总评分门槛锁住
+ok 133 - 高总评替补也按实际零出场外租，不再被总评分门槛锁住
+  ---
+  duration_ms: 2988.620792
+  type: 'test'
+  ...
+# Subtest: AI 招募不自动处置玩家所属球员
+ok 134 - AI 招募不自动处置玩家所属球员
+  ---
+  duration_ms: 2453.06625
+  type: 'test'
+  ...
+# Subtest: 满员AI队可在确认强援后置换无出场替补，人数和位置底线保持
+ok 135 - 满员AI队可在确认强援后置换无出场替补，人数和位置底线保持
+  ---
+  duration_ms: 2351.719666
+  type: 'test'
+  ...
+# Subtest: 同级招募次序按窗口轮换，可重放且不再长期依赖球队编号
+ok 136 - 同级招募次序按窗口轮换，可重放且不再长期依赖球队编号
+  ---
+  duration_ms: 36.633042
+  type: 'test'
+  ...
+# Subtest: 转会日期损坏时拒绝注册存档
+ok 137 - 转会日期损坏时拒绝注册存档
+  ---
+  duration_ms: 37.025625
+  type: 'test'
+  ...
+# Subtest: 原始球员转会使用注册号码覆盖，不修改原始名册或与接收队撞号
+ok 138 - 原始球员转会使用注册号码覆盖，不修改原始名册或与接收队撞号
+  ---
+  duration_ms: 2061.915459
+  type: 'test'
+  ...
+# Subtest: 错位分别影响进攻与防守位置感，有球技术保持原属性
+ok 139 - 错位分别影响进攻与防守位置感，有球技术保持原属性
+  ---
+  duration_ms: 1.91175
+  type: 'test'
+  ...
+# Subtest: 边后卫套上与中锋回撤改变进攻站位，错位收缩防守覆盖
+ok 140 - 边后卫套上与中锋回撤改变进攻站位，错位收缩防守覆盖
+  ---
+  duration_ms: 24.393584
+  type: 'test'
+  ...
+# Subtest: 进攻侧重真实改变传球目标分布，左右方向使用本队坐标
+ok 141 - 进攻侧重真实改变传球目标分布，左右方向使用本队坐标
+  ---
+  duration_ms: 2449.243
+  type: 'test'
+  ...
+# Subtest: 全员事件位置有界、主客坐标可逆，完整快照恢复一致
+ok 142 - 全员事件位置有界、主客坐标可逆，完整快照恢复一致
+  ---
+  duration_ms: 180.148708
+  type: 'test'
+  ...
+# Subtest: 宽度和防线改变真实站位，红牌空缺不重排其余锚点
+ok 143 - 宽度和防线改变真实站位，红牌空缺不重排其余锚点
+  ---
+  duration_ms: 10.456791
+  type: 'test'
+  ...
+# Subtest: 局部防守人数和体能影响压力；换人继承场上位置，改阵锚点唯一
+ok 144 - 局部防守人数和体能影响压力；换人继承场上位置，改阵锚点唯一
+  ---
+  duration_ms: 4.369625
+  type: 'test'
+  ...
+# Subtest: 高防线前的接应者等待合法出球位置，低位防守保持近身覆盖
+ok 145 - 高防线前的接应者等待合法出球位置，低位防守保持近身覆盖
+  ---
+  duration_ms: 5.34025
+  type: 'test'
+  ...
+# Subtest: 短期加练有收益，连续高负荷累积疲劳；比赛前加练收益降低
+ok 146 - 短期加练有收益，连续高负荷累积疲劳；比赛前加练收益降低
+  ---
+  duration_ms: 0.500166
+  type: 'test'
+  ...
+# Subtest: 新青年真实成长接入加练，疲劳与出场在分段、保存后完全一致
+ok 147 - 新青年真实成长接入加练，疲劳与出场在分段、保存后完全一致
+  ---
+  duration_ms: 5352.052833
+  type: 'test'
+  ...
+# Subtest: 正式比赛传入疲劳后的状态，提交比赛不会重复扣减原有疲劳
+ok 148 - 正式比赛传入疲劳后的状态，提交比赛不会重复扣减原有疲劳
+  ---
+  duration_ms: 608.702125
+  type: 'test'
+  ...
+# Subtest: 尚无正式健康记录时，报表不会重复扣疲劳；旧成长球员不展示不适用的建议
+ok 149 - 尚无正式健康记录时，报表不会重复扣疲劳；旧成长球员不展示不适用的建议
+  ---
+  duration_ms: 584.913833
+  type: 'test'
+  ...
+# Subtest: 已晋级球队识别次日淘汰赛，未确定胜者不虚构比赛安排
+ok 150 - 已晋级球队识别次日淘汰赛，未确定胜者不虚构比赛安排
+  ---
+  duration_ms: 230.953125
+  type: 'test'
+  ...
+# Subtest: 所有实体身份唯一，所有引用均能追溯到实体
+ok 151 - 所有实体身份唯一，所有引用均能追溯到实体
+  ---
+  duration_ms: 0.972959
+  type: 'test'
+  ...
+# Subtest: 四区人口与六套体系符合设定
+ok 152 - 四区人口与六套体系符合设定
+  ---
+  duration_ms: 0.093167
+  type: 'test'
+  ...
+# Subtest: 同级别同乡跨联赛、排除本人和退役者，同联赛筛选更严格
+ok 153 - 同级别同乡跨联赛、排除本人和退役者，同联赛筛选更严格
+  ---
+  duration_ms: 1.260834
+  type: 'test'
+  ...
+# Subtest: 历届状元完整连续，退役球员保留，第二位状元来自记录
+ok 154 - 历届状元完整连续，退役球员保留，第二位状元来自记录
+  ---
+  duration_ms: 0.367958
+  type: 'test'
+  ...
+# Subtest: 校友关系与出生地独立、父子双向关系准确、退役者无现役联赛
+ok 155 - 校友关系与出生地独立、父子双向关系准确、退役者无现役联赛
+  ---
+  duration_ms: 0.153458
+  type: 'test'
+  ...
+# Subtest: 新青年的当前体格随日历变化，分段推进和读档一致
+ok 156 - 新青年的当前体格随日历变化，分段推进和读档一致
+  ---
+  duration_ms: 6783.45375
+  type: 'test'
+  ...
+# Subtest: 旧青年从保存日体格平滑接入，原有成年人不改写
+ok 157 - 旧青年从保存日体格平滑接入，原有成年人不改写
+  ---
+  duration_ms: 7827.937042
+  type: 'test'
+  ...
+# Subtest: 跨年归零当季体格增量，保留上年观测而不暴露成年目标
+ok 158 - 跨年归零当季体格增量，保留上年观测而不暴露成年目标
+  ---
+  duration_ms: 12224.027208
+  type: 'test'
+  ...
+# Subtest: 独立周成长同步体格，属性发展不依赖体格目标
+ok 159 - 独立周成长同步体格，属性发展不依赖体格目标
+  ---
+  duration_ms: 0.390125
+  type: 'test'
+  ...
+# Subtest: 损坏的身体档案和历史在模拟前被拒绝
+ok 160 - 损坏的身体档案和历史在模拟前被拒绝
+  ---
+  duration_ms: 650.115875
+  type: 'test'
+  ...
+# Subtest: 同 ID 和种子的成年体格不随入学年龄或重载改变
+ok 161 - 同 ID 和种子的成年体格不随入学年龄或重载改变
+  ---
+  duration_ms: 0.91825
+  type: 'test'
+  ...
+# Subtest: 早熟与晚熟改变少年体格和成熟时间，成年目标保持相同
+ok 162 - 早熟与晚熟改变少年体格和成熟时间，成年目标保持相同
+  ---
+  duration_ms: 0.153333
+  type: 'test'
+  ...
+# Subtest: 曲线连续单调，成年以后保持稳定且不超过目标
+ok 163 - 曲线连续单调，成年以后保持稳定且不超过目标
+  ---
+  duration_ms: 3.313709
+  type: 'test'
+  ...
+# Subtest: 迁移以当日精确年龄和体格为锚，重复迁移不改变资料
+ok 164 - 迁移以当日精确年龄和体格为锚，重复迁移不改变资料
+  ---
+  duration_ms: 0.36925
+  type: 'test'
+  ...
+# Subtest: 体格计算不改写球员属性、潜力或输入对象，无资料沿用原体格
+ok 165 - 体格计算不改写球员属性、潜力或输入对象，无资料沿用原体格
+  ---
+  duration_ms: 1.050417
+  type: 'test'
+  ...
+# Subtest: 存档体格资料拒绝非法数值、反向成长和成年后继续增长
+ok 166 - 存档体格资料拒绝非法数值、反向成长和成年后继续增长
+  ---
+  duration_ms: 0.206333
+  type: 'test'
+  ...
+# Subtest: current-youth-reference.mjs rejects changed generator without rewriting historical artifacts
+ok 167 - current-youth-reference.mjs rejects changed generator without rewriting historical artifacts
+  ---
+  duration_ms: 60.40025
+  type: 'test'
+  ...
+# Subtest: verify-current-youth.mjs rejects changed generator without rewriting historical artifacts
+ok 168 - verify-current-youth.mjs rejects changed generator without rewriting historical artifacts
+  ---
+  duration_ms: 48.610625
+  type: 'test'
+  ...
+# Subtest: summarize-current-youth.py rejects changed generator without rewriting historical artifacts
+ok 169 - summarize-current-youth.py rejects changed generator without rewriting historical artifacts
+  ---
+  duration_ms: 59.686916
+  type: 'test'
+  ...
+# Subtest: reference refuses a relabeled model when summary still records the original source
+ok 170 - reference refuses a relabeled model when summary still records the original source
+  ---
+  duration_ms: 52.57575
+  type: 'test'
+  ...
+# Subtest: verify rejects a changed native implementation before overwriting validation
+ok 171 - verify rejects a changed native implementation before overwriting validation
+  ---
+  duration_ms: 51.94125
+  type: 'test'
+  ...
+# Subtest: verify allows matching recorded sources and reports exactly the verified source hashes
+ok 172 - verify allows matching recorded sources and reports exactly the verified source hashes
+  ---
+  duration_ms: 61.986625
+  type: 'test'
+  ...
+# Subtest: first verification accepts native provenance recorded in the model without a summary
+ok 173 - first verification accepts native provenance recorded in the model without a summary
+  ---
+  duration_ms: 62.37225
+  type: 'test'
+  ...
+# Subtest: 青训发展参数可复现、可序列化，公开资料不泄漏发展真值
+ok 174 - 青训发展参数可复现、可序列化，公开资料不泄漏发展真值
+  ---
+  duration_ms: 4.242042
+  type: 'test'
+  ...
+# Subtest: 同龄相近当前能力允许不同发展前景，潜力不再等于CA加固定年龄差
+ok 175 - 同龄相近当前能力允许不同发展前景，潜力不再等于CA加固定年龄差
+  ---
+  duration_ms: 3.76875
+  type: 'test'
+  ...
+# Subtest: 领域发展倾向有关联，同时保留技术和身体的个体差异
+ok 176 - 领域发展倾向有关联，同时保留技术和身体的个体差异
+  ---
+  duration_ms: 0.375417
+  type: 'test'
+  ...
+# Subtest: 年龄增加初始积累，显式潜力校准不重新设定当前能力
+ok 177 - 年龄增加初始积累，显式潜力校准不重新设定当前能力
+  ---
+  duration_ms: 1.809834
+  type: 'test'
+  ...
+# Subtest: 更改评分位置不能刷新属性成长或修改底层发展参数
+ok 178 - 更改评分位置不能刷新属性成长或修改底层发展参数
+  ---
+  duration_ms: 13.195417
+  type: 'test'
+  ...
+# Subtest: 某项属性接近包络不会阻止其他属性发展，连续培养不越过包络
+ok 179 - 某项属性接近包络不会阻止其他属性发展，连续培养不越过包络
+  ---
+  duration_ms: 11.9745
+  type: 'test'
+  ...
+# Subtest: 新青训进入持久化成长表，生日参考不随赛季重置
+ok 180 - 新青训进入持久化成长表，生日参考不随赛季重置
+  ---
+  duration_ms: 2346.653041
+  type: 'test'
+  ...
+# Subtest: 青年比赛按比赛日判断伤停，分段与整段推进相同
+ok 181 - 青年比赛按比赛日判断伤停，分段与整段推进相同
+  ---
+  duration_ms: 1017.9805
+  type: 'test'
+  ...
+# Subtest: 外租改变真实比赛阵容，正式出场只记一次且不再模拟青年分钟
+ok 182 - 外租改变真实比赛阵容，正式出场只记一次且不再模拟青年分钟
+  ---
+  duration_ms: 2158.828125
+  type: 'test'
+  ...
+# Subtest: 旧存档在保存日期接入新青训，不追补此前训练
+ok 183 - 旧存档在保存日期接入新青训，不追补此前训练
+  ---
+  duration_ms: 467.562458
+  type: 'test'
+  ...
+# Subtest: 失败比赛不留下青训进度，皇家学院未签约者不能由职业队训练
+ok 184 - 失败比赛不留下青训进度，皇家学院未签约者不能由职业队训练
+  ---
+  duration_ms: 1752.98075
+  type: 'test'
+  ...
+# Subtest: 损坏的成长基础状态和青年计数在继续模拟前拒绝
+ok 185 - 损坏的成长基础状态和青年计数在继续模拟前拒绝
+  ---
+  duration_ms: 918.783791
+  type: 'test'
+  ...
+# Subtest: 当天踢过青年赛后提拔，不能再次参加成年比赛
+ok 186 - 当天踢过青年赛后提拔，不能再次参加成年比赛
+  ---
+  duration_ms: 1590.154125
+  type: 'test'
+  ...
+# Subtest: 每年青训只入库一次，引用年龄日独立于世界初始年，注册不污染静态球队
+ok 187 - 每年青训只入库一次，引用年龄日独立于世界初始年，注册不污染静态球队
+  ---
+  duration_ms: 200.037125
+  type: 'test'
+  ...
+# Subtest: 地方青训提拔与租借会改变真实参赛名单，租期结束归队且不重复青年出场
+ok 188 - 地方青训提拔与租借会改变真实参赛名单，租期结束归队且不重复青年出场
+  ---
+  duration_ms: 3961.563833
+  type: 'test'
+  ...
+# Subtest: 皇家学院不受关联职业队任意处分，毕业选秀先授签约权再进入职业队
+ok 189 - 皇家学院不受关联职业队任意处分，毕业选秀先授签约权再进入职业队
+  ---
+  duration_ms: 147.198833
+  type: 'test'
+  ...
+# Subtest: 释放保留球员身份，其他俱乐部可以重新签约且转移参赛归属
+ok 190 - 释放保留球员身份，其他俱乐部可以重新签约且转移参赛归属
+  ---
+  duration_ms: 142.606709
+  type: 'test'
+  ...
+# Subtest: 观察只由可见能力和新证据更新，隐藏潜力改变不改变报告，点击不能刷新
+ok 191 - 观察只由可见能力和新证据更新，隐藏潜力改变不改变报告，点击不能刷新
+  ---
+  duration_ms: 144.490625
+  type: 'test'
+  ...
+# Subtest: 青年出场按具体比赛日结算，任意分段相加一致，升队后的日期不再重复计算
+ok 192 - 青年出场按具体比赛日结算，任意分段相加一致，升队后的日期不再重复计算
+  ---
+  duration_ms: 488.009458
+  type: 'test'
+  ...
+# Subtest: 损坏的成长禀赋、归属和日期不能进入注册存档
+ok 193 - 损坏的成长禀赋、归属和日期不能进入注册存档
+  ---
+  duration_ms: 125.968959
+  type: 'test'
+  ...
+# Subtest: 成年退出覆盖原始注册，补位后仍可比赛，原始数据保持不变
+ok 194 - 成年退出覆盖原始注册，补位后仍可比赛，原始数据保持不变
+  ---
+  duration_ms: 10594.228375
+  type: 'test'
+  ...
+# Subtest: AI 不外租第二门将，有第三门将时仍可外租争取出场
+ok 195 - AI 不外租第二门将，有第三门将时仍可外租争取出场
+  ---
+  duration_ms: 4496.148083
+  type: 'test'
+  ...
+# Subtest: AI 不释放第二门将，玩家仍可自行外租并保留一名门将
+ok 196 - AI 不释放第二门将，玩家仍可自行外租并保留一名门将
+  ---
+  duration_ms: 4728.826667
+  type: 'test'
+  ...
+# Subtest: 相关专项形成技术特点，同时保留跨专项短板
+ok 197 - 相关专项形成技术特点，同时保留跨专项短板
+  ---
+  duration_ms: 6.818875
+  type: 'test'
+  ...
+# Subtest: 定位球不再共用相同分布，既往练习不直接提高发展上限
+ok 198 - 定位球不再共用相同分布，既往练习不直接提高发展上限
+  ---
+  duration_ms: 14.357333
+  type: 'test'
+  ...
+# Subtest: 门将传控与终结有不同起点，外场守门分支仍保持低值
+ok 199 - 门将传控与终结有不同起点，外场守门分支仍保持低值
+  ---
+  duration_ms: 96.3625
+  type: 'test'
+  ...
+# Subtest: 旧青年存档保持原属性和包络，新旧球员均可继续成长
+ok 200 - 旧青年存档保持原属性和包络，新旧球员均可继续成长
+  ---
+  duration_ms: 582.353833
+  type: 'test'
+  ...
+# Subtest: 青训中心有未执教入口，所有栏目渲染安全且不泄露成长参数
+ok 201 - 青训中心有未执教入口，所有栏目渲染安全且不泄露成长参数
+  ---
+  duration_ms: 218.461292
+  type: 'test'
+  ...
+# Subtest: 青年路径变化在中心同步呈现，比赛中禁用操作且租借可选目的地
+ok 202 - 青年路径变化在中心同步呈现，比赛中禁用操作且租借可选目的地
+  ---
+  duration_ms: 503.600417
+  type: 'test'
+  ...
+# Subtest: 观察报告显示范围、依据和时间，重复渲染不制造新报告
+ok 203 - 观察报告显示范围、依据和时间，重复渲染不制造新报告
+  ---
+  duration_ms: 167.415167
+  type: 'test'
+  ...
+# Subtest: 皇家学院显示关联身份，未签约球员不显示职业队训练控件
+ok 204 - 皇家学院显示关联身份，未签约球员不显示职业队训练控件
+  ---
+  duration_ms: 155.846042
+  type: 'test'
+  ...
+# Subtest: 青训和完整成长面板按当前日期显示体格及本季变化，隐藏成年目标
+ok 205 - 青训和完整成长面板按当前日期显示体格及本季变化，隐藏成年目标
+  ---
+  duration_ms: 224.917542
+  type: 'test'
+  ...
+# Subtest: 既有职业球员未建立身体发育档案时不显示本季体格变化
+ok 206 - 既有职业球员未建立身体发育档案时不显示本季体格变化
+  ---
+  duration_ms: 129.886416
+  type: 'test'
+  ...
+# Subtest: 培养计划显示重点名额、选人策略，满员后可取消但不能增加
+ok 207 - 培养计划显示重点名额、选人策略，满员后可取消但不能增加
+  ---
+  duration_ms: 302.144708
+  type: 'test'
+  ...
+# Subtest: 皇家学院无俱乐部培养开关，离队球员不占重点名额
+ok 208 - 皇家学院无俱乐部培养开关，离队球员不占重点名额
+  ---
+  duration_ms: 565.18425
+  type: 'test'
+  ...
+# Subtest: 恢复建议区分今天比赛与无近期赛程，并转义原因
+ok 209 - 恢复建议区分今天比赛与无近期赛程，并转义原因
+  ---
+  duration_ms: 0.379542
+  type: 'test'
+  ...
+# Subtest: 成长报表实际负荷接入两处界面，建议不改写训练计划或承诺出场
+ok 210 - 成长报表实际负荷接入两处界面，建议不改写训练计划或承诺出场
+  ---
+  duration_ms: 1643.594125
+  type: 'test'
+  ...
+1..210
+# tests 210
+# suites 0
+# pass 210
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 193144.960833

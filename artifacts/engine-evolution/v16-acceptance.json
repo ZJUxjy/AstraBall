@@ -1,0 +1,96 @@
+{
+  "engine": 16,
+  "complete": true,
+  "tests": 115,
+  "sourceHashes": {
+    "src/competitions/runtime.js": "c6a64fc6375c41e01657fb353c50e43cd86c27783845caf5f56a64077861ef42",
+    "src/competitions/market.js": "ceeb50e3d5a0cbb2a9177a9302d784bc12de5bf004b4f029171c812af96ead8c",
+    "src/competitions/population.js": "08b79e982da6dd96ea6d9061f96c9c3b61b8ef320409a2f9ace95608860e5018",
+    "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+    "src/football/engine.js": "953db52adfc67d875dd04d490ca4f0cff162f4a7b92a7ca811d69a386340e772",
+    "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237",
+    "src/football/config.js": "d28a2973a2763bc08e051526d86bafdc2c2857567457e05ec637fc8151d4ddbd"
+  },
+  "career": {
+    "seasons": [
+      {
+        "year": 318,
+        "matches": 4759,
+        "goalsPerGame": 2.504307627652868,
+        "minEligible": 20,
+        "minKeepers": 1
+      },
+      {
+        "year": 319,
+        "matches": 4759,
+        "goalsPerGame": 2.5131330111367935,
+        "minEligible": 18,
+        "minKeepers": 1
+      },
+      {
+        "year": 320,
+        "matches": 4759,
+        "goalsPerGame": 2.4988442950199623,
+        "minEligible": 12,
+        "minKeepers": 1
+      }
+    ],
+    "matches": 14277
+  },
+  "generation": {
+    "scope": "Personnel, growth and market audit without match results or match minutes; league membership held fixed. Verifies economic and registration invariants, not competitive ability balance.",
+    "years": 30,
+    "minRoster": 20,
+    "maxRoster": 28,
+    "final": {
+      "date": "0347-12-31",
+      "originalActive": 0,
+      "retired": 18481,
+      "minRoster": 22,
+      "maxRoster": 27,
+      "noGoalkeeper": 0,
+      "transfers": 158,
+      "renewals": 2331,
+      "freePlayers": 13476,
+      "minCash": 7747782,
+      "negativeClubs": 0,
+      "totalCash": 5241479936,
+      "shortClubs": []
+    },
+    "age": {
+      "min": 16,
+      "p10": 19,
+      "median": 25,
+      "p90": 34,
+      "max": 40,
+      "mean": 25.621207477781184
+    },
+    "bestElevenAbilityChanges": {
+      "closed": 2.383009472410933,
+      "crown-league": 4.220210607528173,
+      "crown-league-2": 4.485457947584109,
+      "crown-league-3": 3.720609542583375,
+      "silver-league": 3.6961804422660833,
+      "silver-league-2": 4.672674109188591,
+      "silver-league-3": 4.456035534242545,
+      "lima-league": 3.7448541575001,
+      "lima-league-2": 4.15117597657887,
+      "lima-league-3": 3.693948489863274,
+      "liberlin-league": 3.2771625023659396,
+      "liberlin-league-2": 4.569782171925013,
+      "liberlin-league-3": 3.8658299349334797,
+      "sichuan-league": 4.143005002906136,
+      "sichuan-league-2": 4.2672556053092165,
+      "sichuan-league-3": 3.6103600016184956
+    }
+  },
+  "lateGeneration": {
+    "scope": "First competitive month across all clubs after the training-only 30-year population run. Uses actual match engine, injury/suspension health and minutes; does not fabricate past match history.",
+    "through": "0348-03-31",
+    "matches": 738,
+    "clubs": 268,
+    "goalsPerGame": 2.3794037940379402,
+    "minEligible": 20,
+    "minKeepers": 2
+  }
+}

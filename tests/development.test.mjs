@@ -60,9 +60,9 @@ test('训练计划只影响之后的训练日，不能给其他球队或比赛�
  s.activeMatch={};assert.throws(()=>setPlayerTraining(s,p.id,{focus:'balanced',load:.6}),/比赛结束/);
 });
 test('正式出场记录与成长属性进入比赛输入，旧存档从当前日期起算',()=>{
- const s=createSeason(),m=s.fixtures.find(m=>!m.bye);
- playFixture(s,m.id,input=>({status:'finished',score:[1,0],seconds:5400,events:[],teams:[input.home,input.away].map(t=>({id:t.id,stats:{yellow:0,red:0},players:[{id:t.roster[0].id,minutes:90,goals:0,yellow:0,red:0}]}))}));
- const p=footballTeams.find(t=>t.id===m.home).roster[0],r=s.development.records[p.id];assert.equal(r.seasonMinutes,90);assert.equal(r.seasonAppearances,1);
+ const s=createSeason(),m=s.fixtures.find(m=>!m.bye);let playedId;
+ playFixture(s,m.id,input=>(playedId=input.home.roster[0].id,{status:'finished',score:[1,0],seconds:5400,events:[],teams:[input.home,input.away].map(t=>({id:t.id,stats:{yellow:0,red:0},players:[{id:t.roster[0].id,minutes:90,goals:0,yellow:0,red:0}]}))}));
+ const p=seasonTeam(s,m.home).roster.find(p=>p.id===playedId),r=s.development.records[p.id];assert.equal(r.seasonMinutes,90);assert.equal(r.seasonAppearances,1);
  const ready=seasonTeam(s,m.home).roster.find(x=>x.id===p.id);assert.deepEqual(ready.attributes,r.attributes);assert.deepEqual(matchInput(s,m).home.roster[0].attributes,r.attributes);
  const report=developmentReport(s,ready);assert.equal(report.minutes,90);assert.equal(report.appearances,1);
  assert.throws(()=>playFixture(s,m.id));assert.equal(r.seasonMinutes,90);

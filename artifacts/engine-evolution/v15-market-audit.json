@@ -1,0 +1,231 @@
+{
+  "scope": "Six-year personnel, growth and market audit without match results or match minutes; league membership held fixed. This verifies economic and registration invariants, not competitive ability balance.",
+  "years": 6,
+  "hashes": {
+    "src/competitions/market.js": "4b2fd21866c20c8d56dca1d707601063e2e0486b3fecf3706377bf790fa07b07",
+    "src/competitions/population.js": "203c7319dd759080e5e5b8a535984ec14ed81d6fc06fdd097eb631fc1d133e68",
+    "src/competitions/development.js": "882731cbdc34bd1d09bea925134afb5e2a67ec38528539e946c073681b247f98",
+    "src/football/players.js": "f5b0182b236fe83fb9061a0540adaef2e9d238d238c96e5cd83d21049d181237"
+  },
+  "seconds": 443.15910741700003,
+  "rows": [
+    {
+      "date": "0318-02-28",
+      "minRoster": 23,
+      "maxRoster": 27,
+      "noGoalkeeper": 0,
+      "transfers": 1365,
+      "renewals": 2120,
+      "freePlayers": 0,
+      "minCash": 866839,
+      "negativeClubs": 0,
+      "totalCash": 615545791
+    },
+    {
+      "date": "0318-12-31",
+      "minRoster": 23,
+      "maxRoster": 27,
+      "noGoalkeeper": 0,
+      "transfers": 1463,
+      "renewals": 2123,
+      "freePlayers": 0,
+      "minCash": 134387,
+      "negativeClubs": 0,
+      "totalCash": 274185142
+    },
+    {
+      "date": "0319-02-28",
+      "minRoster": 23,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 331,
+      "renewals": 428,
+      "freePlayers": 19,
+      "minCash": 937344,
+      "negativeClubs": 0,
+      "totalCash": 756073686
+    },
+    {
+      "date": "0319-12-31",
+      "minRoster": 23,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 384,
+      "renewals": 428,
+      "freePlayers": 19,
+      "minCash": 161022,
+      "negativeClubs": 0,
+      "totalCash": 405319110
+    },
+    {
+      "date": "0320-02-28",
+      "minRoster": 16,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 177,
+      "renewals": 840,
+      "freePlayers": 751,
+      "minCash": 999836,
+      "negativeClubs": 0,
+      "totalCash": 890632030
+    },
+    {
+      "date": "0320-12-31",
+      "minRoster": 16,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 177,
+      "renewals": 840,
+      "freePlayers": 751,
+      "minCash": 385669,
+      "negativeClubs": 0,
+      "totalCash": 552539377
+    },
+    {
+      "date": "0321-02-28",
+      "minRoster": 18,
+      "maxRoster": 26,
+      "noGoalkeeper": 3,
+      "transfers": 214,
+      "renewals": 3315,
+      "freePlayers": 1293,
+      "minCash": 1208556,
+      "negativeClubs": 0,
+      "totalCash": 1032431594
+    },
+    {
+      "date": "0321-12-31",
+      "minRoster": 18,
+      "maxRoster": 26,
+      "noGoalkeeper": 3,
+      "transfers": 215,
+      "renewals": 3318,
+      "freePlayers": 1293,
+      "minCash": 633888,
+      "negativeClubs": 0,
+      "totalCash": 696759666
+    },
+    {
+      "date": "0322-02-28",
+      "minRoster": 20,
+      "maxRoster": 26,
+      "noGoalkeeper": 0,
+      "transfers": 145,
+      "renewals": 795,
+      "freePlayers": 1610,
+      "minCash": 1469092,
+      "negativeClubs": 0,
+      "totalCash": 1181383502
+    },
+    {
+      "date": "0322-12-31",
+      "minRoster": 20,
+      "maxRoster": 26,
+      "noGoalkeeper": 0,
+      "transfers": 145,
+      "renewals": 795,
+      "freePlayers": 1610,
+      "minCash": 859846,
+      "negativeClubs": 0,
+      "totalCash": 843140894
+    },
+    {
+      "date": "0323-02-28",
+      "minRoster": 19,
+      "maxRoster": 27,
+      "noGoalkeeper": 1,
+      "transfers": 208,
+      "renewals": 2935,
+      "freePlayers": 2178,
+      "minCash": 1684759,
+      "negativeClubs": 0,
+      "totalCash": 1323334174
+    },
+    {
+      "date": "0323-12-31",
+      "minRoster": 19,
+      "maxRoster": 27,
+      "noGoalkeeper": 1,
+      "transfers": 208,
+      "renewals": 2935,
+      "freePlayers": 2178,
+      "minCash": 1107643,
+      "negativeClubs": 0,
+      "totalCash": 987665332
+    }
+  ],
+  "failures": [
+    {
+      "date": "0320-02-28",
+      "minRoster": 16,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 177,
+      "renewals": 840,
+      "freePlayers": 751,
+      "minCash": 999836,
+      "negativeClubs": 0,
+      "totalCash": 890632030
+    },
+    {
+      "date": "0320-12-31",
+      "minRoster": 16,
+      "maxRoster": 28,
+      "noGoalkeeper": 0,
+      "transfers": 177,
+      "renewals": 840,
+      "freePlayers": 751,
+      "minCash": 385669,
+      "negativeClubs": 0,
+      "totalCash": 552539377
+    },
+    {
+      "date": "0321-02-28",
+      "minRoster": 18,
+      "maxRoster": 26,
+      "noGoalkeeper": 3,
+      "transfers": 214,
+      "renewals": 3315,
+      "freePlayers": 1293,
+      "minCash": 1208556,
+      "negativeClubs": 0,
+      "totalCash": 1032431594
+    },
+    {
+      "date": "0321-12-31",
+      "minRoster": 18,
+      "maxRoster": 26,
+      "noGoalkeeper": 3,
+      "transfers": 215,
+      "renewals": 3318,
+      "freePlayers": 1293,
+      "minCash": 633888,
+      "negativeClubs": 0,
+      "totalCash": 696759666
+    },
+    {
+      "date": "0323-02-28",
+      "minRoster": 19,
+      "maxRoster": 27,
+      "noGoalkeeper": 1,
+      "transfers": 208,
+      "renewals": 2935,
+      "freePlayers": 2178,
+      "minCash": 1684759,
+      "negativeClubs": 0,
+      "totalCash": 1323334174
+    },
+    {
+      "date": "0323-12-31",
+      "minRoster": 19,
+      "maxRoster": 27,
+      "noGoalkeeper": 1,
+      "transfers": 208,
+      "renewals": 2935,
+      "freePlayers": 2178,
+      "minCash": 1107643,
+      "negativeClubs": 0,
+      "totalCash": 987665332
+    }
+  ]
+}

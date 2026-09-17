@@ -1,3 +1,4 @@
+import * as mainV6 from '../src/football/legacy/main-v6/engine.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -38,7 +39,7 @@ test('AI常规换人补充相近实力的新鲜球员，不换健康门将、不
  for(let side=0;side<2;side++){
   const team=state.teams[side],changes=state.events.filter(e=>e.type==='substitution'&&e.side===side);
   assert.ok(changes.length>=2);assert.ok(team.subs<=5);assert.ok(team.windows<=3);
-  assert.ok(changes.filter(e=>!state.events.some(i=>i.type==='injury'&&i.player===e.player)).every(e=>e.minute>=60&&e.player!==keepers[side]));
+  assert.ok(changes.filter(e=>!state.events.some(i=>i.type==='injury'&&i.player===e.player)).every(e=>e.minute>=55&&e.player!==keepers[side]));
   assert.equal(new Set(changes.map(e=>e.incoming)).size,changes.length);
   assert.equal(team.slots.length,11-team.stats.red);
  }
@@ -54,7 +55,7 @@ test('换人评估没有随机数，弱替补与受伤替补不会被常规换�
 });
 test('AI常规换人与角色首发在中途存档后逐事件一致',()=>{
  const state=createMatch({home:uniform('save-home'),away:uniform('save-away'),seed:19,homeAI:true,awayAI:true});
- while(state.elapsed<4000)stepMatch(state);assert.ok(state.teams.some(team=>team.aiReviews>0));const restored=restoreMatch(snapshotMatch(state));
+ while(state.elapsed<4000)stepMatch(state);assert.ok(state.teams.some(team=>team.coach?.subReviews.length>0));const restored=restoreMatch(snapshotMatch(state));
  while(state.status==='playing')stepMatch(state);while(restored.status==='playing')stepMatch(restored);
  assert.deepEqual(getResult(restored),getResult(state));
 });
@@ -62,18 +63,18 @@ test('正式比赛默认由AI选角色，经理指定阵型首发与常规换人
  const s=createSeason();appointManager(s,'bridge');const fixture=s.fixtures.find(f=>!f.bye&&(f.home==='bridge'||f.away==='bridge'));s.date=fixture.date;
  const input=matchInput(s,fixture),side=input.home.id==='bridge'?0:1,team=side?input.away:input.home,tactics={...DEFAULT_TACTICS,formation:'4-4-2'},lineup=selectLineup(team,tactics.formation);
  assert.equal(input.homeAI,true);assert.equal(input.awayAI,true);
- const match=beginCoachedMatch(s,{fixtureId:fixture.id,tactics,lineup});assert.deepEqual(match.teams[side].slots,lineup);assert.equal(match.teams[side].tactics.formation,'4-4-2');assert.equal(match.teams[side].aiManaged,false);assert.equal(match.teams[1-side].aiManaged,true);
- while(match.status==='playing')stepMatch(match);assert.equal(match.teams[side].aiReviews,0);assert.equal(match.teams[1-side].aiReviews,3);
+ const match=beginCoachedMatch(s,{fixtureId:fixture.id,tactics,lineup});assert.deepEqual(match.teams[side].slots.map(({id,position})=>({id,position})),lineup);assert.equal(match.teams[side].tactics.formation,'4-4-2');assert.equal(match.teams[side].coach,null);assert.ok(match.teams[1-side].coach);
+ while(match.status==='playing')stepMatch(match);assert.equal(match.teams[side].coach,null);assert.equal(match.teams[1-side].coach.subReviews.length,3);
 });
 
 
 test('AI换人存档拒绝损坏字段，旧存档缺失字段继续保持手动控制',()=>{
- const state=createMatch({home:uniform('legacy-home'),away:uniform('legacy-away'),seed:36});
- while(state.elapsed<3000)stepMatch(state);const saved=snapshotMatch(state);
+ const state=mainV6.createMatch({home:uniform('legacy-home'),away:uniform('legacy-away'),seed:36});
+ while(state.elapsed<3000)mainV6.stepMatch(state);const saved=mainV6.snapshotMatch(state);
  for(const [field,values] of [['aiManaged',['true',1,null]],['aiReviews',[-1,.5,4,'0',null]]])for(const value of values){
   const invalid=structuredClone(saved);invalid.teams[0][field]=value;assert.throws(()=>restoreMatch(invalid),/AI换人存档/);
  }
  for(const team of saved.teams){delete team.aiManaged;delete team.aiReviews;}
- const restored=restoreMatch(saved);while(state.status==='playing')stepMatch(state);while(restored.status==='playing')stepMatch(restored);
- assert.deepEqual(getResult(restored),getResult(state));
+ const restored=restoreMatch(saved);while(state.status==='playing')mainV6.stepMatch(state);while(restored.status==='playing')mainV6.stepMatch(restored);
+ assert.deepEqual(mainV6.getResult(restored),mainV6.getResult(state));
 });

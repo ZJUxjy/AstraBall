@@ -22,7 +22,7 @@ function chart(points){
 export function playerGrowthPanel(s,p,{editable=false}={}){
  const report=developmentReport(s,p);if(!report)return '';
  const registration=s.playerRegistry?.registrations?.[p.id];
- const allowed=editable&&s.manager?.clubId===p.club&&!(registration?.pathway==='royal'&&!registration.signedAt),disabled=s.activeMatch?'disabled':'';
+ const allowed=editable&&!p.retired&&s.manager?.clubId===p.club&&!(registration?.pathway==='royal'&&!registration.signedAt),disabled=s.activeMatch?'disabled':'';
  const training=[['balanced','综合训练'],...Object.entries(ATTRIBUTE_GROUPS).filter(([key])=>key!=='goalkeeper'||p.position==='GK').map(([key,g])=>[key,g.label])];
  return `<section class="growth-panel"><div class="growth-heading"><h3>个人成长</h3><span>${developmentStage(p)}</span></div><div class="growth-stats"><div><strong>${signed(report.gain)}</strong><span>本季能力变化</span></div><div><strong>${Math.round(report.minutes)}</strong><span>本季正式出场分钟</span></div><div><strong>${report.appearances}</strong><span>本季出场次数</span></div></div>
  ${bodyDevelopmentMarkup(report.body)}${chart(report.history)}${workloadMarkup(report.workload)}${allowed?`<div class="growth-training"><label>训练方向<select data-growth="focus" data-growth-player="${esc(p.id)}" ${disabled}>${training.map(([id,label])=>`<option value="${id}" ${report.plan.focus===id?'selected':''}>${label}</option>`).join('')}</select></label><label>训练负荷<select data-growth="load" data-growth-player="${esc(p.id)}" ${disabled}>${[[.3,'轻量'],[.6,'标准'],[.9,'高强度']].map(([id,label])=>`<option value="${id}" ${report.plan.load===id?'selected':''}>${label}</option>`).join('')}</select></label><span id="growth-notice" role="status">${s.activeMatch?'比赛结束后可调整':'自动保存'}</span></div>`:''}

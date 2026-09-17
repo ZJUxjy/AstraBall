@@ -1,0 +1,9 @@
+{
+  "scope": "Manager renews a 20-year-old academy player through 320, then advances to age 21 in 319. A still-active contract must not be silently discarded by demographic release.",
+  "player": "youth:318:sky:0",
+  "promisedEnd": "0320-12-31",
+  "actualClub": null,
+  "actualContract": null,
+  "passes": false,
+  "populationSourceHash": "08b79e982da6dd96ea6d9061f96c9c3b61b8ef320409a2f9ace95608860e5018"
+}

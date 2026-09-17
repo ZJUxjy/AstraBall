@@ -1,3 +1,5 @@
+import * as populationDevelopment from './population-development.js';
+import {populationPlayers,populationPlayer} from './population.js';
 import {YEAR} from '../world.js';
 import {registeredPlayers,registeredPlayer,ensurePlayerRegistry,playerAgeOnDate,migrateYouthBodies} from './registry.js';
 import {ensureYouthIntake,advanceYouthPathways,youthWeekContext} from './youth.js';
@@ -14,14 +16,14 @@ const zeroDose=()=>Object.fromEntries(groups.map(group=>[group,0]));
 export const defaultTraining={focus:'balanced',load:.6};
 export function createDevelopment(date){return {version:1,since:date,through:date,nextWeek:addDays(date,7),records:{},plans:{}};}
 export function ensureDevelopment(s){return s.development??=createDevelopment(s.date);}
-export const ageOnDate=playerAgeOnDate;
+export const ageOnDate=(p,date)=>p.birthYear!=null?populationDevelopment.ageOnDate(p,date):playerAgeOnDate(p,date);
 const bodyRecord=(p,date)=>p.bodyProfile?bodyAtAge(p,ageOnDate(p,date)):{};
 function recordFor(d,p){
- return d.records[p.id]??={attributes:{...p.attributes},sharpness:p.sharpness,startRating:preciseRating(p),seasonYear:Number(d.through.slice(0,4)),seasonRating:preciseRating(p),seasonAttributes:{...p.attributes},minutes:0,appearances:0,seasonMinutes:0,seasonAppearances:0,weekMinutes:0,weekChallenge:0,dose:zeroDose(),healthyDays:0,history:[{...bodyRecord(p,d.through),date:d.through,age:Math.floor(ageOnDate(p,d.through)),ability:preciseRating(p),minutes:0}],annual:[]};
+ return d.records[p.id]??={attributes:{...p.attributes},sharpness:p.sharpness,startRating:preciseRating(p),seasonYear:Number(d.through.slice(0,4)),seasonRating:preciseRating(p),seasonAttributes:{...p.attributes},minutes:0,appearances:0,seasonMinutes:0,seasonAppearances:0,weekMinutes:0,weekChallenge:0,dose:zeroDose(),healthyDays:0,weekDays:0,history:[{...bodyRecord(p,d.through),date:d.through,age:Math.floor(ageOnDate(p,d.through)),ability:preciseRating(p),minutes:0}],annual:[]};
 }
-export function developedPlayer(s,p,date=s.date){
+export function developedPlayer(s,p,date=s.date){if(s.population)return populationDevelopment.developedPlayer(s,p,date);
  const current=registeredPlayer(s,p.id)||p,r=s.development?.records[p.id];
- return {...current,...bodyAtAge(current,ageOnDate(current,date)),age:Math.floor(ageOnDate(current,date)+1e-9),attributes:r?.attributes||current.attributes,sharpness:r?.sharpness??current.sharpness};
+ return {...p,...current,...bodyAtAge(current,ageOnDate(current,date)),age:Math.floor(ageOnDate(current,date)+1e-9),attributes:r?.attributes||current.attributes,sharpness:r?.sharpness??current.sharpness};
 }
 function enterYear(r,p,date){
  const year=Number(date.slice(0,4));if(r.seasonYear===year)return;
@@ -58,7 +60,7 @@ export function playerWorkload(s,p,date=s.date){
  const nextMatchDays=upcoming(s,p,date,nextMatches(s)),effectiveCondition=clamp(condition-fatiguePenalty(fatigue),0,100);
  return {fatigue,recentMinutes,nextMatchDays,effectiveCondition,...workloadAdvice({fatigue,recentMinutes,nextMatchDays,condition:effectiveCondition,injured:(health?.injuryDays??p.injuryDays??0)-elapsed>0})};
 }
-export function advanceDevelopment(s,date){
+export function advanceDevelopment(s,date){if(s.population)return populationDevelopment.advanceDevelopment(s,date);
  const d=ensureDevelopment(s);
  if(date<d.through)throw Error('成长日期不能倒退');
  ensurePlayerRegistry(s);ensureYouthIntake(s,d.through);migrateYouthBodies(s,d.through);
@@ -71,7 +73,7 @@ export function advanceDevelopment(s,date){
   prepareAcademyContext(s,d.through,end);
   for(const p of registeredPlayers(s)){
    if(p.ageReferenceDate&&p.ageReferenceDate>=end)continue;
-   const r=recordFor(d,p),plan=d.plans[p.id]||defaultTraining,weights=focusWeights(plan.focus),health=s.playerState[p.id];
+   const r=recordFor(d,p);r.weekDays??=7-daysBetween(d.through,d.nextWeek);r.weekDays+=days;const plan=d.plans[p.id]||defaultTraining,weights=focusWeights(plan.focus),health=s.playerState[p.id];
    const elapsed=health?Math.max(0,daysBetween(health.date,d.through)):0;
    const youth=youthWeekContext(s,{...p,attributes:r.attributes},d.through,end);
    const youthFixtures=new Map((youth.fixtures||[]).map(fixture=>[fixture.date,fixture]));
@@ -101,12 +103,12 @@ export function advanceDevelopment(s,date){
    }
    if(r.recentExposure)r.recentExposure=r.recentExposure.filter(row=>daysBetween(row.date,end)<7);
    if(end===d.nextWeek){
-    const current={...p,attributes:r.attributes,sharpness:r.sharpness,developmentAge:ageOnDate(p,addDays(end,-7))};
-    const next=developWeek(current,{days:7,minutes:r.weekMinutes,challenge:r.weekMinutes?r.weekChallenge/r.weekMinutes:1,trainingAvailability:r.healthyDays/7,trainingDose:Object.fromEntries(groups.map(g=>[g,r.dose[g]/7])),load:plan.load});
+    const current={...p,attributes:r.attributes,sharpness:r.sharpness,developmentAge:ageOnDate(p,addDays(end,-r.weekDays))};
+    const next=developWeek(current,{days:r.weekDays,minutes:r.weekMinutes,challenge:r.weekMinutes?r.weekChallenge/r.weekMinutes:1,trainingAvailability:r.healthyDays/r.weekDays,trainingDose:Object.fromEntries(groups.map(g=>[g,r.dose[g]/r.weekDays])),load:plan.load});
     r.attributes=next.attributes;r.sharpness=next.sharpness;
     const point={...bodyRecord(p,end),date:end,age:Math.floor(ageOnDate(p,end)),ability:preciseRating(next),minutes:r.seasonMinutes};
     if(r.history.at(-1)?.date.slice(0,7)===end.slice(0,7))r.history[r.history.length-1]=point;else r.history.push(point);
-    r.history=r.history.slice(-13);r.weekMinutes=0;r.weekChallenge=0;r.dose=zeroDose();r.healthyDays=0;
+    r.history=r.history.slice(-13);r.weekMinutes=0;r.weekChallenge=0;r.dose=zeroDose();r.healthyDays=0;r.weekDays=0;
    }
    if(end===newYear)enterYear(r,p,end);
   }
@@ -114,7 +116,7 @@ export function advanceDevelopment(s,date){
   advanceYouthPathways(s,end);ensureYouthIntake(s,end);
  }
 }
-export function recordDevelopmentMatch(s,input,result,date){
+export function recordDevelopmentMatch(s,input,result,date){if(s.population)return populationDevelopment.recordDevelopmentMatch(s,input,result,date);
  const d=ensureDevelopment(s);
  for(let side=0;side<2;side++){
   const opponent=side?input.home:input.away;
@@ -135,8 +137,8 @@ export function recordDevelopmentMatch(s,input,result,date){
   }
  }
 }
-export function setPlayerTraining(s,id,{focus,load}){
- const p=registeredPlayer(s,id);if(!s.manager||p?.club!==s.manager.clubId)throw Error('只能安排本队球员训练');
+export function setPlayerTraining(s,id,{focus,load}){if(s.population)return populationDevelopment.setPlayerTraining(s,id,{focus,load});
+ const p=registeredPlayer(s,id);if(p?.retired)throw Error('退役球员不能训练');if(!s.manager||p?.club!==s.manager.clubId)throw Error('只能安排本队球员训练');
  const registration=s.playerRegistry?.registrations?.[id];
  if(registration?.pathway==='royal'&&!registration.signedAt)throw Error('学院负责未签约球员的训练');
  if(s.activeMatch)throw Error('请在比赛结束后安排训练');
@@ -144,7 +146,7 @@ export function setPlayerTraining(s,id,{focus,load}){
  if(focus==='goalkeeper'&&p.position!=='GK')throw Error('该球员不是门将');
  const d=ensureDevelopment(s);d.plans[id]={focus,load};s.revision++;
 }
-export function developmentReport(s,p){
+export function developmentReport(s,p){if(s.population)return populationDevelopment.developmentReport(s,p);
  const original=registeredPlayer(s,p.id);if(!original)return null;
  const r=s.development?.records[p.id],ability=preciseRating(p);
  const currentBody=bodyRecord(original,s.date),startDate=[dateOf(Number(s.date.slice(0,4)),1,1),original.ageReferenceDate||s.date].sort().at(-1),startBody=bodyRecord(original,startDate);
@@ -153,7 +155,7 @@ export function developmentReport(s,p){
   changes:Object.entries(p.attributes).map(([key,value])=>({key,change:value-(r?.seasonAttributes?.[key]??value)})).filter(x=>Math.abs(x.change)>=.05).sort((a,b)=>Math.abs(b.change)-Math.abs(a.change)).slice(0,6),
   youthMinutes:r?.seasonYouthMinutes||0,youthAppearances:r?.seasonYouthAppearances||0,history:r?.history||[],annual:r?.annual||[]};
 }
-export function validateDevelopment(d,s={}){
+export function validateDevelopment(d,s={}){if(s.population)return populationDevelopment.validateDevelopment(d,s.population);
  if(!d)return;
  const byId=new Map(registeredPlayers(s,{includeRetired:true}).map(p=>[p.id,p]));
  const validDate=date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date))&&new Date(date).toISOString().slice(0,10)===date;

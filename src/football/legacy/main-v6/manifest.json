@@ -1,0 +1,19 @@
+{
+  "ref": "pre-engine-merge",
+  "commit": "e6e6ea12950aecda19f08e24eda72af7c0a7f521",
+  "files": {
+    "src/football/engine.js": "5cff6c1bf332a130abfda24205ec876752b098498e82e4d3ae4d2d9e61518483",
+    "src/football/random.js": "7be3606e01c639c3f05f1e1f8c4b5e8aadd7c7078e7845b68efbf675f50fb498",
+    "src/football/players.js": "a872e0197316f52df113102661e83aa4b622e0f9e14a6f26917b005683705c0a",
+    "src/football/names.js": "a084fcb80fbd03a9ab8eba87dc09bd2d4d73062dca3bb0fab4779cb8133f6a0d",
+    "src/football/names-data.js": "f4221fbf895852ba2279770e9f67531ecb9beed5fb907321dd936af89290186a",
+    "src/football/body.js": "2ad46771ff1b15bd4b84635462507d357099a9e9f72ae63d4e90e85695b6966e",
+    "src/football/youth-specialties.js": "b0a82a8dc5f237f5a1dc6a3dd8885957c484f83240df5bd8fa75514d747d9a31",
+    "src/football/config.js": "7024a577f882f7dcac770ad826b08d8cd5966881841ff60015ec059b65cccb06",
+    "src/football/shots.js": "d18a1fde2951a07e5b7aa14ff9085dd8abcc5cec55ec835d3ddc21418524538c",
+    "src/football/tactics.js": "ed9aa4501892d81c7027f29371939d7eb8ca7088f3819330666ad2f89dbd3b34",
+    "src/football/fitness.js": "7fa149f1a5724b3df5f54e0df8bfd71cc6b5c230299fcc406a215a403b7179de",
+    "src/football/rules.js": "3de9c624b159750a73ded92a6a59bb951895dddc36017bd18fe56c42981f5d6a",
+    "src/football/ai-team.js": "aae48caee254112301d0200b5fedcf16dae1ce716b5a4a9a683e78632e65a3b6"
+  }
+}

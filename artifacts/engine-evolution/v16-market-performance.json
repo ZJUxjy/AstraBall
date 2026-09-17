@@ -1,0 +1,13 @@
+{
+  "scope": "Identical two-week career progression from the same late-world save, before/after affordability prefilter. Includes all player, contract, transaction, growth and ledger state.",
+  "date": "0325-01-01",
+  "oldMs": 21483.291041999997,
+  "newMs": 733.4254590000019,
+  "speedup": 29.29171707686785,
+  "saveHash": "061ba5685afebe1147401e181640ae5dfa7aac4a412f748eefe183e81714a14c",
+  "identical": true,
+  "sourceHashes": {
+    "before": "d3ade86fef1afc39aff766d898bec6c2190dabeeb1dfc7b89dcb56f93955558b",
+    "after": "a5631f7227e5acb9a72f948ec6cf122c3397399e3cdfcd611572c426058fa803"
+  }
+}

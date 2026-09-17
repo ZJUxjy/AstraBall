@@ -1,0 +1,10 @@
+{
+  "tests": 205,
+  "pass": 203,
+  "fail": 2,
+  "failures": [
+    "Compatibility test incorrectly compared the updated V18 AI with V12 event-for-event; retain frozen V17 parity and separately verify current manual simulation parity.",
+    "New optional undefined season fields were not JSON-stable; omit absent optional fields."
+  ],
+  "originalLogSHA256": "b3526763af58d4cf355a997673c9158a1e70c114a9b10a8d12e959a7846a163e"
+}

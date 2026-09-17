@@ -1,3 +1,5 @@
+import {YEAR} from '../world.js';
+import {registryMovement} from './market.js';
 import {footballTeams} from '../football/data.js';
 import {generateYouthPlayer,preciseRating,POSITIONS} from '../football/players.js';
 import {rng,clamp} from '../football/random.js';
@@ -38,6 +40,7 @@ function hasSeat(s,clubId,p,date=s.date){
 function move(s,id,date,status,clubId,changes={},type=status,text){
  const r=ensurePlayerRegistry(s),p=r.players[id]||registeredPlayer(s,id),reg=r.registrations[id],from=reg.clubId;
  if(!p||date<reg.statusSince)throw Error('球员流转日期无效');
+ if(!registryMovement(s,{...p,club:reg.clubId,birthYear:(p.ageReferenceDate?Number(p.ageReferenceDate.slice(0,4)):YEAR)-p.age},reg,{date,status,clubId,ownerClubId:changes.ownerClubId??reg.ownerClubId,type}))return false;
  Object.assign(reg,{status,clubId,statusSince:date,loanUntil:null},changes);
  reg.history.push({date,status,clubId,ownerClubId:reg.ownerClubId});
  if(['senior','loan'].includes(status)){const numbers=new Set(registeredRoster(s,clubId).filter(q=>q.id!==id).map(q=>q.number));let number=reg.number||p.number||1;while(numbers.has(number))number++;reg.number=number;if(r.players[id])p.number=number;}
@@ -130,7 +133,7 @@ export function setYouthPath(s,id,path,options={}){
  if(s.activeMatch)throw Error('请在比赛结束后调整培养路径');
  if(!s.manager)throw Error('请先接手俱乐部');
  const opportunities=youthOpportunities(s,id);if(!opportunities.actions.includes(path))throw Error('当前球员不能选择该培养路径');
- const r=ensurePlayerRegistry(s),reg=r.registrations[id],clubId=s.manager.clubId,date=s.date;
+ const r=ensurePlayerRegistry(s),reg=r.registrations[id],clubId=s.manager.clubId,date=s.date,beforeMoves=reg.history.length;
  if(path==='retain'){
   if(reg.retainedAt===date)return registeredPlayer(s,id);
   reg.retainedAt=date;emit(r,r.players[id],date,'retain','继续青训');
@@ -142,6 +145,7 @@ export function setYouthPath(s,id,path,options={}){
   if(!opportunities.loans.some(t=>t.id===target))throw Error('租借俱乐部不可用');
   move(s,id,date,'loan',target,{ownerClubId:clubId,signedAt:reg.signedAt||date,loanUntil:dateOf(Number(date.slice(0,4))+Number(date.slice(5)==='12-31'),12,31)},'loan',`租借至${teamById.get(target).name}`);
  }else if(path==='release')move(s,id,date,'free',null,{ownerClubId:null,rightsClubId:null,rightsUntil:null},'release','解除注册，继续寻找比赛机会');
+ if(path!=='retain'&&reg.history.length===beforeMoves)throw Error('合同预算或注册窗口不允许该操作');
  s.revision=(s.revision||0)+1;return registeredPlayer(s,id);
 }
 
