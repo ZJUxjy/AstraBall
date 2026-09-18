@@ -55,6 +55,14 @@ export function mustOffloadClub(s,id){
  if(wageBill(s,id)>s.economy.accounts[id].wageLimit)return true;
  return Boolean(s.history?.seasons?.at(-1)?.movements?.some(m=>m.id===id&&m.kind==='down'));
 }
+function clubMustOffload(s){
+ const cache=new Map();
+ return id=>{
+  if(!id)return false;
+  if(!cache.has(id))cache.set(id,mustOffloadClub(s,id));
+  return cache.get(id);
+ };
+}
 export function askingPrice(s,p){if(!p.club)return 0;if(s.economy?.marketVersion===ECONOMIC_MODEL){const c=s.economy.contracts[p.id];return marketTransferValue({ability:toAbility(currentSkill(s,p)),age:s.year-p.birthYear,remainingDays:c?daysBetween(s.date,addDays(c.end,1)):0,position:p.position});}const age=s.year-p.birthYear,ageFactor=clamp(1.25-(age-22)*.045,.35,1.6);return Math.round(weeklyWage(s,p)*65*ageFactor/100)*100;}
 function transferEligibility(s,id,buyer,years=3,{sellerApproved=false,context}={}){
  const e=ensureEconomy(s),p=context?.byId.get(id)||populationPlayer(s,id),rosterFor=club=>context?.rosters.get(club)||clubPlayers(s,club);
@@ -209,6 +217,7 @@ function aiReview(s){
  if(!isTransferWindow(s))return;
  if(competitiveMarket(s)){runMarketAuctions(s);runLocalBridge(s);}
  else {
+ const offload=clubMustOffload(s);
  const all=populationPlayers(s).filter(p=>['senior','free'].includes(p.unit)&&p.club!==s.manager?.clubId&&p.registrationStatus!=='loan'&&(!p.lastTransfer||daysBetween(p.lastTransfer,s.date)>=90)),ability=new Map(all.map(p=>[p.id,currentSkill(s,p)])),offered=new Set();
  for(const team of seniorTeams(s)){if(team.id===s.manager?.clubId)continue;const roster=clubPlayers(s,team.id);if(roster.length<=23)continue;const positions=new Map();for(const p of roster){const peers=positions.get(p.position)||[];peers.push(p);positions.set(p.position,peers);}for(const [position,peers] of positions)if(peers.length>(position==='GK'?2:1)){peers.sort((a,b)=>(ability.get(a.id)??currentSkill(s,a))-(ability.get(b.id)??currentSkill(s,b))||a.id.localeCompare(b.id));offered.add(peers[0].id);}}
  const candidates=all.filter(p=>!p.club||offered.has(p.id));
@@ -220,7 +229,7 @@ function aiReview(s){
   if(capacity<70)continue;
   const affordable=p=>{const demand=demandAt(s,ability.get(p.id),team.id),wage=Math.max(demand,Math.ceil((e.contracts[p.id]?.weeklyWage||0)*1.05/7)*7);if(wage>capacity)return false;const fee=askingPrice(s,p);return fee+wage*4<=Math.min(account.transferBudget-account.spent,account.cash-financialReserve(s,team.id,bill+wage));};
   const depths=new Map();for(const p of roster){const depth=depths.get(p.position)||{count:0,low:100};depth.count++;depth.low=Math.min(depth.low,ability.get(p.id)??currentSkill(s,p));depths.set(p.position,depth);}
-  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&(ability.get(p.id)<=level+11||p.club&&mustOffloadClub(s,p.club))&&(ability.get(p.id)>=level-16||p.position==='GK'&&!depths.get('GK')?.count)&&affordable(p)).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(p.position==='GK'&&!depth.count?1000:essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&(x.quality>=level-16||x.p.position==='GK'&&!depths.get('GK')?.count)).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
+  const targets=candidates.filter(p=>p.club!==team.id&&!p.retired&&p.unit!=='youth'&&(ability.get(p.id)<=level+11||offload(p.club))&&(ability.get(p.id)>=level-16||p.position==='GK'&&!depths.get('GK')?.count)&&affordable(p)).map(p=>{const depth=depths.get(p.position)||{count:0,low:0},essential=depth.count<(p.position==='GK'?2:1),needed=depth.count<(p.position==='GK'?3:2),quality=ability.get(p.id),improvement=quality-depth.low;return {p,score:(p.position==='GK'&&!depth.count?1000:essential?300:needed?100:0)+(roster.length<24?60:0)+improvement,essential,needed,improvement,quality};}).filter(x=>(roster.length<27||x.essential)&&(x.needed||roster.length<24||x.improvement>5)&&(x.quality>=level-16||x.p.position==='GK'&&!depths.get('GK')?.count)).sort((a,b)=>b.score-a.score||a.p.id.localeCompare(b.p.id));
   for(const {p} of targets){try{signPlayer(s,p.id,team.id,3,{automatic:true});break;}catch{}}
  }
  }
@@ -233,7 +242,8 @@ export function runMarketAuctions(s){return withRosterIndex(s,()=>runMarketAucti
 function runMarketAuctionsIndexed(s){
  ensureReady(s);if(!competitiveMarket(s)||!isTransferWindow(s))return [];
  let context=bidContext(s);
- const candidates=context.players.filter(p=>['senior','free'].includes(p.unit)&&p.registrationStatus!=='loan'&&p.club!==s.manager?.clubId&&(!p.club||canLose(s,p,{minimum:mustOffloadClub(s,p.club)?18:23}))&&(!p.lastTransfer||daysBetween(p.lastTransfer,s.date)>=90));
+ const offload=clubMustOffload(s);
+ const candidates=context.players.filter(p=>['senior','free'].includes(p.unit)&&p.registrationStatus!=='loan'&&p.club!==s.manager?.clubId&&(!p.club||canLose(s,p,{minimum:offload(p.club)?18:23}))&&(!p.lastTransfer||daysBetween(p.lastTransfer,s.date)>=90));
  const terms=new Map(candidates.map(p=>[p.id,openingTerms(s,p,context)])),shortlist=new Set();
  for(const t of seniorTeams(s)){
   if(t.id===s.manager?.clubId)continue;

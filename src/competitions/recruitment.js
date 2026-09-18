@@ -32,6 +32,9 @@ export function recruitmentContext(s,date,roster){
   return teams.get(id);
  };
  const plan=id=>{if(!plans.has(id))plans.set(id,planAITeam(team(id),{healthy:true,rotation:false,allowIncomplete:true}));return plans.get(id);};
+ const wageBills=new Map();
+ for(const c of Object.values(s.economy?.contracts||{}))wageBills.set(c.club,(wageBills.get(c.club)||0)+c.weeklyWage);
+ const relegated=new Set((s.history?.seasons?.at(-1)?.movements||[]).filter(m=>m.kind==='down').map(m=>m.id));
  return {clubs:seniorTeams(s),date,managedClubId:s.manager?.clubId,originalSince:s.development?.since||`${date.slice(0,4)}-01-01`,team,plan,minutes,games,division:id=>divisions.get(id),tier:id=>id&&isMetroLeague(divisions.get(id))?0:getDivision(divisions.get(id))?.tier??1,
   age(p){if(!ages.has(p.id))ages.set(p.id,playerAgeOnDate(p,date));return ages.get(p.id);},
   roleScore(p,position){const key=`${p.id}/${position}`;if(!scores.has(key))scores.set(key,aiRoleScore({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes},position,{condition:100}));return scores.get(key);},
@@ -47,8 +50,7 @@ export function recruitmentContext(s,date,roster){
   opportunity:(id,p)=>plan(id).opportunities[p.id]||evaluateOpportunity(team(id),p,{healthy:true,rotation:false,allowIncomplete:true}),
   mustOffload:id=>{
    const a=s.economy?.accounts[id];if(!a)return false;
-   const bill=Object.values(s.economy.contracts||{}).reduce((n,c)=>n+(c.club===id?c.weeklyWage:0),0);
-   return bill>a.wageLimit||Boolean(s.history?.seasons?.at(-1)?.movements?.some(m=>m.id===id&&m.kind==='down'));
+   return (wageBills.get(id)||0)>a.wageLimit||relegated.has(id);
   },
   invalidate(...ids){for(const id of ids){teams.delete(id);plans.delete(id);}}
  };
