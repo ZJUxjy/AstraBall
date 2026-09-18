@@ -11,7 +11,7 @@ import {getDivision,getSystem} from './catalog.js';
 import {draftOrder} from './season.js';
 import {dateOf,addDays,daysBetween} from './calendar.js';
 import {academyFixtures,academyTrainingQuality} from './academy.js';
-import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates,inRecruitmentWindow} from './recruitment.js';
+import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates,isRecruitmentReviewDate} from './recruitment.js';
 import {ensurePlayerRegistry,registeredPlayers,registeredPlayer,registeredRoster as baseRegisteredRoster,registryDate,playerAgeOnDate} from './registry.js';
 
 const teamById={get:knownTeam,has:id=>Boolean(knownTeam(id))};
@@ -300,7 +300,7 @@ export function advanceYouthPathways(s,date=s.date){
  }
  if(date.slice(5)==='01-20')runDraft(s,date);
  if(['06-30','12-31'].includes(date.slice(5)))review(s,date);
- else if(inRecruitmentWindow(date)){
+ else if(isRecruitmentReviewDate(date)){
   const context=recruitmentContext(s,date,id=>registeredRoster(s,id));recruitmentContexts.set(s,context);
   recruitEstablishedPlayers(s,date,context);
  }

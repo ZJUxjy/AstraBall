@@ -57,6 +57,11 @@ export function inRecruitmentWindow(date){
  const md=date.slice(5);
  return md>='01-01'&&md<='02-28'||md>='07-01'&&md<='07-31';
 }
+export function isRecruitmentReviewDate(date){
+ if(!inRecruitmentWindow(date))return false;
+ // Same 7-day grid as development weeks from 1 January, plus the summer window open.
+ return daysBetween(`${date.slice(0,4)}-01-01`,date)%7===0||date.slice(5)==='07-01';
+}
 
 export function lacksPlayingTime(context,p,reg){
  // Six months of actual fixtures, with a settling-in period. Missing match

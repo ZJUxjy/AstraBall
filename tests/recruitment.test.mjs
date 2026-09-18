@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createSeason} from '../src/competitions/runtime.js';
 import {footballTeams} from '../src/football/data.js';
 import {ATTRIBUTE_KEYS} from '../src/football/players.js';
-import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates} from '../src/competitions/recruitment.js';
+import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates,isRecruitmentReviewDate} from '../src/competitions/recruitment.js';
 import {registeredPlayers,registeredRoster,validatePlayerRegistry} from '../src/competitions/registry.js';
 import {advanceYouthPathways} from '../src/competitions/youth.js';
 import {ensureEconomy} from '../src/competitions/market.js';
@@ -100,6 +100,10 @@ test('原始球员转会使用注册号码覆盖，不修改原始名册或与�
  assert.deepEqual(p,original);validatePlayerRegistry(s);
 });
 test('六月三十日不批量转会，窗口日才招募成材球员',()=>{
+ assert.equal(isRecruitmentReviewDate('0318-06-30'),false);
+ assert.equal(isRecruitmentReviewDate('0318-07-01'),true);
+ assert.equal(isRecruitmentReviewDate('0318-07-03'),false);
+ assert.equal(isRecruitmentReviewDate('0318-01-08'),true);
  const {s,p}=signedTalent();s.date='0318-06-30';advanceYouthPathways(s,s.date);
  assert.equal(s.playerRegistry.registrations[p.id].clubId,source.id);
  s.date='0318-07-01';advanceYouthPathways(s,s.date);
