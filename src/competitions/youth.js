@@ -11,7 +11,7 @@ import {getDivision,getSystem} from './catalog.js';
 import {draftOrder} from './season.js';
 import {dateOf,addDays,daysBetween} from './calendar.js';
 import {academyFixtures,academyTrainingQuality} from './academy.js';
-import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates} from './recruitment.js';
+import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates,inRecruitmentWindow} from './recruitment.js';
 import {ensurePlayerRegistry,registeredPlayers,registeredPlayer,registeredRoster as baseRegisteredRoster,registryDate,playerAgeOnDate} from './registry.js';
 
 const teamById={get:knownTeam,has:id=>Boolean(knownTeam(id))};
@@ -204,7 +204,6 @@ function review(s,date){
   }
   if(reg.status==='youth'&&reg.pathway==='royal'&&age>=24)move(s,p.id,date,'free',null,{ownerClubId:null},'graduate','结束学院培养，可自由签约');
  }
- recruitEstablishedPlayers(s,date,context);
 }
 
 function recruitEstablishedPlayers(s,date,context){
@@ -229,7 +228,8 @@ function recruitEstablishedPlayers(s,date,context){
     move(s,replacement.id,date,'free',null,{ownerClubId:null},'release','阵容调整后解除注册，寻找比赛机会');
    }
    if(!reg)registerOriginal(s,p,date);
-   move(s,p.id,date,'senior',club.id,{ownerClubId:club.id,signedAt:date,transferredAt:date},'transfer',`转会至${club.name}，争取更高级别比赛`);
+   const sourceTier=context.tier(source),targetTier=context.tier(club.id);
+   move(s,p.id,date,'senior',club.id,{ownerClubId:club.id,signedAt:date,transferredAt:date},'transfer',targetTier<sourceTier?`转会至${club.name}，争取更高级别比赛`:`转会至${club.name}`);
    departures.set(source,(departures.get(source)||0)+1);arrivals++;
   }
  }
@@ -299,6 +299,10 @@ export function advanceYouthPathways(s,date=s.date){
  }
  if(date.slice(5)==='01-20')runDraft(s,date);
  if(['06-30','12-31'].includes(date.slice(5)))review(s,date);
+ else if(inRecruitmentWindow(date)){
+  const context=recruitmentContext(s,date,id=>registeredRoster(s,id));recruitmentContexts.set(s,context);
+  recruitEstablishedPlayers(s,date,context);
+ }
  if(date.slice(5)==='12-31'&&!r.retirementYears?.includes(Number(date.slice(0,4)))){retirePlayers(s,date);(r.retirementYears??=[]).push(Number(date.slice(0,4)));}
  r.through=date;return r;
  }finally{rosterContexts.delete(s);recruitmentContexts.delete(s);}

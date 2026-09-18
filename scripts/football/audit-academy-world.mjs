@@ -5,6 +5,7 @@ import {gzipSync,gunzipSync} from 'node:zlib';
 import {parseArgs} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {createSeason,pendingMatches,playFixture,finishDate,followingSeason,engineSimulation,validateSave,seasonTeam} from '../../src/competitions/runtime.js';
+import {ensureEconomy} from '../../src/competitions/market.js';
 import {appointManager,isManagedFixture,coachPreview,beginCoachedMatch,updateCoachedMatch} from '../../src/competitions/career.js';
 import {registeredPlayers,registeredPlayer,playerAgeOnDate} from '../../src/competitions/registry.js';
 import {advanceDevelopment,developedPlayer,setPlayerTraining} from '../../src/competitions/development.js';
@@ -41,7 +42,7 @@ if(values.resume){
  season=validateSave(saved.season);report.status='running';delete report.failure;
 }else{
  if(fs.existsSync(checkpoint))throw Error('输出目录已有检查点，请用 --resume 或指定新的 --out');
- season=createSeason();if(careerYears)appointManager(season,'bridge');
+ season=createSeason({worldModel:true});ensureEconomy(season);if(careerYears)appointManager(season,'bridge');
  report={schema:2,mode,execution,parallelMetrics:{},sourceHash,sourceHashes,requestedYears:years,startedAt:new Date().toISOString(),status:'running',completedMonths:0,matches:0,coachedMatches:0,engineFailures:[],availabilityWarnings:[],debuts:{},seasons:[],actions:[],tracked:[],baseline:null,notes:['正式赛事使用生产比赛引擎；青年比赛按现有游戏逻辑模拟。','startingCA保留成长后固定4-3-3选人可比指标；actualAIStartingCA为年末健康状态下AI所选阵型的槽位CA，非plan.score，也不是逐场实测均值。', '年龄×PA兑现仅新生成未退役球员，按年末周岁和隐藏PA分组；CA/PA为描述统计，不代表真实兑现概率。', '角色分钟取本季正式fixtures；转会取完整注册history的senior→senior跨队迁移，避免有界事件列表漏记，流向按当年members。','GK≥2、CB≥3为名单深度诊断，非引擎硬限制；GK≥1、总人数≥11单独检查。','3季经理情景为固定政策的集成试玩，不代表真人玩家可理解性研究。','初始老球员缺少之前赛季比赛履历，首次职业出场年龄只统计本次新生成青年。']};
  if(careerYears)report.tracked=[0,1,2].map((n)=>({id:`youth:${season.year}:bridge:${n}`,role:['重点培养','外租','提拔'][n]}));
 }

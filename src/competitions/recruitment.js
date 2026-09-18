@@ -45,8 +45,17 @@ export function recruitmentContext(s,date,roster){
   },
   player:p=>({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes}),
   opportunity:(id,p)=>plan(id).opportunities[p.id]||evaluateOpportunity(team(id),p,{healthy:true,rotation:false,allowIncomplete:true}),
+  mustOffload:id=>{
+   const a=s.economy?.accounts[id];if(!a)return false;
+   const bill=Object.values(s.economy.contracts||{}).reduce((n,c)=>n+(c.club===id?c.weeklyWage:0),0);
+   return bill>a.wageLimit||Boolean(s.history?.seasons?.at(-1)?.movements?.some(m=>m.id===id&&m.kind==='down'));
+  },
   invalidate(...ids){for(const id of ids){teams.delete(id);plans.delete(id);}}
  };
+}
+export function inRecruitmentWindow(date){
+ const md=date.slice(5);
+ return md>='01-01'&&md<='02-28'||md>='07-01'&&md<='07-31';
 }
 
 export function lacksPlayingTime(context,p,reg){
@@ -74,12 +83,17 @@ export function loanDestinations(context,p,reg,hasSeat){
   .sort((a,b)=>b.expectedMinutes-a.expectedMinutes||Number(clubs.get(b.id).league===source.league)-Number(clubs.get(a.id).league===source.league)||a.id.localeCompare(b.id)).slice(0,8);
 }
 
+function sellerWouldSell(context,p,reg,targetTier){
+ const sourceTier=context.tier(reg.clubId);
+ if(sourceTier>targetTier)return true;
+ return context.mustOffload?.(reg.clubId)||lacksPlayingTime(context,p,reg)||context.opportunity(reg.clubId,context.player(p)).expectedMinutes<45;
+}
 export function transferCandidates(context,players,registrations,clubId){
  const targetTier=context.tier(clubId),target=context.plan(clubId),targetTeam=context.team(clubId);
  const slots=[...target.lineup.map(slot=>({position:slot.position,score:context.roleScore(targetTeam.roster.find(p=>p.id===slot.id),slot.position)})),...(target.vacancies||[]).map(position=>({position,score:0}))];
  return players.filter(p=>{
   const reg=registrations[p.id]||{status:'senior',clubId:p.club,statusSince:context.originalSince};
-  if(reg.status!=='senior'||reg.clubId===clubId||context.tier(reg.clubId)<=targetTier)return false;
+  if(reg.status!=='senior'||reg.clubId===clubId||!sellerWouldSell(context,p,reg,targetTier))return false;
   const age=context.age(p);
   return age>=18&&age<=30&&
    daysBetween(reg.statusSince,context.date)>=180&&(!reg.transferredAt||daysBetween(reg.transferredAt,context.date)>=365);
