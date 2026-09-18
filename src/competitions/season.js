@@ -32,13 +32,25 @@ export function knockoutBracket(ids,{seed='318',prefix='cup',shuffle=true}={}){
  while(slots.length>1){const next=[];for(let i=0;i<slots.length;i+=2){const id=`${prefix}-r${round}-${i/2+1}`,home=slots[i],away=slots[i+1],bye=!home||!away;result.push({id,round,home,away,bye,winner:bye?(home||away):null});next.push(bye?(home||away):`winner:${id}`);}slots=next;round++;}
  return result;
 }
-export function promotedTeams(table,{playoffWinner}={}){
- if(table.length<6||new Set(table.map(r=>r.id)).size!==table.length)throw Error('排名表无效');const eligible=table.slice(2,6).map(r=>r.id);if(!eligible.includes(playoffWinner))throw Error('附加赛冠军须来自第 3—6 名');return [...table.slice(0,2).map(r=>r.id),playoffWinner];
+export function promotedTeams(table,{playoffWinner,automatic=2,playoff}={}){
+ const ranks=playoff?.length?playoff:[3,4,5,6],auto=automatic??ranks[0]-1;
+ if(table.length<ranks.at(-1)||new Set(table.map(r=>r.id)).size!==table.length)throw Error('排名表无效');
+ const eligible=ranks.map(n=>table[n-1]?.id);if(!eligible.includes(playoffWinner))throw Error('附加赛冠军须来自附加赛资格名次');
+ return [...table.slice(0,auto).map(r=>r.id),playoffWinner];
+}
+export function friendlyFixtures(year,members,dates){
+ const ids=Object.values(members).flat(),result=[];
+ for(const date of dates){
+  const order=[...ids],random=rng(`friendly:${year}:${date}`);
+  for(let i=order.length-1;i>0;i--){const j=random.int(0,i);[order[i],order[j]]=[order[j],order[i]];}
+  for(let i=0;i+1<order.length;i+=2)result.push({id:`${year}:friendly:${date}:${i/2}`,round:1,home:order[i],away:order[i+1],date});
+ }
+ return result;
 }
 export function moveDivisions(levels,tables,playoffWinners){
  if(levels.length!==tables.length)throw Error('缺少级别排名');for(let i=0;i<levels.length;i++){if(tables[i].length!==levels[i].teams||new Set(tables[i].map(r=>r.id)).size!==levels[i].teams)throw Error('排名人数无效');}
  const next=tables.map(t=>t.map(r=>r.id));if(new Set(next.flat()).size!==next.flat().length)throw Error('球队跨级重复');
- for(let i=0;i<levels.length-1;i++){const policy=levels[i+1].promotion,up=policy.playoff?.length?promotedTeams(tables[i+1],{playoffWinner:playoffWinners[i+1]}):tables[i+1].slice(0,policy.automatic).map(r=>r.id),down=tables[i].slice(-levels[i].relegation).map(r=>r.id);if(up.length!==down.length)throw Error('升降级名额不平衡');next[i]=next[i].filter(id=>!down.includes(id)).concat(up);next[i+1]=next[i+1].filter(id=>!up.includes(id)).concat(down);}
+ for(let i=0;i<levels.length-1;i++){const policy=levels[i+1].promotion,up=policy.playoff?.length?promotedTeams(tables[i+1],{playoffWinner:playoffWinners[i+1],automatic:policy.automatic,playoff:policy.playoff}):tables[i+1].slice(0,policy.automatic).map(r=>r.id),down=tables[i].slice(-levels[i].relegation).map(r=>r.id);if(up.length!==down.length)throw Error('升降级名额不平衡');next[i]=next[i].filter(id=>!down.includes(id)).concat(up);next[i+1]=next[i+1].filter(id=>!up.includes(id)).concat(down);}
  return next;
 }
 export function globalQualifiers(rankings){return leagueSystems.filter(s=>s.globalSlots>0).flatMap(s=>{const list=rankings[s.id];if(!list||list.length<s.globalSlots)throw Error(`缺少 ${s.name} 排名`);return list.slice(0,s.globalSlots).map((row,i)=>({id:row.id,system:s.id,rank:i+1}));});}
