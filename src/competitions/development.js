@@ -32,7 +32,9 @@ function enterYear(r,p,date){
 }
 function exposure(r,date,minutes,kind){
  r.recentExposure=(r.recentExposure||[]).filter(row=>daysBetween(row.date,date)<7);
+ const repeat=kind==='senior'&&minutes>=90&&r.recentExposure.some(row=>row.kind==='senior'&&row.minutes>=90);
  r.recentExposure.push({date,minutes,kind});
+ if(repeat)r.sharpness=clamp((r.sharpness??80)-8,0,100);
 }
 function nextMatches(s){
  const dates=new Map(),context={fixturesById:new Map((s.fixtures||[]).map(fixture=>[fixture.id,fixture]))};

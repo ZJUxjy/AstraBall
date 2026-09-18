@@ -27,6 +27,8 @@ test('地方青训提拔与租借会改变真实参赛名单，租期结束归�
  assert.equal(new Set(registeredRoster(s,host.id).map(q=>q.number)).size,registeredRoster(s,host.id).length);
  assert.equal(youthWeekContext(s,p,'0318-02-01','0318-04-01').minutes,0);
  advanceYouthPathways(s,'0318-12-31');assert.equal(s.playerRegistry.registrations[p.id].status,'senior');assert.equal(registeredPlayer(s,p.id).club,'bridge');
+ assert.equal(s.playerRegistry.registrations[p.id].returnedAt,'0318-12-31');
+ assert.ok(!youthOpportunities(s,p.id).actions.includes('loan'));
  const before=JSON.stringify(s.playerRegistry);advanceYouthPathways(s,'0318-12-31');assert.equal(JSON.stringify(s.playerRegistry),before);validatePlayerRegistry(s);
 });
 test('皇家学院不受关联职业队任意处分，毕业选秀先授签约权再进入职业队',()=>{
