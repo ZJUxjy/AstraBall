@@ -62,7 +62,7 @@ export const pendingMatches=s=>s.fixtures.filter(m=>!finished(m));
 function eligibleAcademy(s,id,date,minimumAge=17){return clubPlayers(s,id,{unit:'youth'}).filter(p=>{const reg=s.playerRegistry?.registrations[p.id],age=playerAgeOnDate(p,date);return reg?.pathway==='local'&&age>=minimumAge&&age<21&&s.economy?.contracts[p.id]?.club===id;});}
 function teamAt(s,id,competition,date){
  const t=knownTeam(id);if(!t)throw Error('球队不存在');
- const atDate=p=>{const state=s.playerState[p.id];const elapsed=state?Math.max(0,daysBetween(state.date,date)):0;return {...developedPlayer(s,p,date),playedToday:[s.development?.records[p.id]?.lastMatchDate,s.development?.records[p.id]?.lastYouthMatchDate].includes(date),trainingFatiguePenalty:fatiguePenalty(s.development?.records[p.id]?.fatigue),condition:Math.max(0,(state?Math.min(100,state.condition+elapsed*7):p.condition)-fatiguePenalty(s.development?.records[p.id]?.fatigue)),injuryDays:state?Math.max(0,state.injuryDays-elapsed):p.injuryDays,suspended:s.discipline[`${competition}/${p.id}`]?.ban||0};};
+ const atDate=p=>{const state=s.playerState[p.id];const elapsed=state?Math.max(0,daysBetween(state.date,date)):0;return {...developedPlayer(s,p,date),playedToday:[s.development?.records[p.id]?.lastMatchDate,s.development?.records[p.id]?.lastYouthMatchDate].includes(date),trainingFatiguePenalty:fatiguePenalty(s.development?.records[p.id]?.fatigue),condition:Math.max(0,(state?Math.min(100,state.condition+elapsed*7):p.condition)-fatiguePenalty(s.development?.records[p.id]?.fatigue)),injuryDays:state?Math.max(0,state.injuryDays-elapsed):p.injuryDays,injuryHistory:state?.injuryHistory||p.injuryHistory||0,suspended:s.discipline[`${competition}/${p.id}`]?.ban||0};};
  const roster=clubPlayers(s,id).map(atDate),availableCount=roster.filter(available).length;
  // A local academy player's existing contract permits emergency first-team duty.
  // No new player, transfer or professional wage is invented to fill the bench.
@@ -83,7 +83,7 @@ export function matchInput(s,m){
  for(const side of ['home','away']){const count=input[side].roster.filter(available).length;if(count<7)throw Error('可用球员不足7人，需要赛事裁决');const plan=planAITeam(input[side],{date:m.date,records:s.development?.records,allowIncomplete:true,requireKeeper:true});input[`${side}Tactics`]={formation:plan.formation};input[`${side}Lineup`]=plan.lineup;input[`${side}AI`]=true;if(count<11)input.allowShortHanded=true;}
  return input;
 }
-export function engineSimulation(input){const state=createMatch(input);while(state.status==='playing')stepMatch(state);const result=getResult(state);return {...result,health:state.teams.flatMap(t=>t.roster.map(p=>({id:p.id,condition:t.lines[p.id].condition,injuryDays:p.injuryDays}))) };}
+export function engineSimulation(input){const state=createMatch(input);while(state.status==='playing')stepMatch(state);const result=getResult(state);return {...result,health:state.teams.flatMap(t=>t.roster.map(p=>({id:p.id,condition:t.lines[p.id].condition,injuryDays:p.injuryDays,injuryHistory:p.injuryHistory||0}))) };}
 export function commitResult(s,m,input,result){
  if(m.score)throw Error('比赛已经结束');
  if(result.status!=='finished'||!Array.isArray(result.score)||result.score.length!==2||!result.score.every(n=>Number.isInteger(n)&&n>=0))throw Error('比赛未正常结束，需要赛事裁决');
@@ -102,7 +102,7 @@ export function commitResult(s,m,input,result){
  // Match condition already includes the starting fatigue penalty. Store its raw
  // component so the next match does not subtract the same fatigue twice.
  const penalties=new Map([input.home,input.away].flatMap(t=>t.roster.map(p=>[p.id,p.trainingFatiguePenalty||0])));
- for(const p of result.health||[])s.playerState[p.id]={condition:Math.min(100,p.condition+(penalties.get(p.id)||0)),injuryDays:p.injuryDays,date:m.date};
+ for(const p of result.health||[])s.playerState[p.id]={condition:Math.min(100,p.condition+(penalties.get(p.id)||0)),injuryDays:p.injuryDays,injuryHistory:p.injuryHistory||s.playerState[p.id]?.injuryHistory||0,date:m.date};
  s.revision++;
 }
 export function nextDate(s){if(s.date>=dateOf(s.year,12,31))return null;const dates=[...pendingMatches(s).map(m=>m.date),...s.calendar.events.flatMap(e=>[e.date,...(e.end?[e.end]:[])]),dateOf(s.year,12,31)].filter(d=>d>s.date||d===s.date&&pendingMatches(s).some(m=>m.date===d));return dates.sort()[0]||null;}
