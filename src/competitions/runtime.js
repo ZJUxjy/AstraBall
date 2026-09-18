@@ -19,8 +19,8 @@ import {matchReputation} from './reputation.js';
 import {ECONOMIC_MODEL} from './economics.js';
 import {createMatch,stepMatch,getResult,validateMatchSnapshot} from '../football/engine.js';
 import {leagueSystems,getDivision,RULESET_VERSION,METRO_SYSTEMS,isMetroLeague,isGlobalCupYear} from './catalog.js';
-import {roundRobin,knockoutBracket,globalQualifiers,globalGroups,moveDivisions,draftOrder,metroChampionshipFixtures} from './season.js';
-import {dateOf,addDays,daysBetween,seasonCalendar,roundDates} from './calendar.js';
+import {roundRobin,knockoutBracket,globalQualifiers,globalGroups,moveDivisions,draftOrder,metroChampionshipFixtures,friendlyFixtures} from './season.js';
+import {dateOf,addDays,daysBetween,seasonCalendar,roundDates,friendlyDates} from './calendar.js';
 import {tableFor,fixtureSides} from './participants.js';
 export {tableFor,groupTable,resolveParticipant,fixtureSides} from './participants.js';
 export const SAVE_VERSION=2;
@@ -39,6 +39,12 @@ export function createSeason({worldModel=false,year=YEAR,members=initialMembersh
    const rounds=Math.log2(ranks.length);
    for(const m of bracket)add(m,`${d.id}-playoffs`,'playoff',calendar.playoffs[m.round-1+4-rounds],{division:d.id,neutral:m.round===rounds});
   }
+  for(const d of system.levels){
+   const ranks=d.promotion?.playoff;if(!ranks?.length)continue;
+   const bracket=knockoutBracket(ranks.map(n=>`rank:${d.id}:${n}`),{shuffle:false,prefix:`${year}:${d.id}-playoffs`});
+   const rounds=Math.log2(ranks.length);
+   for(const m of bracket)add(m,`${d.id}-playoffs`,'playoff',calendar.playoffs[m.round-1],{division:d.id,neutral:m.round===rounds});
+  }
  }
  const metroDates=roundDates(calendar.metro,8);
  for(const m of metroChampionshipFixtures({prefix:`${year}:metro-champions`}))add(m,'metro-champions','championship-group',metroDates[m.round-1]);
@@ -51,6 +57,7 @@ export function createSeason({worldModel=false,year=YEAR,members=initialMembersh
  for(const g of groups)for(const m of roundRobin(g.teams.map(t=>t.id),{legs:1,seed:`${year}:group:${g.id}`,prefix:`${year}:global:${g.id}`}))add(m,'global-cup','group',calendar.global[m.round-1],{group:g.id,neutral:true});
  let slots=groups.length?['A:1','B:2','C:1','D:2','B:1','A:2','D:1','C:2'].map(x=>`group:${x}`):[];
  for(let round=1;slots.length>1;round++){const next=[];for(let i=0;i<slots.length;i+=2){const id=`${year}:global-ko:${round}:${i/2}`;add({id,home:slots[i],away:slots[i+1],round},'global-cup','global-ko',calendar.global[round+2],{neutral:true});next.push(`winner:${id}`);}slots=next;}
+ for(const m of friendlyFixtures(year,members,friendlyDates(year)))add(m,'friendly','friendly',m.date);
  fixtures.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
  const s={...(worldModel||economy?.world?{worldModel:1}:{}),version:SAVE_VERSION,abilityVersion:ABILITY_VERSION,ruleset:RULESET_VERSION,year,date:dateOf(year,1,1),members:structuredClone(members),qualifiers,qualificationSource,groups,fixtures,calendar,playerState:structuredClone(playerState),discipline:structuredClone(carryDiscipline),summary:null,draft:null,draftRanking:draftRanking||METRO_SYSTEMS.flatMap(id=>members[id]),revision:0,manager:structuredClone(manager),activeMatch:null,development:structuredClone(development||createDevelopment(dateOf(year,1,1))),playerRegistry:structuredClone(playerRegistry),population:structuredClone(population),economy:structuredClone(economy),history:structuredClone(history)};
  if(!s.population){ensurePlayerRegistry(s);ensureYouthIntake(s,s.date);migrateYouthBodies(s);}if(s.population||s.economy)ensureEconomy(s);if(!s.population)delete s.population;if(!s.economy)delete s.economy;if(!s.playerRegistry)delete s.playerRegistry;if(!s.history)delete s.history;return s;
@@ -62,7 +69,7 @@ export const pendingMatches=s=>s.fixtures.filter(m=>!finished(m));
 function eligibleAcademy(s,id,date,minimumAge=17){return clubPlayers(s,id,{unit:'youth'}).filter(p=>{const reg=s.playerRegistry?.registrations[p.id],age=playerAgeOnDate(p,date);return reg?.pathway==='local'&&age>=minimumAge&&age<21&&s.economy?.contracts[p.id]?.club===id;});}
 function teamAt(s,id,competition,date){
  const t=knownTeam(id);if(!t)throw Error('球队不存在');
- const atDate=p=>{const state=s.playerState[p.id];const elapsed=state?Math.max(0,daysBetween(state.date,date)):0;return {...developedPlayer(s,p,date),playedToday:[s.development?.records[p.id]?.lastMatchDate,s.development?.records[p.id]?.lastYouthMatchDate].includes(date),trainingFatiguePenalty:fatiguePenalty(s.development?.records[p.id]?.fatigue),condition:Math.max(0,(state?Math.min(100,state.condition+elapsed*7):p.condition)-fatiguePenalty(s.development?.records[p.id]?.fatigue)),injuryDays:state?Math.max(0,state.injuryDays-elapsed):p.injuryDays,suspended:s.discipline[`${competition}/${p.id}`]?.ban||0};};
+ const atDate=p=>{const state=s.playerState[p.id];const elapsed=state?Math.max(0,daysBetween(state.date,date)):0;return {...developedPlayer(s,p,date),playedToday:[s.development?.records[p.id]?.lastMatchDate,s.development?.records[p.id]?.lastYouthMatchDate].includes(date),trainingFatiguePenalty:fatiguePenalty(s.development?.records[p.id]?.fatigue),condition:Math.max(0,(state?Math.min(100,state.condition+elapsed*7):p.condition)-fatiguePenalty(s.development?.records[p.id]?.fatigue)),injuryDays:state?Math.max(0,state.injuryDays-elapsed):p.injuryDays,injuryHistory:state?.injuryHistory||p.injuryHistory||0,suspended:s.discipline[`${competition}/${p.id}`]?.ban||0};};
  const roster=clubPlayers(s,id).map(atDate),availableCount=roster.filter(available).length;
  // A local academy player's existing contract permits emergency first-team duty.
  // No new player, transfer or professional wage is invented to fill the bench.
@@ -79,11 +86,11 @@ export function seasonPlayer(s,id){const p=populationPlayer(s,id);if(!p)return n
 export function seasonTeam(s,id,competition){return teamAt(s,id,competition||Object.keys(s.members).find(d=>s.members[d].includes(id)),s.date);}
 export function matchInput(s,m){
  const {home,away}=fixtureSides(s,m);if(!home||!away)throw Error('参赛队尚未确定');
- const input={home:teamAt(s,home,m.competition,m.date),away:teamAt(s,away,m.competition,m.date),seed:`official:${m.id}`,knockout:!['league','group','championship-group'].includes(m.kind),neutral:Boolean(m.neutral),importance:m.kind==='playoff'?1:.6,capture:true,ai:[home!==s.manager?.clubId,away!==s.manager?.clubId]};
- for(const side of ['home','away']){const count=input[side].roster.filter(available).length;if(count<7)throw Error('可用球员不足7人，需要赛事裁决');const plan=planAITeam(input[side],{date:m.date,records:s.development?.records,allowIncomplete:true,requireKeeper:true});input[`${side}Tactics`]={formation:plan.formation};input[`${side}Lineup`]=plan.lineup;input[`${side}AI`]=true;if(count<11)input.allowShortHanded=true;}
+ const input={home:teamAt(s,home,m.competition,m.date),away:teamAt(s,away,m.competition,m.date),seed:`official:${m.id}`,knockout:!['league','group','championship-group','friendly'].includes(m.kind),neutral:Boolean(m.neutral),importance:m.kind==='playoff'?1:m.kind==='friendly'?.3:.6,capture:true,ai:[home!==s.manager?.clubId,away!==s.manager?.clubId]};
+ for(const side of ['home','away']){const count=input[side].roster.filter(available).length;if(count<7)throw Error('可用球员不足7人，需要赛事裁决');const division=Object.keys(s.members).find(d=>s.members[d].includes(input[side].id));const plan=planAITeam(input[side],{date:m.date,records:s.development?.records,allowIncomplete:true,requireKeeper:true,requireUnder21:m.kind==='league'&&(isMetroLeague(division)||getDivision(division)?.tier===1)});input[`${side}Tactics`]={formation:plan.formation};input[`${side}Lineup`]=plan.lineup;input[`${side}AI`]=true;if(count<11)input.allowShortHanded=true;}
  return input;
 }
-export function engineSimulation(input){const state=createMatch(input);while(state.status==='playing')stepMatch(state);const result=getResult(state);return {...result,health:state.teams.flatMap(t=>t.roster.map(p=>({id:p.id,condition:t.lines[p.id].condition,injuryDays:p.injuryDays}))) };}
+export function engineSimulation(input){const state=createMatch(input);while(state.status==='playing')stepMatch(state);const result=getResult(state);return {...result,health:state.teams.flatMap(t=>t.roster.map(p=>({id:p.id,condition:t.lines[p.id].condition,injuryDays:p.injuryDays,injuryHistory:p.injuryHistory||0}))) };}
 export function commitResult(s,m,input,result){
  if(m.score)throw Error('比赛已经结束');
  if(result.status!=='finished'||!Array.isArray(result.score)||result.score.length!==2||!result.score.every(n=>Number.isInteger(n)&&n>=0))throw Error('比赛未正常结束，需要赛事裁决');
@@ -102,7 +109,7 @@ export function commitResult(s,m,input,result){
  // Match condition already includes the starting fatigue penalty. Store its raw
  // component so the next match does not subtract the same fatigue twice.
  const penalties=new Map([input.home,input.away].flatMap(t=>t.roster.map(p=>[p.id,p.trainingFatiguePenalty||0])));
- for(const p of result.health||[])s.playerState[p.id]={condition:Math.min(100,p.condition+(penalties.get(p.id)||0)),injuryDays:p.injuryDays,date:m.date};
+ for(const p of result.health||[])s.playerState[p.id]={condition:Math.min(100,p.condition+(penalties.get(p.id)||0)),injuryDays:p.injuryDays,injuryHistory:p.injuryHistory||s.playerState[p.id]?.injuryHistory||0,date:m.date};
  s.revision++;
 }
 export function nextDate(s){if(s.date>=dateOf(s.year,12,31))return null;const dates=[...pendingMatches(s).map(m=>m.date),...s.calendar.events.flatMap(e=>[e.date,...(e.end?[e.end]:[])]),dateOf(s.year,12,31)].filter(d=>d>s.date||d===s.date&&pendingMatches(s).some(m=>m.date===d));return dates.sort()[0]||null;}
@@ -129,14 +136,14 @@ export function finishDate(s,date){
 }
 export function advanceTo(s,date,{simulate=engineSimulation}={}){if(date<s.date||date>dateOf(s.year,12,31))throw Error('日期超出本赛季');for(const m of pendingMatches(s).filter(m=>m.date<=date))playFixture(s,m.id,simulate);finishDate(s,date);return s;}
 export function settleSeason(s){
- if(pendingMatches(s).length)throw Error('全部赛事结束后才可结算');
+ if(pendingMatches(s).some(m=>m.kind!=='friendly'))throw Error('全部赛事结束后才可结算');
  const tables=Object.fromEntries(Object.keys(s.members).map(id=>[id,tableFor(s,id)])),nextMembers={},movements=[],champions=[];
  for(const sys of leagueSystems){
   if(sys.levels.length===1)nextMembers[sys.id]=[...s.members[sys.id]];
   else {const next=moveDivisions(sys.levels,sys.levels.map(d=>tables[d.id]),sys.levels.map(d=>s.fixtures.filter(m=>m.competition===`${d.id}-playoffs`).at(-1)?.winner));sys.levels.forEach((d,i)=>{nextMembers[d.id]=next[i];for(const id of next[i])if(!s.members[d.id].includes(id)){const from=sys.levels.find(x=>s.members[x.id].includes(id));movements.push({id,from:from.id,to:d.id,kind:from.tier>d.tier?'up':'down'});}});}
   for(const d of sys.levels)champions.push({competition:d.id,id:tables[d.id][0].id});
  }
- for(const competition of [...new Set(s.fixtures.filter(m=>!['league','group','championship-group'].includes(m.kind)).map(m=>m.competition))])champions.push({competition,id:s.fixtures.filter(m=>m.competition===competition).at(-1).winner});
+ for(const competition of [...new Set(s.fixtures.filter(m=>!['league','group','championship-group','friendly'].includes(m.kind)).map(m=>m.competition))])champions.push({competition,id:s.fixtures.filter(m=>m.competition===competition).at(-1).winner});
  tables['metro-champions']=tableFor(s,'metro-champions');
  const knockoutRanking=(id,regular)=>{
   const ms=s.fixtures.filter(m=>m.competition===id&&m.kind==='playoff'),final=ms.at(-1);
@@ -170,4 +177,8 @@ export function validateSave(s){
  migrateYouthBodies(s);return s;
 }
 
-export function expectedFixtureCount(year){return leagueSystems.flatMap(s=>s.levels).reduce((n,d)=>n+d.matches,0)+leagueSystems.reduce((n,s)=>n+(s.playoffs?.teams||1)-1,0)+51+(isGlobalCupYear(year)?31:0);}
+export function expectedFixtureCount(year){
+ const promotion=leagueSystems.flatMap(s=>s.levels).reduce((n,d)=>n+(d.promotion?.playoff?.length?d.promotion.playoff.length-1:0),0);
+ const friendlies=friendlyDates(year).length*Math.floor(clubs.length/2);
+ return leagueSystems.flatMap(s=>s.levels).reduce((n,d)=>n+d.matches,0)+leagueSystems.reduce((n,s)=>n+(s.playoffs?.teams||1)-1,0)+promotion+51+(isGlobalCupYear(year)?31:0)+friendlies;
+}

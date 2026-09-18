@@ -11,7 +11,7 @@ import {getDivision,getSystem} from './catalog.js';
 import {draftOrder} from './season.js';
 import {dateOf,addDays,daysBetween} from './calendar.js';
 import {academyFixtures,academyTrainingQuality} from './academy.js';
-import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates} from './recruitment.js';
+import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates,isRecruitmentReviewDate} from './recruitment.js';
 import {ensurePlayerRegistry,registeredPlayers,registeredPlayer,registeredRoster as baseRegisteredRoster,registryDate,playerAgeOnDate} from './registry.js';
 
 const teamById={get:knownTeam,has:id=>Boolean(knownTeam(id))};
@@ -126,7 +126,8 @@ export function youthOpportunities(s,id){
   actions.push('release');
  }
  if(owned&&reg.status==='senior'&&canLeave(s,p,reg.clubId))actions.push('release');
- const loans=owned&&['youth','senior'].includes(reg.status)&&age>=17&&(reg.pathway==='local'||reg.signedAt)&&(reg.status!=='senior'||canLeave(s,p,reg.clubId))?loanOptions(s,p,reg):[];
+ const recentlyReturned=reg.returnedAt&&daysBetween(reg.returnedAt,s.date)<60;
+ const loans=owned&&!recentlyReturned&&['youth','senior'].includes(reg.status)&&age>=17&&(reg.pathway==='local'||reg.signedAt)&&(reg.status!=='senior'||canLeave(s,p,reg.clubId))?loanOptions(s,p,reg):[];
  if(loans.length)actions.push('loan');
  const rightsAvailable=!reg.rightsClubId||reg.rightsClubId===clubId||reg.rightsUntil<s.date;
  const draftComplete=reg.pathway!=='royal'||reg.draftEnteredYear||age>23;
@@ -190,7 +191,7 @@ function review(s,date){
   }else if(reg.status==='senior'&&age<28){
    // AI keeps a natural backup keeper; player decisions and retirement retain
    // the existing one-keeper hard floor through canLeave's default policy.
-   if(lacksPlayingTime(context,p,reg)&&context.opportunity(reg.clubId,context.player(p)).expectedMinutes<45&&canLeave(s,p,reg.clubId,{goalkeepers:2})){
+   if(!(reg.returnedAt&&daysBetween(reg.returnedAt,date)<60)&&lacksPlayingTime(context,p,reg)&&context.opportunity(reg.clubId,context.player(p)).expectedMinutes<45&&canLeave(s,p,reg.clubId,{goalkeepers:2})){
     const options=loanOptions(s,p,reg,standards);
     if(options.length)move(s,p.id,date,'loan',options[0].id,{ownerClubId:reg.clubId,loanUntil:dateOf(Number(date.slice(0,4))+Number(date.slice(5)==='12-31'),12,31)},'loan','租借争取成年比赛');
     else if(age>=22&&score<clubStandard(s,reg.clubId,standards)-10)move(s,p.id,date,'free',null,{ownerClubId:null},'release','评估后解除注册，寻找新机会');
@@ -204,7 +205,6 @@ function review(s,date){
   }
   if(reg.status==='youth'&&reg.pathway==='royal'&&age>=24)move(s,p.id,date,'free',null,{ownerClubId:null},'graduate','结束学院培养，可自由签约');
  }
- recruitEstablishedPlayers(s,date,context);
 }
 
 function recruitEstablishedPlayers(s,date,context){
@@ -229,7 +229,8 @@ function recruitEstablishedPlayers(s,date,context){
     move(s,replacement.id,date,'free',null,{ownerClubId:null},'release','阵容调整后解除注册，寻找比赛机会');
    }
    if(!reg)registerOriginal(s,p,date);
-   move(s,p.id,date,'senior',club.id,{ownerClubId:club.id,signedAt:date,transferredAt:date},'transfer',`转会至${club.name}，争取更高级别比赛`);
+   const sourceTier=context.tier(source),targetTier=context.tier(club.id);
+   move(s,p.id,date,'senior',club.id,{ownerClubId:club.id,signedAt:date,transferredAt:date},'transfer',targetTier<sourceTier?`转会至${club.name}，争取更高级别比赛`:`转会至${club.name}`);
    departures.set(source,(departures.get(source)||0)+1);arrivals++;
   }
  }
@@ -294,11 +295,15 @@ export function advanceYouthPathways(s,date=s.date){
  beginRosterContext(s);
  try{
  for(const [id,reg] of Object.entries(r.registrations)){
-  if(reg.status==='loan'&&reg.loanUntil<=date)move(s,id,date,'senior',reg.ownerClubId,{ownerClubId:reg.ownerClubId},'return','租借期满归队');
+  if(reg.status==='loan'&&reg.loanUntil<=date)move(s,id,date,'senior',reg.ownerClubId,{ownerClubId:reg.ownerClubId,returnedAt:date},'return','租借期满归队');
   if(reg.rightsUntil&&reg.rightsUntil<=date){reg.rightsClubId=null;reg.rightsUntil=null;emit(r,r.players[id],date,'rights-expired','选秀签约权到期');}
  }
  if(date.slice(5)==='01-20')runDraft(s,date);
  if(['06-30','12-31'].includes(date.slice(5)))review(s,date);
+ else if(isRecruitmentReviewDate(date)){
+  const context=recruitmentContext(s,date,id=>registeredRoster(s,id));recruitmentContexts.set(s,context);
+  recruitEstablishedPlayers(s,date,context);
+ }
  if(date.slice(5)==='12-31'&&!r.retirementYears?.includes(Number(date.slice(0,4)))){retirePlayers(s,date);(r.retirementYears??=[]).push(Number(date.slice(0,4)));}
  r.through=date;return r;
  }finally{rosterContexts.delete(s);recruitmentContexts.delete(s);}

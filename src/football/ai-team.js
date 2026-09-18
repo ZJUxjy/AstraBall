@@ -8,10 +8,12 @@ export function roleFit(player,position){
  if(player.secondary?.includes(position))return .95;
  return [['CB','LB','RB','DM'],['DM','CM','AM'],['LW','RW','AM','ST']].some(group=>group.includes(player.position)&&group.includes(position))?.83:.64;
 }
-export function aiRoleScore(player,position,{condition=player.condition??100,recentMinutes=0,rotation=false}={}){
+export function aiRoleScore(player,position,{condition=player.condition??100,recentMinutes=0,rotation=false,forcedRest=false}={}){
  const quality=preciseSkill(player,position)*roleFit(player,position);
  const rest=rotation?Math.min(5,Math.max(0,recentMinutes-90)/90*2.5)*(position==='GK'?.2:1):0;
- return quality*(.7+.3*clamp(condition/100))-rest;
+ const sit=forcedRest&&position!=='GK'?25:0;
+ const sharp=.92+.08*clamp((player.sharpness??80)/100);
+ return quality*(.7+.3*clamp(condition/100))*sharp-rest-sit;
 }
 function minutesFor(player,date,records){
  if(!date)return player.recentMinutes||0;
@@ -19,6 +21,18 @@ function minutesFor(player,date,records){
  return (records?.[player.id]?.recentExposure||[]).reduce((total,row)=>{
   const gap=(now-Date.parse(`${row.date}T12:00:00Z`))/86400000;return total+(gap>=0&&gap<7?row.minutes:0);
  },0);
+}
+function consecutiveNineties(player,date,records){
+ const rows=(records?.[player.id]?.recentExposure||[]).filter(row=>row.kind==='senior'&&row.minutes>=90).sort((a,b)=>b.date.localeCompare(a.date));
+ if(rows.length<2||!date)return false;
+ return rows.slice(0,2).every(row=>{
+  const gap=(Date.parse(`${date}T12:00:00Z`)-Date.parse(`${row.date}T12:00:00Z`))/86400000;
+  return gap>=0&&gap<14;
+ });
+}
+function under21(player,date){
+ if(player.birthYear!=null&&date)return Number(date.slice(0,4))-player.birthYear<21;
+ return (player.age??99)<21;
 }
 // Rectangular Hungarian assignment: each of the eleven roles gets one player.
 // Stable roster ordering makes exact-score ties reproducible without randomness.
@@ -39,12 +53,14 @@ function assign(scores){
  }
  const result=Array(n);for(let j=1;j<=m;j++)if(p[j])result[p[j]-1]=j-1;return result;
 }
-export function planAITeam(team,{date,records={},rotation=true,formation,healthy=false,allowIncomplete=false,requireKeeper=false}={}){
+export function planAITeam(team,{date,records={},rotation=true,formation,healthy=false,allowIncomplete=false,requireKeeper=false,requireUnder21=false}={}){
  if(formation&&!FORMATIONS[formation])throw Error('未知阵型');
  const all=team.roster.map(p=>healthy?{...p,condition:100,injuryDays:0,suspended:0,playedToday:false}:p).sort((a,b)=>a.id.localeCompare(b.id));
  const candidates=all.filter(available);if(candidates.length<11&&!allowIncomplete)throw Error('健康球员不足 11 人');
  const roles=[...new Set(Object.values(FORMATIONS).flat())];
- const scores=new Map(all.map(p=>[p.id,Object.fromEntries(roles.map(role=>[role,aiRoleScore(p,role,{recentMinutes:minutesFor(p,date,records),rotation})]))]));
+ const tired=rotation?candidates.filter(p=>p.position!=='GK'&&(p.condition??100)<88&&consecutiveNineties(p,date,records)):[];
+ const canForce=candidates.length-tired.length>=11;
+ const scores=new Map(all.map(p=>[p.id,Object.fromEntries(roles.map(role=>[role,aiRoleScore(p,role,{recentMinutes:minutesFor(p,date,records),rotation,forcedRest:canForce&&tired.some(q=>q.id===p.id)})]))]));
  let best;
  for(const name of formation?[formation]:Object.keys(FORMATIONS)){
   if(candidates.length<11){
@@ -56,6 +72,12 @@ export function planAITeam(team,{date,records={},rotation=true,formation,healthy
   }
   const slots=FORMATIONS[name],matrix=slots.map(role=>candidates.map(p=>scores.get(p.id)[role])),assignment=assign(matrix),score=assignment.reduce((sum,index,i)=>sum+matrix[i][index],0);
   if(!best||score>best.score+1e-9)best={formation:name,score,lineup:assignment.map((index,i)=>({id:candidates[index].id,position:slots[i]}))};
+ }
+ if(requireUnder21&&best.lineup.every(slot=>!under21(all.find(p=>p.id===slot.id),date))){
+  const youth=candidates.filter(p=>p.position!=='GK'&&under21(p,date)&&!best.lineup.some(slot=>slot.id===p.id))
+   .sort((a,b)=>preciseSkill(b)-preciseSkill(a)||a.id.localeCompare(b.id))[0];
+  const outgoing=best.lineup.filter(slot=>slot.position!=='GK').sort((a,b)=>scores.get(a.id)[a.position]-scores.get(b.id)[b.position]||a.id.localeCompare(b.id))[0];
+  if(youth&&outgoing)best.lineup=best.lineup.map(slot=>slot.id===outgoing.id?{id:youth.id,position:slot.position}:slot);
  }
  const selected=new Map(best.lineup.map(slot=>[slot.id,slot])),opportunities={};
  for(const player of all){

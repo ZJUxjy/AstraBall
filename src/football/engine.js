@@ -64,13 +64,15 @@ function choose(s,team,role,exclude){return s.random.pick(outfield(team).filter(
  if(role==='shoot')return (forward?5:pos==='CM'?2:.5)*(p.attributes.offBall+30)/100;
  return (s.x<35?(defender?3:1):s.x>72?(forward?6:['CM','DM'].includes(pos)?1.3:.35):(['CM','DM','AM'].includes(pos)?3:1))*(p.attributes.teamwork+40)/100;
  });}
+function venueSign(s,side=s.side){return s.neutral?0:side===0?1:-1;}
 function shot(s,shooter,{kind='open',assist=s.lastPass}={}){
  const attack=s.teams[s.side],defense=s.teams[1-s.side],gk=keeper(defense),line=attack.lines[shooter.id];
  const tactics=tacticalEffects(attack,defense,s.x);
- const pressure=clamp(localPressure(s,s.side,[s.x,s.y])*.7+teamAbility(s,defense,['marking','positioning','concentration'])/430+tactics.defensivePressure*.3-tactics.exposure*.3,.1,.9);
+ const home=venueSign(s);
+ const pressure=clamp(localPressure(s,s.side,[s.x,s.y])*.7+teamAbility(s,defense,['marking','positioning','concentration'])/430+tactics.defensivePressure*.3-tactics.exposure*.3-home*TUNE.homeEdge*4,.1,.9);
  if(kind==='penalty')attack.stats.penalties++;
  const xG=shotQuality({x:s.x,y:s.y,pressure,kind,counter:assist?.kind==='through'&&defense.tactics.line==='high'});
- const fin=ability(s,attack,shooter,kind==='penalty'?['penalties','composure']:kind==='freeKick'?['freeKicks','technique']:kind==='header'?['heading','jumping','bravery']:s.x<82?['longShots','technique','composure']:['finishing','composure']),gkSkill=ability(s,defense,gk,s.x>93?['oneOnOnes','reflexes','rushingOut']:['reflexes','handling','agility']);
+ const fin=ability(s,attack,shooter,kind==='penalty'?['penalties','composure']:kind==='freeKick'?['freeKicks','technique']:kind==='header'?['heading','jumping','bravery']:s.x<82?['longShots','technique','composure']:['finishing','composure'])+home*4.5,gkSkill=ability(s,defense,gk,s.x>93?['oneOnOnes','reflexes','rushingOut']:['reflexes','handling','agility'])-home*3.2;
  const weak=(s.y<34&&shooter.foot==='right'||s.y>34&&shooter.foot==='left')?shooter.weakFoot:100;
  const probability=goalProbability(xG,fin,gkSkill,{weakFoot:kind==='penalty'?100:weak}),onTarget=clamp(.32+xG*.45+(fin-65)*.0015,probability,.95);
  const roll=s.random.next(),outcome=roll<probability?'goal':roll<onTarget?'save':roll<.62?'blocked':'miss';
@@ -104,20 +106,29 @@ function foul(s,defender){
  }
  if(s.status!=='playing')return;clock(s,24,false);s.lastPass=null;
  if(penalty){const taker=field(s.teams[s.side]).sort((a,b)=>b.attributes.penalties-a.attributes.penalties)[0];s.x=94;s.y=34;shot(s,taker,{kind:'penalty',assist:null});}
- else if(s.x>74&&s.random.next()<.20){const taker=outfield(s.teams[s.side]).sort((a,b)=>b.attributes.freeKicks-a.attributes.freeKicks)[0];shot(s,taker,{kind:'freeKick',assist:null});}
+ else if(s.periodClock>=60&&s.x>74&&s.random.next()<.20){const taker=outfield(s.teams[s.side]).sort((a,b)=>b.attributes.freeKicks-a.attributes.freeKicks)[0];shot(s,taker,{kind:'freeKick',assist:null});}
 }
 function corner(s){
  s.pending=null;const attack=s.teams[s.side],defense=s.teams[1-s.side],gk=keeper(defense);
  const taker=outfield(attack).sort((a,b)=>b.attributes.corners-a.attributes.corners)[0];attack.stats.corners++;emit(s,'corner',{player:taker.id});clock(s,20,false);
- const delivery=ability(s,attack,taker,['corners','crossing','technique']);const defending=teamAbility(s,defense,['heading','jumping','marking'])*.75+ability(s,defense,gk,['aerialReach','command'])*.25;
- if(s.random.next()<clamp(.23+(delivery-defending)*.003,.08,.48)){
+ const delivery=ability(s,attack,taker,['corners','crossing','technique'])+venueSign(s)*3.5;const defending=teamAbility(s,defense,['heading','jumping','marking'])*.75+ability(s,defense,gk,['aerialReach','command'])*.25-venueSign(s)*2.5;
+ if(s.random.next()<clamp(.23+(delivery-defending)*.003+venueSign(s)*TUNE.homeEdge*2,.08,.48)){
   const receiver=s.random.pick(outfield(attack).filter(p=>p.id!==taker.id),p=>(p.attributes.heading+p.attributes.jumping+p.attributes.bravery)**2);
   s.x=s.random.int(90,98);s.y=s.random.int(25,43);shot(s,receiver,{kind:'header',assist:{id:taker.id,kind:'corner'}});
  }else takeBall(s,1-s.side,15,34,gk.id);
 }
+export function injuryAbsence(random,{history=0}={}){
+ const rec=Math.min(4,Math.max(0,history));
+ const roll=random.next();
+ const shift=rec*.05;
+ if(roll<Math.max(.42,.62-shift*1.4))return random.int(3,9);
+ if(roll<Math.max(.72,.88-shift*.5))return random.int(10,21);
+ if(roll<.97)return random.int(22,35);
+ return random.int(36,70);
+}
 function injure(s,side){
- const t=s.teams[side],p=s.random.pick(field(t),p=>(20+p.personality.injuryProneness)*(1+(100-t.lines[p.id].condition)/80));
- p.injuryDays=s.random.int(3,35);emit(s,'injury',{side,player:p.id,days:p.injuryDays});clock(s,30,false);
+ const t=s.teams[side],p=s.random.pick(field(t),p=>(20+p.personality.injuryProneness)*(1+(100-t.lines[p.id].condition)/80)*(1+(p.injuryHistory||0)*.35));
+ p.injuryDays=injuryAbsence(s.random,{history:p.injuryHistory||0});p.injuryHistory=(p.injuryHistory||0)+1;emit(s,'injury',{side,player:p.id,days:p.injuryDays});clock(s,30,false);
  const slot=t.slots.find(x=>x.id===p.id),candidate=t.roster.filter(p=>available(p)&&!t.used.has(p.id)).sort((a,b)=>skillRating(b,slot.position)*familiarity(b,slot.position)-skillRating(a,slot.position)*familiarity(a,slot.position))[0];
  if(candidate&&t.subs<5&&t.windows<3)applyCommand(s,{type:'substitution',side,out:p.id,in:candidate.id});else removePlayer(s,side,p.id);
 }
@@ -132,11 +143,11 @@ function playAction(s){
  const defender=player(defense,nearestDefender(s,1-s.side,[105-s.x,68-s.y]));
  if(s.random.next()<TUNE.foulRate*(.55+defender.attributes.aggression/100)){foul(s,defender);return;}
  if(s.random.next()<TUNE.injuryRate){injure(s,s.random.int(0,1));return;}
- if(s.x>75&&s.random.next()<(s.lastPass?.kind==='cross'?.62:TUNE.shoot*effects.shooting)){shot(s,actor,{kind:s.lastPass?.kind==='cross'?'header':'open'});return;}
+ if(s.periodClock>=60&&s.x>75&&s.random.next()<(s.lastPass?.kind==='cross'?.62:TUNE.shoot*effects.shooting)){shot(s,actor,{kind:s.lastPass?.kind==='cross'?'header':'open'});return;}
  if(s.random.next()<.11){
   const skill=ability(s,attack,actor,['dribbling','agility','balance','acceleration']);
   const stop=ability(s,defense,defender,['tackling','positioning','strength']);
-  const success=s.random.next()<clamp(.59+skillDifference(skill-stop,TUNE.duelSkillScale),.15,.91);
+  const success=s.random.next()<clamp(.59+skillDifference(skill-stop,TUNE.duelSkillScale)+venueSign(s)*TUNE.homeEdge*2,.15,.91);
   attack.stats.dribbles++;attack.lines[actor.id].dribbles++;
   emit(s,'dribble',{player:actor.id,defender:defender.id,success});
   if(success){attack.stats.dribblesWon++;attack.lines[actor.id].dribblesWon++;s.x=Math.min(96,s.x+8);if(s.x>70)s.y+=Math.sign(34-s.y)*Math.min(5,Math.abs(34-s.y));attack.lines[actor.id].position=[s.x,s.y];s.lastPass=null;}
@@ -148,7 +159,7 @@ function playAction(s){
  const route=selectPass(s,actor,{forward,back,crossing,through}),receiver=route.player,target=route.target;
  const skill=ability(s,attack,actor,attack.slots.find(slot=>slot.id===actor.id)?.position==='GK'?(forward?['kicking','decisions']:['throwing','decisions']):crossing?['crossing','technique','vision']:through||route.length>30?['longPassing','vision','decisions']:['passing','decisions','technique'])+ability(s,attack,receiver,['firstTouch','offBall','pace'])*.15;
  const pressure=teamAbility(s,defense,['anticipation','positioning','workRate'])*1.15;
- const probability=clamp(TUNE.passBase+skillDifference(skill-pressure)+effects.completion+routeModifier(route)-(crossing?.14:route.progress>5?.045:0)+(s.side===0&&!s.neutral?TUNE.homeEdge:0),.4,.97);
+ const probability=clamp(TUNE.passBase+skillDifference(skill-pressure)+effects.completion+routeModifier(route)-(crossing?.14:route.progress>5?.045:0)+venueSign(s)*TUNE.homeEdge,.4,.97);
  const offside=route.offside;
  const success=!offside&&s.random.next()<probability;attack.stats.passes++;attack.lines[actor.id].passes++;
  emit(s,'pass',{player:actor.id,receiver:receiver.id,defender:defender.id,success,from:[s.side===0?s.x:105-s.x,s.side===0?s.y:68-s.y],to:s.side===0?target:[105-target[0],68-target[1]],kind:crossing?'cross':through?'through':route.progress>5?'progressive':route.progress<-5?'back':'short',offside,receiverStart:route.start,passLength:route.length,laneRisk:route.laneRisk,openness:route.openness});

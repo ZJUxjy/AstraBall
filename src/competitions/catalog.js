@@ -14,8 +14,8 @@ export const leagueSystems=[
  {...closed('sichuan-league','新四川超级联赛','sichuan',36,8,4),finalName:'新四川季后赛'},
  {...closed('lima-league','利玛超级联赛','lima',40,16,4),finalName:'利玛季后赛'},
  {...base('liberlin-league','利柏林超级联赛','liberlin'),system:'升降级体系',description:'超级联赛20队、甲级联赛20队、地区联赛18队、地方联赛47队。',globalSlots:2,
-  levels:[level('liberlin-league','利柏林超级联赛',20),level('liberlin-league-2','利柏林甲级联赛',20,2,2),level('liberlin-league-3','利柏林地区联赛',18,2,3),level('liberlin-league-4','利柏林地方联赛',47,1,4)].map((d,i)=>({...d,promotion:i?{automatic:i===3?2:3,places:i===3?2:3,playoff:[]}:null,relegation:i===0||i===1?3:i===2?2:0})),
-  playoffs:null,entry:'俱乐部青训、自由签约与转会；前三层双循环、地方联赛单循环，地方联赛前二与地区联赛末二交换。'},
+  levels:[level('liberlin-league','利柏林超级联赛',20),level('liberlin-league-2','利柏林甲级联赛',20,2,2),level('liberlin-league-3','利柏林地区联赛',18,2,3),level('liberlin-league-4','利柏林地方联赛',47,1,4)].map((d,i)=>({...d,promotion:i?{automatic:i===3?1:2,places:i===3?2:3,playoff:i===3?[2,3,4,5]:[3,4,5,6]}:null,relegation:i===0||i===1?3:i===2?2:0})),
+  playoffs:null,entry:'俱乐部青训、自由签约与转会；前三层双循环、地方联赛单循环。甲级与地区前二直接升级，第3—6名附加赛；地方联赛第一直接升级，第2—5名附加赛。'},
 ];
 export const METRO_CHAMPIONS={id:'metro-champions',name:'星冠季后赛',trophy:'星冠杯',teams:12,advance:4,rounds:8,matches:48,knockoutMatches:3,qualification:'三个平级联赛各取常规赛前四；争冠组每队对阵另外两联赛的8队，四强淘汰争夺星冠杯。'};
 export const GLOBAL_CUP={id:'global-cup',name:'全球冠军杯',teams:16,groups:4,groupSize:4,groupLegs:1,advance:2,groupMatches:24,knockoutMatches:7,month:6,interval:4,firstYear:318,qualification:'四年一届；星冠季后赛前六、新四川四队、利玛四队、利柏林前二。首届使用创始资格名单。',draw:'四档抽签，每组每档一队，同赛区最多两队。',final:'八强起单场淘汰，加时后点球，全部中立场。',tiebreak};

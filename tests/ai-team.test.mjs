@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {generateTeam,ATTRIBUTE_KEYS,selectLineup} from '../src/football/players.js';
-import {planAITeam,evaluateOpportunity,selectAISubstitutions} from '../src/football/ai-team.js';
+import {planAITeam,evaluateOpportunity,selectAISubstitutions,aiRoleScore} from '../src/football/ai-team.js';
 import {createMatch,stepMatch,getResult,snapshotMatch,restoreMatch,DEFAULT_TACTICS} from '../src/football/engine.js';
 import {createSeason,matchInput} from '../src/competitions/runtime.js';
 import {appointManager,beginCoachedMatch} from '../src/competitions/career.js';
@@ -15,6 +15,24 @@ test('真实330快照中84.467分零分钟前腰在4231获得本职首发',()=>{
  assert.equal(plan.opportunities[fixture.trackedPlayer].starter,true);assert.ok(Object.values(plan.opportunities).reduce((sum,row)=>sum+row.expectedMinutes,0)<=990+1e-9);assert.equal(JSON.stringify(fixture.team),before);
  const hidden=structuredClone(fixture.team);for(const p of hidden.roster){p.potential=1;p.personality={adaptability:1};p.growthProfile={ceilings:Object.fromEntries(ATTRIBUTE_KEYS.map(key=>[key,1]))};}
  assert.deepEqual(planAITeam(hidden,{rotation:false}),plan);
+});
+test('连续两场满场且体能下降时强制轮换，比赛状态进入选人',()=>{
+ const team=uniform('forced-rest',88),star=team.roster.find(p=>p.id==='forced-rest-13'),backup=team.roster.find(p=>p.id==='forced-rest-14');
+ for(const [p,value] of [[star,95],[backup,76]]){p.attributes=Object.fromEntries(ATTRIBUTE_KEYS.map(key=>[key,value]));p.secondary=[];p.sharpness=80;}
+ star.condition=70;backup.condition=95;
+ const options={date:'0318-03-09',formation:'4-2-3-1',records:{[star.id]:{recentExposure:[{date:'0318-03-06',minutes:90,kind:'senior'},{date:'0318-03-03',minutes:90,kind:'senior'}]}}};
+ assert.ok(!planAITeam(team,options).lineup.some(slot=>slot.id===star.id));
+ assert.ok(planAITeam(team,options).lineup.length===11);
+ star.sharpness=20;backup.sharpness=90;star.condition=100;
+ const fresh={date:'0318-03-09',formation:'4-2-3-1',rotation:false};
+ assert.ok(aiRoleScore(backup,'AM')>aiRoleScore({...backup,sharpness:20},'AM'));
+});
+test('顶级联赛有可用U21时首发至少一人',()=>{
+ const team=uniform('u21',80);
+ for(const p of team.roster)p.age=28;
+ const youth=team.roster.find(p=>p.position==='AM');youth.age=19;youth.attributes=Object.fromEntries(ATTRIBUTE_KEYS.map(key=>[key,68]));
+ const plan=planAITeam(team,{formation:'4-2-3-1',rotation:false,requireUnder21:true,date:'0318-03-08'});
+ assert.ok(plan.lineup.some(slot=>team.roster.find(p=>p.id===slot.id).age<21));
 });
 test('连续出场只在能力接近时轮换，明显更强球员不会随机失去首发',()=>{
  const team=uniform('rotation',88),star=team.roster.find(p=>p.id==='rotation-13'),backup=team.roster.find(p=>p.id==='rotation-14'),third=team.roster.find(p=>p.id==='rotation-15');

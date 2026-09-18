@@ -24,7 +24,7 @@ test('年度补员和退役只执行一次，JSON 恢复与连续结算一致',(
  s.year+=2;assert.throws(()=>annualPopulation(s),/跳过/);
 });
 test('提拔限制年龄、归属和比赛状态，升队后正式首发与成长分钟使用同一身份',()=>{
- const s=createSeason(),fixture=s.fixtures.find(m=>!m.bye),club=fixture.home;s.manager={clubId:club};
+ const s=createSeason(),fixture=s.fixtures.find(m=>m.kind==='league'),club=fixture.home;s.manager={clubId:club};
  const youths=clubPlayers(s,club,{unit:'youth'}),p=youths.find(p=>318-p.birthYear>=16);assert.ok(p);
  const outsider=clubPlayers(s,fixture.away,{unit:'youth'}).find(p=>318-p.birthYear>=16);assert.throws(()=>promotePlayer(s,outsider.id),/本队/);
  s.activeMatch={};assert.throws(()=>promotePlayer(s,p.id),/比赛结束/);s.activeMatch=null;
