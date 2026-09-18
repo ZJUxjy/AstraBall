@@ -1,4 +1,4 @@
-import {FORMATIONS,available,preciseRating} from './players.js';
+import {FORMATIONS,available,preciseSkill} from './players.js';
 import {clamp} from './random.js';
 
 // Selection uses observable position familiarity, not hidden adaptability or PA.
@@ -9,7 +9,7 @@ export function roleFit(player,position){
  return [['CB','LB','RB','DM'],['DM','CM','AM'],['LW','RW','AM','ST']].some(group=>group.includes(player.position)&&group.includes(position))?.83:.64;
 }
 export function aiRoleScore(player,position,{condition=player.condition??100,recentMinutes=0,rotation=false}={}){
- const quality=preciseRating(player,position)*roleFit(player,position);
+ const quality=preciseSkill(player,position)*roleFit(player,position);
  const rest=rotation?Math.min(5,Math.max(0,recentMinutes-90)/90*2.5)*(position==='GK'?.2:1):0;
  return quality*(.7+.3*clamp(condition/100))-rest;
 }
@@ -39,14 +39,21 @@ function assign(scores){
  }
  const result=Array(n);for(let j=1;j<=m;j++)if(p[j])result[p[j]-1]=j-1;return result;
 }
-export function planAITeam(team,{date,records={},rotation=true,formation,healthy=false}={}){
+export function planAITeam(team,{date,records={},rotation=true,formation,healthy=false,allowIncomplete=false,requireKeeper=false}={}){
  if(formation&&!FORMATIONS[formation])throw Error('未知阵型');
  const all=team.roster.map(p=>healthy?{...p,condition:100,injuryDays:0,suspended:0,playedToday:false}:p).sort((a,b)=>a.id.localeCompare(b.id));
- const candidates=all.filter(available);if(candidates.length<11)throw Error('健康球员不足 11 人');
+ const candidates=all.filter(available);if(candidates.length<11&&!allowIncomplete)throw Error('健康球员不足 11 人');
  const roles=[...new Set(Object.values(FORMATIONS).flat())];
  const scores=new Map(all.map(p=>[p.id,Object.fromEntries(roles.map(role=>[role,aiRoleScore(p,role,{recentMinutes:minutesFor(p,date,records),rotation})]))]));
  let best;
  for(const name of formation?[formation]:Object.keys(FORMATIONS)){
+  if(candidates.length<11){
+   const slots=FORMATIONS[name],matrix=candidates.map(p=>slots.map(role=>scores.get(p.id)[role])),assignment=matrix.length?assign(matrix):[];
+   const keeper=slots.indexOf('GK');if(requireKeeper&&assignment.length&&!assignment.includes(keeper)){let chosen=0;for(let i=1;i<assignment.length;i++)if(matrix[i][keeper]-matrix[i][assignment[i]]>matrix[chosen][keeper]-matrix[chosen][assignment[chosen]])chosen=i;assignment[chosen]=keeper;}
+   const score=assignment.reduce((sum,index,i)=>sum+matrix[i][index],0);
+   if(!best||score>best.score+1e-9)best={formation:name,score,lineup:assignment.map((index,i)=>({id:candidates[i].id,position:slots[index],anchorIndex:index})),vacancies:slots.filter((_,i)=>!assignment.includes(i))};
+   continue;
+  }
   const slots=FORMATIONS[name],matrix=slots.map(role=>candidates.map(p=>scores.get(p.id)[role])),assignment=assign(matrix),score=assignment.reduce((sum,index,i)=>sum+matrix[i][index],0);
   if(!best||score>best.score+1e-9)best={formation:name,score,lineup:assignment.map((index,i)=>({id:candidates[index].id,position:slots[i]}))};
  }
@@ -54,7 +61,7 @@ export function planAITeam(team,{date,records={},rotation=true,formation,healthy
  for(const player of all){
   const starter=selected.has(player.id);let opportunity;
   for(const position of new Set(FORMATIONS[best.formation])){
-   const occupants=best.lineup.filter(slot=>slot.position===position),roleScore=scores.get(player.id)[position],starterScore=Math.min(...occupants.map(slot=>scores.get(slot.id)[position])),gap=roleScore-starterScore;
+   const occupants=best.lineup.filter(slot=>slot.position===position),roleScore=scores.get(player.id)[position],starterScore=occupants.length?Math.min(...occupants.map(slot=>scores.get(slot.id)[position])):0,gap=roleScore-starterScore;
    const rank=candidates.filter(other=>scores.get(other.id)[position]>roleScore+1e-9||Math.abs(scores.get(other.id)[position]-roleScore)<1e-9&&other.id.localeCompare(player.id)<0).length+1;
    const direct=selected.get(player.id)?.position===position;
    const minutes=direct?(position==='GK'?90:75):position==='GK'?(player.position==='GK'&&rank===2&&gap>=-12?5:0):clamp(22+gap*1.5-Math.max(0,rank-occupants.length-1)*5,0,30);

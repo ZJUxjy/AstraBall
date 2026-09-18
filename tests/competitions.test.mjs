@@ -1,23 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {leagueSystems,GLOBAL_CUP} from '../src/competitions/catalog.js';
+import {leagueSystems,GLOBAL_CUP,METRO_SYSTEMS} from '../src/competitions/catalog.js';
 import {clubs,leagues,cities,provinces,players,playerLeague} from '../src/world.js';
 import {footballTeams} from '../src/football/data.js';
 import {generateName,NAME_POOLS,REGION_NAME_WEIGHTS} from '../src/football/names.js';
 import {roundRobin,standings,knockoutBracket,promotedTeams,moveDivisions,globalQualifiers,globalGroups,draftOrder} from '../src/competitions/season.js';
 const ids=d=>clubs.filter(c=>c.division===d.id).map(c=>c.id);
-test('四区六体系十六级别全员齐备，行政边界与分区注册相符',()=>{
- assert.equal(leagueSystems.length,6);assert.equal(leagueSystems.flatMap(l=>l.levels).length,16);assert.equal(clubs.length,268);assert.equal(new Set(clubs.map(c=>c.name)).size,clubs.length);
+test('四区六体系九级别全员齐备，行政边界与分区注册相符',()=>{
+ assert.equal(leagueSystems.length,6);assert.equal(leagueSystems.flatMap(l=>l.levels).length,9);assert.equal(clubs.length,217);assert.equal(new Set(clubs.map(c=>c.name)).size,clubs.length);
  for(const l of leagues)for(const d of l.levels){assert.equal(ids(d).length,d.teams);for(const id of ids(d)){const c=clubs.find(c=>c.id===id),p=provinces.find(p=>p.id===cities.find(x=>x.id===c.city).province);assert.equal(p.region,l.region);if(l.provinces)assert.ok(l.provinces.includes(p.id));}}
- const lower=clubs.find(c=>c.division==='crown-league-3');assert.equal(playerLeague({club:lower.id}).tier,3);assert.equal(playerLeague(players.find(p=>p.id==='lin')).tier,1);
+ const lower=clubs.find(c=>c.division==='liberlin-league-3');assert.equal(playerLeague({club:lower.id}).tier,3);assert.equal(playerLeague(players.find(p=>p.id==='lin')).tier,1);
 });
-test('每级双循环：轮次和场次正确，每轮只出场一次，每对恰好交换主客',()=>{
+test('各级单/双循环：轮次和场次正确，每轮只出场一次，奇数队轮休',()=>{
  for(const d of leagues.flatMap(l=>l.levels)){
-  const teams=ids(d),f=roundRobin(teams);assert.equal(f.length,d.matches);assert.equal(Math.max(...f.map(m=>m.round)),d.rounds);assert.equal(new Set(f.map(m=>m.id)).size,f.length);
-  for(let r=1;r<=d.rounds;r++){const matches=f.filter(m=>m.round===r);assert.equal(matches.length,d.teams/2);assert.equal(new Set(matches.flatMap(m=>[m.home,m.away])).size,d.teams);}
-  const pairs=new Set(f.map(m=>`${m.home}:${m.away}`));assert.equal(pairs.size,f.length);for(const m of f)assert.ok(pairs.has(`${m.away}:${m.home}`));
-  for(const id of teams){assert.equal(f.filter(m=>m.home===id).length,d.teams-1);assert.equal(f.filter(m=>m.away===id).length,d.teams-1);}
+  const teams=ids(d),f=roundRobin(teams,{legs:d.legs});assert.equal(f.length,d.matches);assert.equal(Math.max(...f.map(m=>m.round)),d.rounds);assert.equal(new Set(f.map(m=>m.id)).size,f.length);
+  for(let r=1;r<=d.rounds;r++){const matches=f.filter(m=>m.round===r);assert.equal(matches.length,Math.floor(d.teams/2));assert.equal(new Set(matches.flatMap(m=>[m.home,m.away])).size,Math.floor(d.teams/2)*2);}
+  const pairs=new Set(f.map(m=>`${m.home}:${m.away}`));assert.equal(pairs.size,f.length);if(d.legs===2)for(const m of f)assert.ok(pairs.has(`${m.away}:${m.home}`));
+  for(const id of teams){assert.equal(f.filter(m=>m.home===id||m.away===id).length,(d.teams-1)*d.legs);if(d.legs===2)assert.equal(f.filter(m=>m.home===id).length,d.teams-1);}
  }
  const odd=roundRobin(['a','b','c']);assert.equal(odd.length,6);assert.equal(new Set(odd.map(m=>m.round)).size,6);assert.throws(()=>roundRobin(['a','a']));
 });
@@ -39,12 +39,12 @@ test('地区杯轮空与淘汰场次正确，参赛者只出现一次且不会�
   assert.deepEqual(participants.sort(),[...teams].sort());assert.equal(bracket.filter(m=>!m.bye).length,teams.length-1);assert.ok(first.filter(m=>m.bye).every(m=>m.winner));assert.equal(bracket.at(-1).winner,null);assert.deepEqual(bracket,knockoutBracket(teams,{seed:318}));
  }
 });
-test('全球杯32席来源闭合，8组每组4队且同体系最多2队，共48场小组赛',()=>{
- assert.equal(leagues.reduce((s,l)=>s+l.globalSlots,0),32);const rankings=Object.fromEntries(leagues.map(l=>[l.id,ids(l.levels[0]).map(id=>({id}))]));const qualifiers=globalQualifiers(rankings),groups=globalGroups(qualifiers);assert.equal(groups.length,8);assert.equal(new Set(groups.flatMap(g=>g.teams.map(t=>t.id))).size,32);let matches=0;
- for(const g of groups){assert.equal(g.teams.length,4);for(const l of leagues)assert.ok(g.teams.filter(t=>t.system===l.id).length<=2);matches+=roundRobin(g.teams.map(t=>t.id),{legs:1}).length;}assert.equal(matches,GLOBAL_CUP.groupMatches);assert.equal(knockoutBracket(qualifiers.slice(0,16).map(q=>q.id)).length,15);assert.throws(()=>globalQualifiers({}));assert.throws(()=>globalGroups([...qualifiers.slice(1),qualifiers[1]]));
+test('帝国杯16席来源闭合，4组每组4队且同赛区最多2队，共24场小组赛',()=>{
+ assert.equal(leagues.reduce((s,l)=>s+l.globalSlots,0),16);const rankings=Object.fromEntries(leagues.map(l=>[l.id,ids(l.levels[0]).map(id=>({id}))]));const qualifiers=globalQualifiers(rankings),groups=globalGroups(qualifiers);assert.equal(groups.length,4);assert.equal(new Set(groups.flatMap(g=>g.teams.map(t=>t.id))).size,16);let matches=0;
+ for(const g of groups){assert.equal(g.teams.length,4);for(const l of leagues)assert.ok(g.teams.filter(t=>t.system===l.id).length<=2);matches+=roundRobin(g.teams.map(t=>t.id),{legs:1}).length;}assert.equal(matches,GLOBAL_CUP.groupMatches);assert.equal(knockoutBracket(qualifiers.slice(0,8).map(q=>q.id)).length,7);assert.throws(()=>globalQualifiers({}));assert.throws(()=>globalGroups([...qualifiers.slice(1),qualifiers[1]]));
 });
-test('选秀48签按规则分轮，前三抽签无重复，后二轮保持逆战绩',()=>{
- const order=ids(leagues[0].levels[0]);for(let seed=0;seed<100;seed++){const picks=draftOrder(order,{seed});assert.equal(picks.length,48);for(let round=1;round<=3;round++){const rows=picks.filter(p=>p.round===round);assert.equal(new Set(rows.map(p=>p.club)).size,16);}assert.ok(picks.slice(0,3).every(p=>order.slice(0,8).includes(p.club)));assert.deepEqual(picks.slice(16,32).map(p=>p.club),order);assert.deepEqual(picks.slice(32).map(p=>p.club),order);assert.deepEqual(picks,draftOrder(order,{seed}));}assert.throws(()=>draftOrder(order.slice(1)));
+test('三联赛36队共同选秀，108签每轮逆战绩且各队一签',()=>{
+ const order=METRO_SYSTEMS.flatMap(id=>ids(leagues.find(l=>l.id===id).levels[0])).reverse(),picks=draftOrder(order);assert.equal(picks.length,108);for(let round=1;round<=3;round++){const rows=picks.filter(p=>p.round===round);assert.equal(new Set(rows.map(p=>p.club)).size,36);assert.deepEqual(rows.map(p=>p.club),order);}assert.throws(()=>draftOrder(order.slice(1)));
 });
 test('八种姓名语系稳定、成组组合与原文完整，继承姓氏，非法参数拒绝',()=>{
  assert.equal(Object.keys(NAME_POOLS).length,8);for(const culture of Object.keys(NAME_POOLS))for(let n=0;n<100;n++){

@@ -1,3 +1,4 @@
+import {toAbility} from '../src/football/ability.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateYouthPlayer,developWeek,preciseRating,publicProfile,ATTRIBUTE_KEYS,ATTRIBUTE_GROUPS} from '../src/football/players.js';
@@ -6,7 +7,7 @@ import {createSeason,playFixture,matchInput,seasonTeam,validateSave} from '../sr
 import {advanceDevelopment,developedPlayer,setPlayerTraining,developmentReport,createDevelopment} from '../src/competitions/development.js';
 import {appointManager} from '../src/competitions/career.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
-const base=()=>generateYouthPlayer({id:'growth-test',age:16,potential:84,seed:'fixed'});
+const base=()=>generateYouthPlayer({id:'growth-test',age:16,potential:toAbility(84),seed:'fixed'});
 const mature=(p,options,weeks=416)=>{for(let i=0;i<weeks;i++)p=developWeek(p,options);return p;};
 const mean=(p,group)=>Object.keys(ATTRIBUTE_GROUPS[group].fields).reduce((n,k)=>n+p.attributes[k],0)/Object.keys(ATTRIBUTE_GROUPS[group].fields).length;
 

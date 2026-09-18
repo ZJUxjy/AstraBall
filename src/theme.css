@@ -1,0 +1,18 @@
+/* Global palette. Features may use color for data, never redefine the shell. */
+:root {
+ --bg:#0b0f1c;
+ --surface:#171b2b;
+ --surface-2:#202436;
+ --line:#34394c;
+ --text:#e8e8ef;
+ --muted:#a2a5b8;
+ --accent:#bd95f4;
+ --selected:#322447;
+ --positive:#39d39a;
+ --warning:#e8be72;
+ --negative:#ed859b;
+ --gold:var(--accent); /* Compatibility for existing feature selectors. */
+ --green:var(--positive);
+ --radius:8px;
+ --sidebar-width:188px;
+}

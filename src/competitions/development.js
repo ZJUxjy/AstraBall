@@ -3,7 +3,7 @@ import {populationPlayers,populationPlayer} from './population.js';
 import {YEAR} from '../world.js';
 import {registeredPlayers,registeredPlayer,ensurePlayerRegistry,playerAgeOnDate,migrateYouthBodies} from './registry.js';
 import {ensureYouthIntake,advanceYouthPathways,youthWeekContext} from './youth.js';
-import {ATTRIBUTE_GROUPS,developWeek,preciseRating,focusWeights,trainingEfficiency} from '../football/players.js';
+import {ATTRIBUTE_GROUPS,developWeek,preciseRating,preciseSkill,focusWeights,trainingEfficiency} from '../football/players.js';
 import {bodyAtAge} from '../football/body.js';
 import {dailyWorkload,matchFatigue,fatiguePenalty,workloadAdvice} from '../football/workload.js';
 import {prepareAcademyContext,academyTrainingQuality} from './academy.js';
@@ -121,12 +121,12 @@ export function recordDevelopmentMatch(s,input,result,date){if(s.population)retu
  for(let side=0;side<2;side++){
   const opponent=side?input.home:input.away;
   const outfield=opponent.roster.filter(p=>p.position!=='GK');
-  const opposition=outfield.reduce((n,p)=>n+preciseRating(p),0)/outfield.length;
+  const opposition=outfield.reduce((n,p)=>n+preciseSkill(p),0)/outfield.length;
   for(const line of result.teams[side].players||[]){
    if(!(line.minutes>0))continue;
    const p=registeredPlayer(s,line.id);if(!p)continue;
    const r=recordFor(d,p);enterYear(r,p,date);
-   const ability=preciseRating({...p,attributes:r.attributes});
+   const ability=preciseSkill({...p,attributes:r.attributes});
    const challenge=clamp(1-Math.max(0,ability-opposition-5)/45-Math.max(0,opposition-ability-15)/80,.25,1);
    const minutes=Math.min(line.minutes,result.seconds/60);
    r.minutes+=minutes;r.appearances++;r.seasonMinutes+=minutes;r.seasonAppearances++;
@@ -167,13 +167,13 @@ export function validateDevelopment(d,s={}){if(s.population)return populationDev
  const finiteBetween=(value,low,high)=>Number.isFinite(value)&&value>=low&&value<=high;
  for(const [id,r] of Object.entries(d.records)){
   if(!byId.has(id)||!r||!groups.every(g=>Number.isFinite(r.dose?.[g])&&r.dose[g]>=0)||!['minutes','appearances','seasonMinutes','seasonAppearances','weekMinutes','weekChallenge','healthyDays'].every(k=>Number.isFinite(r[k])&&r[k]>=0)||!Array.isArray(r.history)||!Array.isArray(r.annual)||!Object.values(ATTRIBUTE_GROUPS).every(g=>Object.keys(g.fields).every(k=>finiteBetween(r.attributes?.[k],1,99)&&finiteBetween(r.seasonAttributes?.[k],1,99))))throw Error('球员成长属性无效');
-  if(!finiteBetween(r.sharpness,0,100)||!finiteBetween(r.startRating,1,99)||!finiteBetween(r.seasonRating,1,99)||!Number.isInteger(r.seasonYear)||r.seasonYear<YEAR||r.healthyDays>7)throw Error('球员成长记录无效');
+  if(!finiteBetween(r.sharpness,0,100)||!finiteBetween(r.startRating,1,200)||!finiteBetween(r.seasonRating,1,200)||!Number.isInteger(r.seasonYear)||r.seasonYear<YEAR||r.healthyDays>7)throw Error('球员成长记录无效');
   for(const field of ['youthMinutes','youthAppearances','seasonYouthMinutes','seasonYouthAppearances'])if(r[field]!==undefined&&(!Number.isFinite(r[field])||r[field]<0))throw Error('青年比赛记录无效');
   if(r.fatigue!==undefined&&!finiteBetween(r.fatigue,0,100))throw Error('训练疲劳记录无效');
   if(r.recentExposure!==undefined&&(!Array.isArray(r.recentExposure)||r.recentExposure.some(row=>!validDate(row.date)||row.date>d.through||!finiteBetween(row.minutes,0,150)||!['senior','youth'].includes(row.kind))))throw Error('近期出场记录无效');
   for(const field of ['lastMatchDate','lastYouthMatchDate'])if(r[field]!==undefined&&!validDate(r[field]))throw Error('出场日期无效');
   for(const point of [...r.history,...r.annual])if((point.height!==undefined||point.weight!==undefined)&&(!finiteBetween(point.height,100,230)||!finiteBetween(point.weight,25,180)))throw Error('身体发育历史无效');
-  if(r.history.some(point=>!validDate(point.date)||point.date>d.through||!finiteBetween(point.ability,1,99)||!Number.isFinite(point.age)||!Number.isFinite(point.minutes)||point.minutes<0))throw Error('成长历史无效');
-  if(r.annual.some(point=>!Number.isInteger(point.year)||!finiteBetween(point.ability,1,99)||!Number.isFinite(point.gain)||!Number.isFinite(point.minutes)||point.minutes<0||!Number.isFinite(point.appearances)||point.appearances<0))throw Error('年度成长记录无效');
+  if(r.history.some(point=>!validDate(point.date)||point.date>d.through||!finiteBetween(point.ability,1,200)||!Number.isFinite(point.age)||!Number.isFinite(point.minutes)||point.minutes<0))throw Error('成长历史无效');
+  if(r.annual.some(point=>!Number.isInteger(point.year)||!finiteBetween(point.ability,1,200)||!Number.isFinite(point.gain)||!Number.isFinite(point.minutes)||point.minutes<0||!Number.isFinite(point.appearances)||point.appearances<0))throw Error('年度成长记录无效');
  }
 }

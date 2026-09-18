@@ -1,3 +1,9 @@
+import {positionOrder} from './list-sort.js';
+import {preciseRating} from './football/players.js';
+import {findFootballPlayer} from './football/data.js';
+import {peekSeason} from './competitions/store.js';
+import {populationPlayer} from './competitions/population.js';
+import {developedPlayer} from './competitions/development.js';
 import { geography as geo, inside, polygonPath, formatPopulation, formatArea } from './geography/generate.js';
 import { clubs, academies, players, leagues, drafts, byId, location } from './world.js';
 import { zoomCamera, wheelCamera } from './map-input.js';
@@ -76,19 +82,20 @@ function football(selection) {
   const localAcademies = academies.filter(a => contains(at(a.city)));
   const localPlayers = players.filter(p => contains(at(p.city))).sort((a,b)=>b.reputation-a.reputation);
   const champions = drafts.filter(d => localPlayers.some(p => p.id === d.player));
-  const section = (title,html) => `<section class="atlas-football-section"><h3>${title}</h3>${html || '<p class="atlas-empty">暂无记录</p>'}</section>`;
-  return `<div class="atlas-football-stats"><div><b>${localClubs.length}</b><span>俱乐部</span></div><div><b>${localAcademies.length}</b><span>培养机构</span></div><div><b>${champions.length}</b><span>历届状元</span></div></div><p class="atlas-count-note">俱乐部列表最多显示 16 家</p>`
+  const playerData=p=>{const season=peekSeason(),base=(season&&populationPlayer(season,p.id))||findFootballPlayer(p.id),current=base&&season?developedPlayer(season,base):base;return `data-player-list-row data-name="${escape(p.name)}" data-age="${current?.age??p.age}" data-position="${positionOrder(current?.position||p.position)??''}" data-ability="${current?preciseRating(current):''}" data-wage="${season?.economy?.contracts[p.id]?.weeklyWage??''}"`;};
+  const section = (title,html) => `<section class="atlas-football-section"><h3>${title}</h3>${html ? (title==='本地球员'?html:`<div data-sort-list="name">${html}</div>`) : '<p class="atlas-empty">暂无记录</p>'}</section>`;
+  return `<div class="atlas-football-stats"><div><b>${localClubs.length}</b><span>俱乐部</span></div><div><b>${localAcademies.length}</b><span>培养机构</span></div><div><b>${champions.length}</b><span>历届状元</span></div></div><p class="atlas-count-note">球员按出生地归属</p>`
     + section('联赛体系', leagues.filter(l=>kind==='planet'||l.region===(kind==='region'?entity.id:at(kind==='city'?entity.id:entity.capital).region)).map(l=>`<a class="atlas-entity-link" href="#leagues/${l.id}/1/rules"><span><strong>${l.name}</strong><small>${l.system} · ${l.levels.length} 个级别</small></span><span>↗</span></a>`).join(''))
-    + section('俱乐部', localClubs.slice(0,16).map(c=>`<a class="atlas-entity-link" href="#player/lin/club/${c.id}"><span class="club-monogram">${c.short}</span><span><strong>${c.name}</strong><small>${byId(leagues,c.league).name}</small></span><span>↗</span></a>`).join(''))
+    + section('俱乐部', localClubs.map(c=>`<a class="atlas-entity-link" href="#player/lin/club/${c.id}"><span class="club-monogram">${c.short}</span><span><strong>${c.name}</strong><small>${byId(leagues,c.league).name}</small></span><span>↗</span></a>`).join(''))
     + section('培养机构', localAcademies.map(a=>`<a class="atlas-entity-link" href="#player/lin/academy/${a.id}"><span class="academy-monogram">学</span><span><strong>${a.name}</strong><small>${at(a.city).name}</small></span><span>↗</span></a>`).join(''))
-    + section('本地球员', localPlayers.slice(0,8).map(p=>`<a class="atlas-entity-link" href="#player/${p.id}/place/city/${p.city}"><span class="player-monogram">${escape(p.name.slice(0,1))}</span><span><strong>${escape(p.name)}</strong><small>${p.age} 岁 · ${p.position} · ${p.retired?'已退役':at(p.city).name}</small></span><span>↗</span></a>`).join(''));
+    + section('本地球员', localPlayers.map(p=>`<a ${playerData(p)} class="atlas-entity-link" href="#player/${p.id}/place/city/${p.city}"><span class="player-monogram">${escape(p.name.slice(0,1))}</span><span><strong>${escape(p.name)}</strong><small>${p.age} 岁 · ${p.position} · ${p.retired?'已退役':at(p.city).name}</small></span><span>↗</span></a>`).join(''));
 }
 
 function drawerBody(selection) {
   const {kind,entity} = selection;
   const {province,region} = ancestors(selection);
   if (kind === 'planet') {
-    return `${facts([['总人口','500 亿'],['陆域面积',formatArea(geo.landAreaKm2)],['行政区划','4 大区 · 36 省'],['重要城市','108 座']])}<h3 class="atlas-section-title">大区</h3><div class="region-directory">${geo.regions.map(r=>link('region',r,`<span class="region-swatch" style="--region:${r.color}"></span><span><strong>${r.name}</strong><small>${geo.provinces.filter(p=>p.region===r.id).length} 省 · 首府 ${at(r.capital).name}</small></span><span class="atlas-list-value">${r.population} 亿</span><span>›</span>`,'atlas-list-row')).join('')}</div><h3 class="atlas-section-title">人口分布</h3><div class="population-bars">${geo.regions.map(r=>`<div><span>${r.name}</span><i style="--bar:${r.population/170*100}%;--region:${r.color}"></i><b>${r.population} 亿</b></div>`).join('')}</div>`;
+    return `${facts([['总人口','500 亿'],['陆域面积',formatArea(geo.landAreaKm2)],['行政区划','4 大区 · 36 省'],['重要城市','108 座']])}<h3 class="atlas-section-title">大区</h3><div class="region-directory" data-sort-list="name">${geo.regions.map(r=>link('region',r,`<span class="region-swatch" style="--region:${r.color}"></span><span><strong>${r.name}</strong><small>${geo.provinces.filter(p=>p.region===r.id).length} 省 · 首府 ${at(r.capital).name}</small></span><span class="atlas-list-value">${r.population} 亿</span><span>›</span>`,'atlas-list-row')).join('')}</div><h3 class="atlas-section-title">人口分布</h3><div class="population-bars">${geo.regions.map(r=>`<div><span>${r.name}</span><i style="--bar:${r.population/170*100}%;--region:${r.color}"></i><b>${r.population} 亿</b></div>`).join('')}</div>`;
   }
   if (kind === 'region') {
     const provinces = geo.provinces.filter(p=>p.region===entity.id);

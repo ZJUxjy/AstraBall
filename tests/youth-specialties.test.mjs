@@ -1,3 +1,4 @@
+import {toSkill,calibratePotential} from '../src/football/ability.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -42,15 +43,16 @@ test('旧青年存档保持原属性和包络，新旧球员均可继续成长',
  const old=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
  const s=createSeason(),id='youth:318:bridge:1',fresh=s.playerRegistry.players[id];
  const legacy=old.generateYouthPlayer({id,seed:'intake:318',age:16,position:fresh.position,identity:{club:fresh.club,city:fresh.city,ageReferenceDate:fresh.ageReferenceDate}});
- s.playerRegistry.players[id]={...fresh,...legacy};
+ delete s.abilityVersion;for(const p of Object.values(s.playerRegistry.players)){p.potential=toSkill(p.potential);delete p.abilityVersion;}
+ s.playerRegistry.players[id]={...fresh,...legacy};delete s.playerRegistry.players[id].abilityVersion;
  const before=structuredClone(s.playerRegistry.players[id]);
  assert.equal(before.growthProfile.generationVersion,undefined);
  const restored=validateSave(JSON.parse(JSON.stringify(s)));
- assert.deepEqual(restored.playerRegistry.players[id],before);
+ assert.deepEqual(restored.playerRegistry.players[id].attributes,before.attributes);assert.deepEqual(restored.playerRegistry.players[id].growthProfile,before.growthProfile);assert.equal(restored.playerRegistry.players[id].potential,calibratePotential(before.potential,id));
  advanceDevelopment(restored,'0318-01-08');
- assert.deepEqual(restored.playerRegistry.players[id],before);
+ assert.deepEqual(restored.playerRegistry.players[id].attributes,before.attributes);assert.deepEqual(restored.playerRegistry.players[id].growthProfile,before.growthProfile);assert.equal(restored.playerRegistry.players[id].potential,calibratePotential(before.potential,id));
  assert.notDeepEqual(restored.development.records[id].attributes,before.attributes);
- const authored=generateYouthPlayer({id:'new-specialty-authored',potential:84});
+ const authored=generateYouthPlayer({id:'new-specialty-authored',potential:157});
  const frozen=structuredClone(authored.growthProfile);let adult=authored;
  for(let i=0;i<624;i++)adult=developWeek(adult,{minutes:90});
  assert.deepEqual(adult.growthProfile,frozen);

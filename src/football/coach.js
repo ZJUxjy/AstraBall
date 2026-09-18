@@ -1,6 +1,6 @@
-import {selectAISubstitutions} from './ai-team.js';
+import {selectAISubstitutions,planAITeam} from './ai-team.js';
 import {hash,mean} from './random.js';
-import {FORMATIONS,available,rating,familiarity,selectLineup} from './players.js';
+import {FORMATIONS,available,skillRating,familiarity,selectLineup} from './players.js';
 export const COACH_STYLES={
  possession:{formation:'4-2-3-1',passing:'short',tempo:'slow',width:'narrow',striker:'link',fullbacks:'overlap'},
  pressing:{formation:'4-3-3',passing:'mixed',pressing:'high',line:'high',tempo:'fast',fullbacks:'support'},
@@ -10,9 +10,10 @@ export const COACH_STYLES={
 };
 export function coachStyle(team){return Object.keys(COACH_STYLES)[hash(`coach:${team.id}`)%Object.keys(COACH_STYLES).length];}
 export function matchReadiness(player,position){
- return rating(player,position)*familiarity(player,position)*(.55+.45*player.condition/100)*(.94+.06*player.sharpness/100);
+ return skillRating(player,position)*familiarity(player,position)*(.55+.45*player.condition/100)*(.94+.06*player.sharpness/100);
 }
 export function coachLineup(team,formation){
+ if(team.roster.filter(available).length<11)return planAITeam(team,{formation,allowIncomplete:true,requireKeeper:true,rotation:false}).lineup;
  const used=new Set();
  return FORMATIONS[formation].map(position=>{
   const candidates=team.roster.filter(p=>available(p)&&!used.has(p.id)).sort((a,b)=>matchReadiness(b,position)-matchReadiness(a,position)||a.id.localeCompare(b.id));
@@ -20,7 +21,7 @@ export function coachLineup(team,formation){
   used.add(candidates[0].id);return {id:candidates[0].id,position};
  });
 }
-const lineupQuality=team=>mean(selectLineup(team).map(slot=>rating(team.roster.find(p=>p.id===slot.id),slot.position)));
+const lineupQuality=team=>mean((team.roster.filter(available).length<11?coachLineup(team,'4-3-3'):selectLineup(team)).map(slot=>skillRating(team.roster.find(p=>p.id===slot.id),slot.position)));
 export function prepareCoach(team,opponent){
  const style=coachStyle(team),tactics={...COACH_STYLES[style]},gap=lineupQuality(team)-lineupQuality(opponent);
  const players=team.roster.filter(available),defenders=players.filter(p=>['CB','LB','RB'].includes(p.position)),runners=opponent.roster.filter(p=>available(p)&&['ST','LW','RW'].includes(p.position));

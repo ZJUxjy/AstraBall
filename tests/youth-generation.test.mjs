@@ -44,10 +44,10 @@ test('年龄增加初始积累，显式潜力校准不重新设定当前能力',
  const young=generateYouthPlayer({id:'age-pair',age:15}),older=generateYouthPlayer({id:'age-pair',age:18});
  assert.deepEqual(young.growthProfile,older.growthProfile);assert.equal(young.potential,older.potential);
  assert.ok(preciseRating(older)>preciseRating(young));
- const first=generateYouthPlayer({id:'authored-pair',potential:88}),second=generateYouthPlayer({id:'authored-pair',potential:98});
+ const first=generateYouthPlayer({id:'authored-pair',potential:169}),second=generateYouthPlayer({id:'authored-pair',potential:196});
  assert.deepEqual(first.attributes,second.attributes,'上调充分宽裕的成长包络不能凭空提升少年能力');
- assert.equal(first.potential,88);assert.equal(second.potential,98);
- for(const potential of [45,99]){
+ assert.equal(first.potential,169);assert.equal(second.potential,196);
+ for(const potential of [1,90,180,200]){
   const p=generateYouthPlayer({id:`edge-${potential}`,potential});
   assert.ok(preciseRating(p)<=potential);
   assert.ok(ATTRIBUTE_KEYS.every(key=>p.attributes[key]>=1&&p.growthProfile.ceilings[key]<=99));
@@ -69,12 +69,12 @@ test('更改评分位置不能刷新属性成长或修改底层发展参数',()=
 });
 
 test('某项属性接近包络不会阻止其他属性发展，连续培养不越过包络',()=>{
- let p=generateYouthPlayer({id:'attribute-room',potential:84}),before=structuredClone(p.growthProfile);
+ let p=generateYouthPlayer({id:'attribute-room',potential:157}),before=structuredClone(p.growthProfile);
  p.attributes.pace=p.growthProfile.ceilings.pace;
  const next=developWeek(p,{minutes:90});
  assert.equal(next.attributes.pace,p.attributes.pace);assert.ok(next.attributes.passing>p.attributes.passing);
  for(let week=0;week<520;week++)p=developWeek(p,{minutes:90});
- assert.deepEqual(p.growthProfile,before);assert.equal(p.potential,84);
+ assert.deepEqual(p.growthProfile,before);assert.equal(p.potential,157);
  assert.ok(ATTRIBUTE_KEYS.every(key=>p.attributes[key]<=p.growthProfile.ceilings[key]+1e-10));
- assert.ok(preciseRating(p)<=84);
+ assert.ok(preciseRating(p)<=157);
 });

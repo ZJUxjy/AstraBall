@@ -6,7 +6,7 @@ import {positionalAttribute} from './roles.js';
 import {selectPass,routeModifier} from './passing.js';
 import {initializeSpace,updateSpace,localPressure,nearestDefender} from './spatial.js';
 import {rng,clamp,mean,sigmoid,logit} from './random.js';
-import {selectLineup,FORMATIONS,available,familiarity,ATTRIBUTE_KEYS,rating} from './players.js';
+import {selectLineup,FORMATIONS,available,familiarity,ATTRIBUTE_KEYS,skillRating} from './players.js';
 import {ENGINE_VERSION,TUNE,skillDifference} from './config.js';
 import {shotQuality,goalProbability} from './shots.js';
 import {tacticalEffects} from './tactics.js';
@@ -18,24 +18,26 @@ export const TACTIC_VALUES={formation:Object.keys(FORMATIONS),passing:['short','
 export function validateTactics(value={}){for(const [k,v] of Object.entries(value))if(!TACTIC_VALUES[k]?.includes(v))throw Error(`战术无效：${k}`);return {...DEFAULT_TACTICS,...value};}
 function lineStats(id){return {id,seconds:0,goals:0,assists:0,shots:0,onTarget:0,xG:0,xA:0,passes:0,completed:0,tackles:0,interceptions:0,dribbles:0,dribblesWon:0,saves:0,goalsAgainst:0,fouls:0,yellow:0,red:0,condition:100};}
 function teamStats(){return {goals:0,shots:0,onTarget:0,xG:0,passes:0,completed:0,dribbles:0,dribblesWon:0,tackles:0,interceptions:0,corners:0,fouls:0,yellow:0,red:0,offsides:0,possessionSeconds:0,playerSeconds:0,penalties:0};}
-function teamContext(input,tactics,lineup){
+function teamContext(input,tactics,lineup,allowShortHanded=false){
  const team=structuredClone(input),ids=new Set();if(!team?.id||!Array.isArray(team.roster))throw Error('球队数据无效');
  for(const p of team.roster){if(!p.id||ids.has(p.id))throw Error('球员 ID 重复');ids.add(p.id);for(const k of ATTRIBUTE_KEYS)if(!Number.isFinite(p.attributes?.[k])||p.attributes[k]<1||p.attributes[k]>99)throw Error(`球员属性无效：${p.id}/${k}`);for(const k of ['morale','sharpness','weakFoot'])if(!Number.isFinite(p[k])||p[k]<0||p[k]>100)throw Error('球员状态无效');for(const k of ['consistency','bigMatches','injuryProneness','adaptability'])if(!Number.isFinite(p.personality?.[k]))throw Error('球员性格数据无效');if(!Number.isFinite(p.condition)||p.condition<0||p.condition>100)throw Error('体能无效');}
  const settings=validateTactics(tactics),slots=structuredClone(lineup??selectLineup(team,settings.formation));
- if(slots.map(s=>s.position).sort().join(',')!==[...FORMATIONS[settings.formation]].sort().join(','))throw Error('首发位置必须符合所选阵型');
- if(slots.length!==11||new Set(slots.map(s=>s.id)).size!==11||slots.filter(s=>s.position==='GK').length!==1)throw Error('首发必须有 11 名不同球员和 1 名门将');
+ const short=allowShortHanded&&slots.length>=7&&slots.length<11,positions=[...FORMATIONS[settings.formation]];
+ if(short){for(const slot of slots){const index=positions.indexOf(slot.position);if(index<0)throw Error('首发位置必须符合所选阵型');positions.splice(index,1);}}
+ else if(slots.map(s=>s.position).sort().join(',')!==positions.sort().join(','))throw Error('首发位置必须符合所选阵型');
+ if((!short&&slots.length!==11)||new Set(slots.map(s=>s.id)).size!==slots.length||slots.filter(s=>s.position==='GK').length!==1)throw Error('首发必须有 11 名不同球员和 1 名门将');
  for(const s of slots){const p=team.roster.find(p=>p.id===s.id);if(!p||!available(p)||!FORMATIONS[settings.formation].includes(s.position))throw Error('首发球员或位置无效');}
  const lines=Object.fromEntries(team.roster.map(p=>[p.id,{...lineStats(p.id),condition:p.condition}]));
  return {...team,tactics:settings,slots,lines,stats:teamStats(),used:new Set(slots.map(s=>s.id)),subs:0,windows:0,lastSubTime:-1};
 }
-export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,neutral=false,knockout=false,capture=true,plans=[],importance=0,homeAI=false,awayAI=false,ai=[homeAI,awayAI]}={}){
+export function createMatch({home,away,seed=1,homeTactics={},awayTactics={},homeLineup,awayLineup,neutral=false,knockout=false,capture=true,plans=[],importance=0,homeAI=false,awayAI=false,ai=[homeAI,awayAI],allowShortHanded=false}={}){
  if(home?.id===away?.id)throw Error('不能与自己比赛');
  if(!Array.isArray(ai)||ai.length!==2||ai.some(v=>typeof v!=='boolean'))throw Error('教练控制设置无效');
  const inputs=[home,away],settings=[homeTactics,awayTactics],lineups=[homeLineup,awayLineup];
  const teams=inputs.map((input,side)=>{
   const coach=ai[side]?prepareCoach(input,inputs[1-side]):null;
   const tactics=validateTactics({...coach?.tactics,...settings[side]});
-  const team=teamContext(input,tactics,lineups[side]||(coach?coachLineup(input,tactics.formation):undefined));
+  const team=teamContext(input,tactics,lineups[side]||(coach?coachLineup(input,tactics.formation):undefined),allowShortHanded);
   team.coach=coach?{style:coach.style,baseTactics:{...tactics},nextReview:15,subReviews:[],lastDecision:null}:null;return team;
  });
  const ids=teams.flatMap(t=>t.roster.map(p=>p.id));if(new Set(ids).size!==ids.length)throw Error('两队球员 ID 不得相同');
@@ -116,7 +118,7 @@ function corner(s){
 function injure(s,side){
  const t=s.teams[side],p=s.random.pick(field(t),p=>(20+p.personality.injuryProneness)*(1+(100-t.lines[p.id].condition)/80));
  p.injuryDays=s.random.int(3,35);emit(s,'injury',{side,player:p.id,days:p.injuryDays});clock(s,30,false);
- const slot=t.slots.find(x=>x.id===p.id),candidate=t.roster.filter(p=>available(p)&&!t.used.has(p.id)).sort((a,b)=>rating(b,slot.position)*familiarity(b,slot.position)-rating(a,slot.position)*familiarity(a,slot.position))[0];
+ const slot=t.slots.find(x=>x.id===p.id),candidate=t.roster.filter(p=>available(p)&&!t.used.has(p.id)).sort((a,b)=>skillRating(b,slot.position)*familiarity(b,slot.position)-skillRating(a,slot.position)*familiarity(a,slot.position))[0];
  if(candidate&&t.subs<5&&t.windows<3)applyCommand(s,{type:'substitution',side,out:p.id,in:candidate.id});else removePlayer(s,side,p.id);
 }
 
@@ -180,7 +182,7 @@ export function applyCommand(s,command){
   const tactics=validateTactics({...t.tactics,...command.tactics});
   if(tactics.formation!==t.tactics.formation){
    const remaining=[...t.slots];const slots=FORMATIONS[tactics.formation].slice(0,t.slots.length).map((position,anchorIndex)=>{
-    remaining.sort((a,b)=>rating(player(t,b.id),position)*familiarity(player(t,b.id),position)-rating(player(t,a.id),position)*familiarity(player(t,a.id),position));
+    remaining.sort((a,b)=>skillRating(player(t,b.id),position)*familiarity(player(t,b.id),position)-skillRating(player(t,a.id),position)*familiarity(player(t,a.id),position));
     return {id:remaining.shift().id,position,anchorIndex};});t.slots=slots;
   }
   t.tactics=tactics;emit(s,'tactics',{side:command.side,tactics:{...tactics},reason:command.reason||null});return;

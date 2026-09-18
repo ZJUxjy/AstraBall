@@ -1,15 +1,17 @@
+import {seniorTeams,allKnownTeams,knownTeam} from './team-directory.js';
+import {isMetroLeague,METRO_SYSTEMS} from './catalog.js';
 import {footballTeams} from '../football/data.js';
-import {preciseRating} from '../football/players.js';
+import {preciseSkill} from '../football/players.js';
 import {planAITeam,evaluateOpportunity,aiRoleScore} from '../football/ai-team.js';
 import {getDivision} from './catalog.js';
 import {daysBetween} from './calendar.js';
 import {playerAgeOnDate} from './registry.js';
 import {rng} from '../football/random.js';
 
-const clubs=new Map(footballTeams.map(t=>[t.id,t]));
+const clubs={get:knownTeam,has:id=>Boolean(knownTeam(id))};
 export function recruitmentOrder(context){
- const priority=new Map(footballTeams.map(t=>[t.id,rng(`recruit-order:${context.date}:${t.id}`).next()]));
- return [...footballTeams].sort((a,b)=>context.tier(a.id)-context.tier(b.id)||priority.get(a.id)-priority.get(b.id)||a.id.localeCompare(b.id));
+ const priority=new Map(context.clubs.map(t=>[t.id,rng(`recruit-order:${context.date}:${t.id}`).next()]));
+ return [...context.clubs].sort((a,b)=>context.tier(a.id)-context.tier(b.id)||priority.get(a.id)-priority.get(b.id)||a.id.localeCompare(b.id));
 }
 // One review window, invalidated after every move. No hidden development fields
 // enter a decision and no cache survives the mutable registration transaction.
@@ -29,8 +31,8 @@ export function recruitmentContext(s,date,roster){
   if(!teams.has(id))teams.set(id,{id,roster:roster(id).map(p=>({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes,age:playerAgeOnDate(p,date),injuryDays:0,suspended:0,playedToday:false,condition:100}))});
   return teams.get(id);
  };
- const plan=id=>{if(!plans.has(id))plans.set(id,planAITeam(team(id),{healthy:true,rotation:false}));return plans.get(id);};
- return {date,managedClubId:s.manager?.clubId,originalSince:s.development?.since||`${date.slice(0,4)}-01-01`,team,plan,minutes,games,division:id=>divisions.get(id),tier:id=>id&&divisions.get(id)==='closed'?0:getDivision(divisions.get(id))?.tier??1,
+ const plan=id=>{if(!plans.has(id))plans.set(id,planAITeam(team(id),{healthy:true,rotation:false,allowIncomplete:true}));return plans.get(id);};
+ return {clubs:seniorTeams(s),date,managedClubId:s.manager?.clubId,originalSince:s.development?.since||`${date.slice(0,4)}-01-01`,team,plan,minutes,games,division:id=>divisions.get(id),tier:id=>id&&isMetroLeague(divisions.get(id))?0:getDivision(divisions.get(id))?.tier??1,
   age(p){if(!ages.has(p.id))ages.set(p.id,playerAgeOnDate(p,date));return ages.get(p.id);},
   roleScore(p,position){const key=`${p.id}/${position}`;if(!scores.has(key))scores.set(key,aiRoleScore({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes},position,{condition:100}));return scores.get(key);},
   evidence(p,reg){
@@ -42,7 +44,7 @@ export function recruitmentContext(s,date,roster){
    return evidenceCache.get(key);
   },
   player:p=>({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes}),
-  opportunity:(id,p)=>plan(id).opportunities[p.id]||evaluateOpportunity(team(id),p,{healthy:true,rotation:false}),
+  opportunity:(id,p)=>plan(id).opportunities[p.id]||evaluateOpportunity(team(id),p,{healthy:true,rotation:false,allowIncomplete:true}),
   invalidate(...ids){for(const id of ids){teams.delete(id);plans.delete(id);}}
  };
 }
@@ -60,11 +62,11 @@ export function loanDestinations(context,p,reg,hasSeat){
  const current=context.opportunity(origin,p).expectedMinutes;
  // A same-level club can offer the missing role as well. Shortlisting uses
  // current role ability, then the shared AI selector checks the actual vacancy.
- const candidates=footballTeams.filter(t=>t.id!==origin&&t.id!==context.managedClubId&&t.league!=='closed'&&context.tier(t.id)>=sourceTier&&hasSeat(t.id,p));
+ const candidates=context.clubs.filter(t=>t.id!==origin&&t.id!==context.managedClubId&&!isMetroLeague(t.league)&&context.tier(t.id)>=sourceTier&&hasSeat(t.id,p));
  const rough=t=>{
-  const roster=context.team(t.id).roster,peers=roster.filter(q=>q.position===p.position).map(q=>preciseRating(q));
-  const level=peers.length?Math.max(...peers):Math.max(...roster.map(q=>preciseRating(q)))-8;
-  return Math.abs(level-preciseRating(p))+(source.league===t.league?0:3);
+  const roster=context.team(t.id).roster,peers=roster.filter(q=>q.position===p.position).map(q=>preciseSkill(q));
+  const level=peers.length?Math.max(...peers):Math.max(...roster.map(q=>preciseSkill(q)))-8;
+  return Math.abs(level-preciseSkill(p))+(source.league===t.league?0:3);
  };
  return candidates.map(t=>({t,gap:rough(t)})).sort((a,b)=>a.gap-b.gap||a.t.id.localeCompare(b.t.id)).slice(0,16)
   .map(({t})=>({id:t.id,name:t.name,division:context.division(t.id),expectedMinutes:context.opportunity(t.id,p).expectedMinutes}))
@@ -74,7 +76,7 @@ export function loanDestinations(context,p,reg,hasSeat){
 
 export function transferCandidates(context,players,registrations,clubId){
  const targetTier=context.tier(clubId),target=context.plan(clubId),targetTeam=context.team(clubId);
- const slots=target.lineup.map(slot=>({position:slot.position,score:context.roleScore(targetTeam.roster.find(p=>p.id===slot.id),slot.position)}));
+ const slots=[...target.lineup.map(slot=>({position:slot.position,score:context.roleScore(targetTeam.roster.find(p=>p.id===slot.id),slot.position)})),...(target.vacancies||[]).map(position=>({position,score:0}))];
  return players.filter(p=>{
   const reg=registrations[p.id]||{status:'senior',clubId:p.club,statusSince:context.originalSince};
   if(reg.status!=='senior'||reg.clubId===clubId||context.tier(reg.clubId)<=targetTier)return false;

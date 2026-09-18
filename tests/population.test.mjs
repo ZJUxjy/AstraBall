@@ -9,7 +9,7 @@ import {advanceDevelopment,createDevelopment,developedPlayer,setPlayerTraining} 
 import {createMatch,stepMatch,getResult,DEFAULT_TACTICS} from '../src/football/engine.js';
 import {selectLineup} from '../src/football/players.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
-const nextYear=s=>{s.year++;s.date=`${String(s.year).padStart(4,'0')}-01-01`;accrueEconomy(s,s.date);const result=annualPopulation(s);rolloverEconomy(s);return result;};
+const nextYear=s=>{s.year++;const scheduled=createRuntimeSeason({year:s.year});s.fixtures=scheduled.fixtures;s.calendar=scheduled.calendar;s.groups=scheduled.groups;s.qualifiers=scheduled.qualifiers;s.date=`${String(s.year).padStart(4,'0')}-01-01`;accrueEconomy(s,s.date);const result=annualPopulation(s);rolloverEconomy(s);return result;};
 
 test('新赛季有独立青训名单，确定性身份和号码不会覆盖原球员',()=>{
  const pop=createPopulation();assert.deepEqual(pop,createPopulation());validatePopulation(pop);
@@ -17,7 +17,7 @@ test('新赛季有独立青训名单，确定性身份和号码不会覆盖原�
 });
 test('年度补员和退役只执行一次，JSON 恢复与连续结算一致',()=>{
  const s=createSeason(),p=Object.values(s.population.players).find(p=>p.unit==='senior');p.birthYear=319-p.retirementAge;
- const restored=clone(s),result=nextYear(s);assert.ok(result.intake>=268*4);assert.ok(result.retired>0);nextYear(restored);assert.deepEqual(restored.population,clone(s.population));
+ const restored=clone(s),result=nextYear(s);assert.ok(result.intake>=217*4);assert.ok(result.retired>0);nextYear(restored);assert.deepEqual(restored.population,clone(s.population));
  assert.equal(populationPlayer(s,p.id).retired,true);assert.equal(populationPlayer(s,p.id).lastClub,footballTeams.find(t=>t.roster.some(q=>q.id===p.id)).id);
  assert.ok(!seasonTeam(s,p.lastClub).roster.some(q=>q.id===p.id));
  const saved=JSON.stringify(s.population);assert.deepEqual(annualPopulation(s),{intake:0,retired:0,promoted:0,released:0});assert.equal(JSON.stringify(s.population),saved);validatePopulation(s.population);

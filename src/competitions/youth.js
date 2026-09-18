@@ -1,7 +1,11 @@
+import {toAbility,toSkill} from '../football/ability.js';
+import {seniorTeams,allKnownTeams,knownTeam} from './team-directory.js';
+import {isMetroLeague,METRO_SYSTEMS} from './catalog.js';
+import {invalidateRosterIndex} from './registry.js';
 import {YEAR} from '../world.js';
 import {registryMovement} from './market.js';
 import {footballTeams} from '../football/data.js';
-import {generateYouthPlayer,preciseRating,POSITIONS} from '../football/players.js';
+import {generateYouthPlayer,preciseRating,preciseSkill,POSITIONS} from '../football/players.js';
 import {rng,clamp} from '../football/random.js';
 import {getDivision,getSystem} from './catalog.js';
 import {draftOrder} from './season.js';
@@ -10,15 +14,15 @@ import {academyFixtures,academyTrainingQuality} from './academy.js';
 import {recruitmentContext,recruitmentOrder,lacksPlayingTime,loanDestinations,transferCandidates} from './recruitment.js';
 import {ensurePlayerRegistry,registeredPlayers,registeredPlayer,registeredRoster as baseRegisteredRoster,registryDate,playerAgeOnDate} from './registry.js';
 
-const teamById=new Map(footballTeams.map(t=>[t.id,t]));
+const teamById={get:knownTeam,has:id=>Boolean(knownTeam(id))};
 const youthAge=playerAgeOnDate;
 const rosterContexts=new WeakMap();
 const recruitmentContexts=new WeakMap();
 const registeredRoster=(s,id)=>rosterContexts.get(s)?.get(id)||baseRegisteredRoster(s,id);
-function beginRosterContext(s){const map=new Map(footballTeams.map(t=>[t.id,[]]));for(const p of registeredPlayers(s))if(p.club&&(!p.registrationStatus||['senior','loan'].includes(p.registrationStatus)))map.get(p.club)?.push(p);rosterContexts.set(s,map);}
+function beginRosterContext(s){const map=new Map(seniorTeams(s).map(t=>[t.id,[]]));for(const p of registeredPlayers(s))if(p.club&&(!p.registrationStatus||['senior','loan'].includes(p.registrationStatus)))map.get(p.club)?.push(p);rosterContexts.set(s,map);}
 const currentPlayer=(s,p,date=s.date)=>({...p,age:Math.floor(youthAge(p,date)+1e-9),attributes:s.development?.records[p.id]?.attributes||p.attributes});
 const divisionOf=(s,id)=>Object.keys(s.members||{}).find(d=>s.members[d].includes(id))||teamById.get(id)?.division;
-const ability=(s,p,date=s.date)=>preciseRating(currentPlayer(s,p,date));
+const ability=(s,p,date=s.date)=>preciseSkill(currentPlayer(s,p,date));
 function clubStandard(s,id,standards){
  if(standards?.has(id))return standards.get(id);
  const roster=registeredRoster(s,id).map(p=>ability(s,p)).sort((a,b)=>b-a);
@@ -41,10 +45,10 @@ function move(s,id,date,status,clubId,changes={},type=status,text){
  const r=ensurePlayerRegistry(s),p=r.players[id]||registeredPlayer(s,id),reg=r.registrations[id],from=reg.clubId;
  if(!p||date<reg.statusSince)throw Error('球员流转日期无效');
  if(!registryMovement(s,{...p,club:reg.clubId,birthYear:(p.ageReferenceDate?Number(p.ageReferenceDate.slice(0,4)):YEAR)-p.age},reg,{date,status,clubId,ownerClubId:changes.ownerClubId??reg.ownerClubId,type}))return false;
- Object.assign(reg,{status,clubId,statusSince:date,loanUntil:null},changes);
+ Object.assign(reg,{status,clubId,statusSince:date,loanUntil:null},changes);invalidateRosterIndex(s);
  reg.history.push({date,status,clubId,ownerClubId:reg.ownerClubId});
  if(['senior','loan'].includes(status)){const numbers=new Set(registeredRoster(s,clubId).filter(q=>q.id!==id).map(q=>q.number));let number=reg.number||p.number||1;while(numbers.has(number))number++;reg.number=number;if(r.players[id])p.number=number;}
- const context=rosterContexts.get(s);if(context){if(from)context.set(from,context.get(from).filter(q=>q.id!==id));if(clubId&&['senior','loan'].includes(status))context.set(clubId,[...context.get(clubId).filter(q=>q.id!==id),registeredPlayer(s,id)]);}
+ const context=rosterContexts.get(s);if(context){if(from&&context.has(from))context.set(from,context.get(from).filter(q=>q.id!==id));if(clubId&&['senior','loan'].includes(status)&&context.has(clubId))context.set(clubId,[...context.get(clubId).filter(q=>q.id!==id),registeredPlayer(s,id)]);}
  recruitmentContexts.get(s)?.invalidate(from,clubId);
  emit(r,p,date,type,text||({youth:'继续青训',senior:'进入一线队',loan:'租借加盟',free:'进入自由球员池',retired:'结束球员生涯'}[status]),from);
 }
@@ -54,9 +58,9 @@ export function ensureYouthIntake(s,date=s.date){
  const registry=ensurePlayerRegistry(s),year=Number(date.slice(0,4));
  const cohorts=new Set(registry.cohorts.map(cohort=>cohort.id));
  // A migrated save starts its first cohort now; it never receives retroactive training.
- for(const [index,club] of footballTeams.entries()){
+ for(const [index,club] of seniorTeams(s).entries()){
   const cohortId=`${year}:${club.id}`;if(cohorts.has(cohortId))continue;
-  const pathway=club.league==='closed'?'royal':'local',academyId=pathway==='royal'?(index%2?'horizon':'morning'):club.id==='bridge'?'bridge-academy':club.id==='iron-fc'?'iron-academy':`${club.id}-academy`;
+  const pathway=isMetroLeague(club.league)?'royal':'local',academyId=pathway==='royal'?(index%2?'horizon':'morning'):club.id==='bridge'?'bridge-academy':club.id==='iron-fc'?'iron-academy':`${club.id}-academy`;
   const playerIds=[],random=rng(`intake:${cohortId}`),positions=Object.keys(POSITIONS),region=getSystem(club.league)?.region||'metro';
   for(let i=0;i<3;i++){
    const id=`youth:${cohortId}:${i}`,p=generateYouthPlayer({id,seed:`intake:${year}`,age:15+i,position:positions[random.int(0,positions.length-1)],region,identity:{city:club.city,club:club.id,ageReferenceDate:date,academyId,academyClubId:club.id,pathway}});
@@ -95,7 +99,7 @@ export function observeYouth(s,id,{clubId}={}){
  if(!r.players[id]||p.retired)throw Error('青训球员不存在');
  const old=youthObservation(s,id,observer);if(!canObserve(s,p,observer))return old;
  const evidence=observationEvidence(s,p),age=youthAge(p,s.date),points=evidence.history,earlier=points.find(point=>daysBetween(point.date,s.date)>=90),span=earlier?Math.max(90,daysBetween(earlier.date,s.date)):0;
- const trend=earlier?clamp((evidence.ability-earlier.ability)*365.25/span,-3,9):null;
+ const trend=earlier?clamp((evidence.ability-toSkill(earlier.ability))*365.25/span,-3,9):null;
  const bias=rng(`scout:${observer}:${id}`).normal()*3.5,observedMatches=evidence.matches;
  const samples=(old?.samples||0)+1,width=Math.max(7,15-Math.min(5,observedMatches/5)-Math.min(3,samples-1));
  const expectedGrowth=Math.max(0,23-age)*(trend===null?2.3:clamp(trend*.62,.5,4));
@@ -104,7 +108,7 @@ export function observeYouth(s,id,{clubId}={}){
  if(age<18)notes.push('青年比赛表现尚待成年赛事验证');
  if(trend!==null)notes.push(trend>3?'近阶段进步较快':trend<.5?'近阶段成长较慢':'近阶段持续进步');
  if(!(s.development?.records[id]?.minutes>0))notes.push('暂无成年正式比赛记录');
- const report={playerId:id,observerClubId:observer,updatedAt:s.date,evidenceThrough:evidence.through,evidenceMinutes:evidence.minutes,samples,observedMatches,forecastLow:Math.round(clamp(projected-width,1,99)),forecastHigh:Math.round(clamp(projected+width,1,99)),confidence:samples>=4&&observedMatches>=20?'中等':'较低',currentAbility:Math.round(evidence.ability),trend,notes};
+ const report={playerId:id,observerClubId:observer,updatedAt:s.date,evidenceThrough:evidence.through,evidenceMinutes:evidence.minutes,samples,observedMatches,forecastLow:Math.round(toAbility(clamp(projected-width,1,99))),forecastHigh:Math.round(toAbility(clamp(projected+width,1,99))),confidence:samples>=4&&observedMatches>=20?'中等':'较低',currentAbility:Math.round(toAbility(evidence.ability)),trend,notes};
  r.observations[`${observer}/${id}`]=report;s.revision=(s.revision||0)+1;return structuredClone(report);
 }
 
@@ -152,7 +156,7 @@ export function setYouthPath(s,id,path,options={}){
 function runDraft(s,date){
  const r=ensurePlayerRegistry(s),year=Number(date.slice(0,4));if(r.drafts.some(d=>d.year===year))return;
  const candidates=Object.values(r.players).filter(p=>{const reg=r.registrations[p.id],age=youthAge(p,date);return reg.pathway==='royal'&&['youth','free'].includes(reg.status)&&age>=18-1e-6&&age<24&&!reg.draftEnteredYear&&!reg.signedAt;});
- const order=draftOrder([...(s.draftRanking||s.members.closed)].reverse(),{seed:`draft:${year}`}),pool=[...candidates],picks=[],standards=new Map(footballTeams.map(t=>[t.id,clubStandard(s,t.id)]));
+ const order=draftOrder([...(s.draftRanking||METRO_SYSTEMS.flatMap(id=>s.members[id]))].reverse(),{seed:`draft:${year}`}),pool=[...candidates],picks=[],standards=new Map(seniorTeams(s).map(t=>[t.id,clubStandard(s,t.id)]));
  for(const pick of order){
   if(!pool.length)break;
   const roster=registeredRoster(s,pick.club);
@@ -171,7 +175,7 @@ function runDraft(s,date){
 function review(s,date){
  const r=ensurePlayerRegistry(s);if(r.reviews.includes(date))return;r.reviews.push(date);
  const context=recruitmentContext(s,date,id=>registeredRoster(s,id));recruitmentContexts.set(s,context);
- const standards=new Map(footballTeams.map(t=>[t.id,clubStandard(s,t.id)]));
+ const standards=new Map(seniorTeams(s).map(t=>[t.id,clubStandard(s,t.id)]));
  for(const p of Object.values(r.players)){
   const reg=r.registrations[p.id],age=youthAge(p,date),score=ability(s,p,date),owner=reg.ownerClubId||reg.academyClubId;
   if(reg.status==='retired'||reg.status==='loan'||['youth','senior'].includes(reg.status)&&owner===s.manager?.clubId||s.manager&&reg.rightsClubId===s.manager.clubId)continue;
@@ -194,7 +198,7 @@ function review(s,date){
   }
   if(reg.status==='free'&&!reg.rightsClubId&&age>=18&&(reg.pathway!=='royal'||reg.draftEnteredYear)){
    // A limited set of clubs observes each player; release is not a permanent verdict.
-   const candidates=footballTeams.filter(t=>t.id!==s.manager?.clubId&&t.league!=='closed'&&(getDivision(divisionOf(s,t.id))?.tier||1)>=2&&rng(`trial:${date}:${p.id}:${t.id}`).next()<.04&&hasSeat(s,t.id,p,date)).map(t=>({club:t,standard:clubStandard(s,t.id,standards)})).filter(t=>score>=t.standard-13).sort((a,b)=>Math.abs(a.standard-score)-Math.abs(b.standard-score));
+   const candidates=seniorTeams(s).filter(t=>t.id!==s.manager?.clubId&&!isMetroLeague(t.league)&&(getDivision(divisionOf(s,t.id))?.tier||1)>=2&&rng(`trial:${date}:${p.id}:${t.id}`).next()<.04&&hasSeat(s,t.id,p,date)).map(t=>({club:t,standard:clubStandard(s,t.id,standards)})).filter(t=>score>=t.standard-13).sort((a,b)=>Math.abs(a.standard-score)-Math.abs(b.standard-score));
    if(candidates.length)move(s,p.id,date,'senior',candidates[0].club.id,{ownerClubId:candidates[0].club.id,signedAt:reg.signedAt||date},'sign','经过试训进入职业球队');
    else if(age>=28&&daysBetween(reg.statusSince,date)>730)move(s,p.id,date,'retired',null,{ownerClubId:null},'retire','结束球员生涯');
   }
@@ -243,8 +247,8 @@ function recruitmentReplacement(s,clubId,incoming,date,context){
 }
 function registerOriginal(s,p,date){
  const r=ensurePlayerRegistry(s);if(r.registrations[p.id])return r.registrations[p.id];
- const pathway=teamById.get(p.club)?.league==='closed'?'royal':'local';
- return r.registrations[p.id]={clubId:p.club,ownerClubId:p.club,academyClubId:p.club,academyId:null,pathway,status:'senior',statusSince:date,history:[{date,status:'senior',clubId:p.club,ownerClubId:p.club}]};
+ const pathway=isMetroLeague(teamById.get(p.club)?.league)?'royal':'local';
+ invalidateRosterIndex(s);return r.registrations[p.id]={clubId:p.club,ownerClubId:p.club,academyClubId:p.club,academyId:null,pathway,status:'senior',statusSince:date,history:[{date,status:'senior',clubId:p.club,ownerClubId:p.club}]};
 }
 function fillVacancies(s,clubId,date,{minimum=18,goalkeepers=2}={}){
  const r=ensurePlayerRegistry(s),managed=clubId===s.manager?.clubId;
@@ -262,7 +266,7 @@ function fillVacancies(s,clubId,date,{minimum=18,goalkeepers=2}={}){
   }).sort((a,b)=>ability(s,b,date)-ability(s,a,date)||a.id.localeCompare(b.id));
   if(!candidates.length)return;
   const p=candidates[0],reg=r.registrations[p.id],isYouth=reg.status==='youth';
-  move(s,p.id,date,'senior',clubId,{ownerClubId:clubId,signedAt:reg.signedAt||date,rightsClubId:null,rightsUntil:null},isYouth?'promote':'sign',isYouth?'提拔青训球员补充比赛名单':'签约补充一线队位置');
+  if(move(s,p.id,date,'senior',clubId,{ownerClubId:clubId,signedAt:reg.signedAt||date,rightsClubId:null,rightsUntil:null},isYouth?'promote':'sign',isYouth?'提拔青训球员补充比赛名单':'签约补充一线队位置')===false)return;
  }
 }
 function retirePlayers(s,date){
@@ -280,7 +284,7 @@ function retirePlayers(s,date){
   const clubId=reg.clubId;move(s,p.id,date,'retired',null,{ownerClubId:null},'retire','结束职业生涯');
   if(clubId)fillVacancies(s,clubId,date);
  }
- for(const team of footballTeams)fillVacancies(s,team.id,date);
+ for(const team of seniorTeams(s))fillVacancies(s,team.id,date);
 }
 export function advanceYouthPathways(s,date=s.date){
  if(!registryDate(date))throw Error('青训日期无效');
@@ -310,7 +314,7 @@ export function youthWeekContext(s,p,startDate,endDate){
   const state=[...reg.history].reverse().find(h=>h.date<day);if(!state||state.status!=='free')continue;
   const month=Number(day.slice(5,7));if(month<2||month>11||new Date(`${day}T12:00:00Z`).getUTCDay()!==6)continue;
   const random=rng(`youth-match:${p.id}:${day}`);if(random.next()<(state.status==='free'?.28:.12))continue;
-  const minutes=random.int(30,75),opposition=52,score=preciseRating(p);
+  const minutes=random.int(30,75),opposition=52,score=preciseSkill(p);
   const challenge=clamp(1-Math.max(0,score-opposition-5)/45-Math.max(0,opposition-score-15)/80,.25,1);
   result.fixtures.push({date:day,minutes,challenge});result.minutes+=minutes;result.appearances++;weighted+=minutes*challenge;
  }

@@ -1,14 +1,18 @@
+import {seniorTeams,allKnownTeams,knownTeam} from './team-directory.js';
+import {isMetroLeague,METRO_SYSTEMS} from './catalog.js';
 import {footballTeams} from '../football/data.js';
-import {preciseRating} from '../football/players.js';
+import {preciseRating,preciseSkill,available} from '../football/players.js';
+import {fatiguePenalty} from '../football/workload.js';
 import {clamp,rng} from '../football/random.js';
 import {getDivision} from './catalog.js';
 import {addDays,daysBetween} from './calendar.js';
-import {ensurePlayerRegistry,registryDate,playerAgeOnDate} from './registry.js';
+import {ensurePlayerRegistry,registryDate,playerAgeOnDate,registeredRoster} from './registry.js';
+import {fixtureSides} from './participants.js';
 
-const teams=new Map(footballTeams.map(t=>[t.id,t]));
+const teams={get:knownTeam,has:id=>Boolean(knownTeam(id))};
 const selections=new Set(['balanced','development','competitive']);
 const focusCapacity=2,contexts=new WeakMap(),memberLevels=new WeakMap();
-const qualityJitter=new Map(footballTeams.map(t=>[t.id,(rng(`academy-quality:${t.id}`).next()-.5)*.03]));
+const qualityJitter=new Map(allKnownTeams.map(t=>[t.id,(rng(`academy-quality:${t.id}`).next()-.5)*.03]));
 const slots=['GK','CB','CB','LB','RB','DM','CM','AM','LW','RW','ST'];
 const families={GK:'keeper',CB:'centreback',LB:'fullback',RB:'fullback',DM:'midfield',CM:'midfield',AM:'midfield',LW:'forward',RW:'forward',ST:'forward'};
 const stateOn=(reg,date)=>reg?.history?.findLast(h=>h.date<date);
@@ -25,12 +29,12 @@ export function academyReport(s,clubId=s.manager?.clubId){
  if(!teams.has(clubId))throw Error('青训俱乐部不存在');
  const r=ensurePlayerRegistry(s),plan=r.academies?.[clubId]?.history.at(-1)||{selection:'balanced',focusPlayers:[]};
  const players=Object.values(r.players).filter(p=>r.registrations[p.id]?.status==='youth'&&r.registrations[p.id].clubId===clubId).map(p=>({id:p.id,name:p.name,position:p.position,ability:Math.round(preciseRating({...p,attributes:s.development?.records?.[p.id]?.attributes||p.attributes}))}));
- return {level:levelOf(s,clubId),quality:qualityOf(s,clubId),focusCapacity,focusPlayers:activeFocus(s,clubId,plan.focusPlayers),selection:plan.selection,managed:s.manager?.clubId===clubId&&teams.get(clubId).league!=='closed',players,effectiveFrom:plan.date?addDays(plan.date,1):null};
+ return {level:levelOf(s,clubId),quality:qualityOf(s,clubId),focusCapacity,focusPlayers:activeFocus(s,clubId,plan.focusPlayers),selection:plan.selection,managed:s.manager?.clubId===clubId&&!isMetroLeague(teams.get(clubId).league),players,effectiveFrom:plan.date?addDays(plan.date,1):null};
 }
 export function setAcademyPlan(s,{selection,focusPlayers}={}){
  if(s.activeMatch)throw Error('请在比赛结束后调整青训安排');
  const clubId=s.manager?.clubId;if(!teams.has(clubId))throw Error('请先接手俱乐部');
- if(teams.get(clubId).league==='closed')throw Error('皇家学院由学院负责培养');
+ if(isMetroLeague(teams.get(clubId).league))throw Error('皇家学院由学院负责培养');
  const report=academyReport(s,clubId),next={selection:selection??report.selection,focusPlayers:focusPlayers??report.focusPlayers};
  if(!selections.has(next.selection)||!Array.isArray(next.focusPlayers)||next.focusPlayers.length>focusCapacity||new Set(next.focusPlayers).size!==next.focusPlayers.length||next.focusPlayers.some(id=>!controlled(s.playerRegistry.registrations[id],clubId)))throw Error('青训安排无效：重点名额最多两人，限本队地方青年');
  const r=ensurePlayerRegistry(s);r.academies??={};const academy=r.academies[clubId]??={history:[]};
@@ -49,7 +53,7 @@ export function validateAcademies(s){
  const academies=s.playerRegistry?.academies;if(academies===undefined)return s;
  if(!academies||typeof academies!=='object'||Array.isArray(academies))throw Error('青训安排存档无效');
  for(const [clubId,academy] of Object.entries(academies)){
-  if(!teams.has(clubId)||teams.get(clubId).league==='closed'||!academy||!Array.isArray(academy.history)||!academy.history.length)throw Error('青训安排存档无效');
+  if(!teams.has(clubId)||isMetroLeague(teams.get(clubId).league)||!academy||!Array.isArray(academy.history)||!academy.history.length)throw Error('青训安排存档无效');
   let last='';for(const plan of academy.history){
    if(!registryDate(plan.date)||plan.date<=last||plan.date>s.date||!selections.has(plan.selection)||!Array.isArray(plan.focusPlayers)||plan.focusPlayers.length>focusCapacity||new Set(plan.focusPlayers).size!==plan.focusPlayers.length||plan.focusPlayers.some(id=>{
     const reg=s.playerRegistry.registrations[id],eligible=reg?.history?.some((h,i)=>h.date<=plan.date&&(!reg.history[i+1]||reg.history[i+1].date>=plan.date)&&h.status==='youth'&&h.clubId===clubId&&h.ownerClubId===clubId);return !s.playerRegistry.players[id]||reg.pathway!=='local'||!eligible;
@@ -61,11 +65,18 @@ export function validateAcademies(s){
 
 function fit(position,slot){if(position==='GK'||slot==='GK')return position===slot?0:100;if(position===slot)return 0;if(families[position]===families[slot])return 4;return 12;}
 function healthOn(s,p,date){const h=s.playerState?.[p.id],elapsed=h?Math.max(0,daysBetween(h.date,date)):0;return {injury:Math.max(0,(h?.injuryDays??p.injuryDays??0)-elapsed),condition:h?clamp(h.condition+elapsed*7,0,100):100};}
-function buildLineup(s,clubId,players,date){
+function buildLineup(s,clubId,players,date,competitions=[]){
  const selection=planOn(s,clubId,date).selection,level=levelOf(s,clubId),candidates=[];
+ const senior=s.economy?.financeVersion&&competitions.length?registeredRoster(s,clubId):[];
+ const ready=(p,competition)=>{const h=healthOn(s,p,date),r=s.development?.records?.[p.id];return available({...p,injuryDays:h.injury,condition:h.condition-fatiguePenalty(r?.fatigue),suspended:s.discipline?.[`${competition}/${p.id}`]?.ban||0,playedToday:[r?.lastMatchDate,r?.lastYouthMatchDate].includes(date)});};
+ const contracted=players.filter(p=>s.playerRegistry.registrations[p.id]?.pathway==='local'&&s.economy?.contracts[p.id]?.club===clubId&&playerAgeOnDate(p,date)>=17&&playerAgeOnDate(p,date)<21);
+ const reserveForSenior=Boolean(s.economy?.financeVersion)&&competitions.some(c=>senior.filter(p=>ready(p,c)).length<18);
+ const emergency=Boolean(s.economy?.financeVersion)&&competitions.some(c=>[...senior,...contracted].filter(p=>ready(p,c)).length<11);
  for(const p of players){
   const health=healthOn(s,p,date),record=s.development?.records?.[p.id];if(health.injury>0||health.condition<40||record?.lastMatchDate===date)continue;
-  candidates.push({id:p.id,position:p.position,age:playerAgeOnDate(p,date),ability:preciseRating({...p,attributes:record?.attributes||p.attributes}),condition:health.condition,background:false});
+  const age=playerAgeOnDate(p,date);
+  if(reserveForSenior&&s.playerRegistry.registrations[p.id]?.pathway==='local'&&age>=(emergency?16:17)&&age<21&&s.economy.contracts[p.id]?.club===clubId)continue;
+  candidates.push({id:p.id,position:p.position,age:playerAgeOnDate(p,date),ability:preciseSkill({...p,attributes:record?.attributes||p.attributes}),condition:health.condition,background:false});
  }
  // The saved three-player intake is a shortlist, not the entire academy.
  // Stable background teammates occupy the remaining first-team and bench seats.
@@ -96,8 +107,9 @@ export function prepareAcademyContext(s,start,end){
  if(r&&dates.length){
   const all=Object.values(r.players);
   for(const date of dates){
+   const firstTeam=new Map();if(s.economy?.financeVersion)for(const m of s.fixtures||[]){if(m.date!==date||m.bye)continue;for(const club of Object.values(fixtureSides(s,m))){if(!club)continue;const list=firstTeam.get(club)||[];list.push(m.competition);firstTeam.set(club,list);}}
    const clubs=new Map();for(const p of all){const state=stateOn(r.registrations[p.id],date);if(state?.status!=='youth')continue;if(!clubs.has(state.clubId))clubs.set(state.clubId,[]);clubs.get(state.clubId).push(p);}
-   for(const [clubId,players] of clubs){const lineup=buildLineup(s,clubId,players,date);context.lineups.set(`${clubId}/${date}`,lineup);for(const fixture of lineup.players){const list=context.fixtures.get(fixture.id)||[];list.push(fixture);context.fixtures.set(fixture.id,list);}}
+   for(const [clubId,players] of clubs){const lineup=buildLineup(s,clubId,players,date,firstTeam.get(clubId)||[]);context.lineups.set(`${clubId}/${date}`,lineup);for(const fixture of lineup.players){const list=context.fixtures.get(fixture.id)||[];list.push(fixture);context.fixtures.set(fixture.id,list);}}
   }
  }
  contexts.set(s,context);return context;

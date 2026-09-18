@@ -1,4 +1,6 @@
-import {registeredPlayers,registeredPlayer,registeredRoster,ensurePlayerRegistry} from './registry.js';
+import {calibratePotential,toSkill} from '../football/ability.js';
+import {isMetroLeague,METRO_SYSTEMS} from './catalog.js';
+import {registeredPlayers,registeredPlayer,registeredRoster,registeredYouth,ensurePlayerRegistry,invalidateRosterIndex} from './registry.js';
 import {footballTeams} from '../football/data.js';
 import {YEAR,cities,provinces} from '../world.js';
 import {generateYouthPlayer,preciseRating,POSITIONS,ATTRIBUTE_KEYS} from '../football/players.js';
@@ -20,7 +22,7 @@ export function setPlayerClub(s,p,club){
 }
 function registerPlayer(pop,p){if(pop.players[p.id])throw Error('球员身份重复');pop.players[p.id]=p;const index=rosterIndexes.get(pop);if(index){index.order.set(p.id,index.order.size);const list=index.get(p.club)||[];list.push(p);index.set(p.club,list);}}
 export function clubPlayers(s,club,{unit='senior'}={}){
- if(s.playerRegistry&&!s.population){const senior=unit==='senior'||unit==='all'?registeredRoster(s,club).map(registryView):[];if(unit==='senior')return senior;return [...senior,...Object.entries(s.playerRegistry.registrations).filter(([,reg])=>reg.clubId===club&&reg.status==='youth'&&(unit==='all'||unit==='youth')).map(([id])=>populationPlayer(s,id))];}
+ if(s.playerRegistry&&!s.population){const senior=unit==='senior'||unit==='all'?registeredRoster(s,club).map(registryView):[];if(unit==='senior')return senior;return [...senior,...(unit==='all'||unit==='youth'?registeredYouth(s,club).map(registryView):[])];}
  const index=s.population&&indexPopulation(s.population),list=index?index.get(club)||[]:teamById.get(club)?.roster||[];
  const selected=list.filter(p=>p.club===club&&!p.retired&&(unit==='all'||(p.unit||'senior')===unit));
  return index?selected.sort((a,b)=>index.order.get(a.id)-index.order.get(b.id)):selected;
@@ -31,6 +33,7 @@ export function createPopulation(year=YEAR){
  return pop;
 }
 export const ensurePopulation=s=>s.population||(s.playerRegistry|| (s.population=createPopulation(s.year)));
+export const currentSkill=(s,p)=>toSkill(currentAbility(s,p));
 export function currentAbility(s,p){return preciseRating({...p,attributes:s.development?.records[p.id]?.attributes||p.attributes});}
 function event(pop,year,type,p,club,extra={}){pop.events.push({id:`${year}:${type}:${p.id}`,year,type,player:p.id,club,...extra});}
 function numberPlayer(s,p){const used=new Set(clubPlayers(s,p.club,{unit:'all'}).filter(q=>q.id!==p.id).map(p=>p.number));let number=1;while(used.has(number))number++;p.number=number;}
@@ -50,11 +53,11 @@ function addIntake(pop,team,year,tier,date,roster){
   const random=rng(`intake:${team.id}:${year}`),count=4+(random.next()<.5?1:0);
   const region=provinces.find(p=>p.id===cities.find(c=>c.id===team.city).province).region;
   // Fixed tier talent distribution. No copying retirees or inflating ceilings from current world CA.
-  const median=team.league==='closed'?86:82-(tier-1)*8;
+  const median=isMetroLeague(team.league)?86:82-(tier-1)*8;
   for(let i=0;i<count;i++){
    const id=`youth:${year}:${team.id}:${i}`,position=intakePositions[(hash(team.id)+(year-YEAR)*5+i)%intakePositions.length];
    const potential=Math.round(clamp(median+random.normal()*8+(random.next()<.025?8:0),45,96));
-   const age=random.int(15,17),p=generateYouthPlayer({id,seed:`intake:${year}`,age,potential,position,region,identity:{club:team.id,city:team.city}});
+   const age=random.int(15,17),p=generateYouthPlayer({id,seed:`intake:${year}`,age,potential:calibratePotential(potential,id),position,region,identity:{club:team.id,city:team.city}});
    Object.assign(p,{birthYear:year-age,unit:'youth',joinedYear:year,intakeYear:year,registeredAt:date,retirementAge:(position==='GK'?37:34)+hash(`retire:${id}`)%5});let number=1;while(usedNumbers.has(number))number++;p.number=number;usedNumbers.add(number);registerPlayer(pop,p);event(pop,year,'intake',p,team.id);
   }
  return count;
@@ -76,7 +79,7 @@ export function annualPopulation(s){
    const needed=senior.length<23||peers.length<(p.position==='GK'?3:1);
    // Financial careers defer promotion until contract expiry has been settled,
    // then use payroll-checked reviews in market.js.
-   if(!s.economy&&team.id!==s.manager?.clubId&&age>=16&&senior.length<30&&(needed||age>=18&&currentAbility(s,p)>=best-6)){
+   if(!s.economy&&team.id!==s.manager?.clubId&&age>=16&&senior.length<30&&(needed||age>=18&&currentSkill(s,p)>=toSkill(best)-6)){
     promotePlayer(s,p.id,{automatic:true});result.promoted++;
    }else if(age>=21&&(!s.economy?.contracts[p.id]||s.economy.contracts[p.id].end<s.date)){
     // Aging out must not cancel a renewed contract; promotion remains a club decision.
@@ -91,7 +94,7 @@ export function validatePopulation(pop){
  if(pop.version!==1||!Number.isInteger(pop.processedYear)||pop.processedYear<YEAR||!pop.players||!Array.isArray(pop.events))throw Error('人员存档无效');
  if(new Set(pop.events.map(e=>e.id)).size!==pop.events.length||pop.events.some(e=>!pop.players[e.player]||!Number.isInteger(e.year)||e.year>pop.processedYear||!['intake','promotion','retirement','release'].includes(e.type)))throw Error('人员事件无效');
  for(const [id,p] of Object.entries(pop.players)){
-  if(id!==p.id||!POSITIONS[p.position]||!Number.isInteger(p.birthYear)||p.birthYear>pop.processedYear-15||p.birthYear<YEAR-60||!Number.isFinite(p.potential)||p.potential<1||p.potential>99||!Number.isInteger(p.retirementAge)||p.retirementAge<30||p.retirementAge>45||!['senior','youth','free','retired'].includes(p.unit)||p.club&&!teamById.has(p.club)||p.retired!==(p.unit==='retired')||!ATTRIBUTE_KEYS.every(k=>Number.isFinite(p.attributes?.[k])&&p.attributes[k]>=1&&p.attributes[k]<=99))throw Error('球员人员记录无效');
+  if(id!==p.id||!POSITIONS[p.position]||!Number.isInteger(p.birthYear)||p.birthYear>pop.processedYear-15||p.birthYear<YEAR-60||!Number.isFinite(p.potential)||p.potential<1||p.potential>200||!Number.isInteger(p.retirementAge)||p.retirementAge<30||p.retirementAge>45||!['senior','youth','free','retired'].includes(p.unit)||p.club&&!teamById.has(p.club)||p.retired!==(p.unit==='retired')||!ATTRIBUTE_KEYS.every(k=>Number.isFinite(p.attributes?.[k])&&p.attributes[k]>=1&&p.attributes[k]<=99))throw Error('球员人员记录无效');
   if(['senior','youth'].includes(p.unit)&&!p.club||['free','retired'].includes(p.unit)&&p.club)throw Error('球员归属无效');
  }
 }
@@ -99,11 +102,11 @@ export function validatePopulation(pop){
 export function persistPlayer(s,p,{type='transfer',date=s.date}={}){
  if(s.population)return;
  const r=ensurePlayerRegistry(s),old=r.registrations[p.id],before=old?.clubId??originalById.get(p.id)?.club??null;
- const reg=old??{pathway:teamById.get(before)?.league==='closed'?'royal':'local',academyClubId:before,academyId:null,history:[]};
+ const reg=old??{pathway:isMetroLeague(teamById.get(before)?.league)?'royal':'local',academyClubId:before,academyId:null,history:[]};
  const status=p.retired?'retired':p.unit,ownerClubId=['senior','youth'].includes(status)?p.club:null;
  Object.assign(reg,{status,clubId:p.club,ownerClubId,statusSince:date,number:p.number,loanUntil:null,rightsClubId:null,rightsUntil:null});
  if(status==='senior')reg.signedAt??=date;
  reg.marketMeta={...reg.marketMeta,...Object.fromEntries(['lastClub','lastTransfer','joinedYear','freeSince'].filter(k=>p[k]!==undefined).map(k=>[k,p[k]]))};
- reg.history.push({date,status,clubId:p.club,ownerClubId});r.registrations[p.id]=reg;
+ reg.history.push({date,status,clubId:p.club,ownerClubId});r.registrations[p.id]=reg;invalidateRosterIndex(s);
  r.events.push({id:`${p.id}:${r.events.length}`,playerId:p.id,date,type,clubId:p.club,fromClubId:before,text:{transfer:'转会签约',release:'合同解除',expiry:'合同到期',promotion:'提拔至一线队'}[type]||'注册更新'});
 }

@@ -1,3 +1,4 @@
+import {toAbility,toSkill,calibratePotential,talentCeiling,ABILITY_VERSION} from './ability.js';
 import {rng,clamp,mean} from './random.js';
 import {generateName} from './names.js';
 import {createBodyProfile,bodyAtAge} from './body.js';
@@ -23,17 +24,20 @@ export const POSITION_WEIGHTS={
  RW:{pace:3,acceleration:2,dribbling:3,crossing:2,offBall:2,finishing:1,technique:1},
  ST:{finishing:4,offBall:3,composure:2,heading:1,pace:2,acceleration:1,anticipation:2,firstTouch:1},
 };
-export function rating(player,position=player.position){const w=POSITION_WEIGHTS[position];if(!w)throw Error('未知位置');return Math.round(Object.entries(w).reduce((s,[k,v])=>s+player.attributes[k]*v,0)/Object.values(w).reduce((a,b)=>a+b,0));}
+export const rating=(player,position=player.position)=>Math.round(preciseRating(player,position));
+export const skillRating=(player,position=player.position)=>Math.round(preciseSkill(player,position));
 export function familiarity(player,position){if(player.position===position)return 1;if(player.secondary?.includes(position))return .95;if(player.position==='GK'||position==='GK')return .3;const groups=[['CB','LB','RB','DM'],['DM','CM','AM'],['LW','RW','AM','ST']];return (groups.some(g=>g.includes(player.position)&&g.includes(position))?.80:.61)+(player.personality?.adaptability??50)*.0006;}
 export function generatePlayer({id,seed='318',position='CM',quality=68,name,age,region='metro',culture,identity={}}={}){
  if(!id||!POSITIONS[position])throw Error('球员身份或位置无效');const r=rng(`${seed}:${id}`),attributes={};
  for(const key of ATTRIBUTE_KEYS){const important=POSITION_WEIGHTS[position][key]||0;const isGK=key in ATTRIBUTE_GROUPS.goalkeeper.fields;
    attributes[key]=Math.round(clamp(quality+(important?7:0)+r.normal()*9-(isGK&&position!=='GK'?48:0)-(position==='GK'&&!isGK&&key in ATTRIBUTE_GROUPS.technical.fields?20:0),1,99));}
  const personality=Object.fromEntries(Object.keys(PERSONALITY).map(k=>[k,Math.round(clamp(55+r.normal()*18,5,95))]));
- const years=age??r.int(18,33),current=rating({position,attributes});
+ const years=age??r.int(18,33),current=preciseSkill({position,attributes});
  if(!name){r.int(0,19);r.int(0,19);} // Preserve the established non-name random sequence.
  const identityName=name?{name}:generateName({id,seed,region,culture});
- return {id,...identityName,age:years,position,secondary:position==='CM'?['DM','AM']:position==='LW'?['RW']:position==='RB'?['LB']:[],attributes,personality,potential:Math.min(99,current+(years<24?r.int(6,20):r.int(0,5))),height:position==='GK'||position==='CB'?r.int(182,198):r.int(169,191),weight:r.int(67,89),foot:r.next()<.23?'left':'right',weakFoot:r.int(30,85),condition:100,sharpness:80,morale:65,injuryDays:0,suspended:0,retired:false,...identity};
+ const ceiling=toSkill(talentCeiling(id)),raw=preciseSkill({position,attributes});
+ if(raw>ceiling)for(const key of ATTRIBUTE_KEYS)attributes[key]=clamp(attributes[key]-(raw-ceiling),1,99);
+ return {id,...identityName,age:years,position,secondary:position==='CM'?['DM','AM']:position==='LW'?['RW']:position==='RB'?['LB']:[],attributes,personality,abilityVersion:ABILITY_VERSION,potential:calibratePotential(Math.min(99,current+(years<24?r.int(6,20):r.int(0,5))),id,preciseRating({position,attributes})),height:position==='GK'||position==='CB'?r.int(182,198):r.int(169,191),weight:r.int(67,89),foot:r.next()<.23?'left':'right',weakFoot:r.int(30,85),condition:100,sharpness:80,morale:65,injuryDays:0,suspended:0,retired:false,...identity};
 }
 export const ROSTER_POSITIONS=['GK','GK','GK','CB','CB','CB','CB','LB','LB','RB','RB','DM','DM','CM','CM','CM','AM','AM','LW','LW','RW','RW','ST','ST','ST'];
 export function generateTeam({id,name=id,seed='318',quality=68}={}){return {id,name,roster:ROSTER_POSITIONS.map((position,i)=>generatePlayer({id:`${id}-${i}`,seed,position,quality:quality+(i%3===0?3:i%3===2?-5:0)}))};}
@@ -46,9 +50,10 @@ export const FORMATIONS={
 export const available=p=>!p.retired&&!p.injuryDays&&!p.suspended&&!p.playedToday&&p.condition>25;
 export function selectLineup(team,formation='4-3-3'){
  if(!FORMATIONS[formation])throw Error('未知阵型');const used=new Set();
- return FORMATIONS[formation].map(position=>{const p=team.roster.filter(p=>available(p)&&!used.has(p.id)).sort((a,b)=>rating(b,position)*familiarity(b,position)-rating(a,position)*familiarity(a,position)||a.id.localeCompare(b.id))[0];if(!p)throw Error('健康球员不足 11 人');used.add(p.id);return {id:p.id,position};});
+ return FORMATIONS[formation].map(position=>{const p=team.roster.filter(p=>available(p)&&!used.has(p.id)).sort((a,b)=>skillRating(b,position)*familiarity(b,position)-skillRating(a,position)*familiarity(a,position)||a.id.localeCompare(b.id))[0];if(!p)throw Error('健康球员不足 11 人');used.add(p.id);return {id:p.id,position};});
 }
-export function preciseRating(player,position=player.position){
+export const preciseRating=(player,position=player.position)=>toAbility(preciseSkill(player,position));
+export function preciseSkill(player,position=player.position){
  const weights=POSITION_WEIGHTS[position];
  return Object.entries(weights).reduce((sum,[key,weight])=>sum+player.attributes[key]*weight,0)/Object.values(weights).reduce((a,b)=>a+b,0);
 }
@@ -78,7 +83,7 @@ export function developWeek(player,{seed='week',training='balanced',minutes=0,lo
  const age=p.developmentAge??p.age,traits=developmentTraits(p),rates=annualDevelopmentRates(age,developmentPosition,traits.maturityShift);
  const healthy=trainingAvailability??1-Math.min(days,p.injuryDays||0)/days;
  if(!Number.isFinite(healthy)||healthy<0||healthy>1)throw Error('训练出勤无效');
- const current=preciseRating(p,developmentPosition),headroom=Math.max(0,p.potential-current),room=1-Math.exp(-headroom/12);
+ const current=preciseSkill(p,developmentPosition),headroom=Math.max(0,toSkill(p.potential)-current),room=1-Math.exp(-headroom/12);
  const attitude=(.6+(p.personality.professionalism||0)/250)*(.85+(p.personality.ambition||0)*.003);
  const experience=clamp(minutes/(90*days/7))*challenge;
  const overload=1-Math.min(.4,Math.max(0,minutes/(days/7)-120)/300);
@@ -97,7 +102,7 @@ export function developWeek(player,{seed='week',training='balanced',minutes=0,lo
   p.attributes[key]=clamp(baseline[key]+(gain-rehabLoss)*days/365.25,1,profile?Math.max(baseline[key],profile.ceilings[key]):99);
  }
  // Enforce the ceiling with unrounded ability: focused work cannot cross it.
- const gained=preciseRating(p,developmentPosition)-current;
+ const gained=preciseSkill(p,developmentPosition)-current;
  if(gained>headroom){const ratio=headroom/gained;for(const key of ATTRIBUTE_KEYS)p.attributes[key]=baseline[key]+(p.attributes[key]-baseline[key])*ratio;}
  p.developmentAge=age+days/365.25;p.age=Math.floor(p.developmentAge+1e-9);
  Object.assign(p,bodyAtAge(p,p.developmentAge));
@@ -107,7 +112,7 @@ export function developWeek(player,{seed='week',training='balanced',minutes=0,lo
  return p;
 }
 export function generateYouthPlayer({id,seed='academy',age=16,potential,position='CM',...options}={}){
- if(!Number.isInteger(age)||age<15||age>18||potential!==undefined&&(!Number.isFinite(potential)||potential<45||potential>99))throw Error('青训年龄或潜力无效');
+ if(!Number.isInteger(age)||age<15||age>18||potential!==undefined&&(!Number.isFinite(potential)||potential<1||potential>200))throw Error('青训年龄或潜力无效');
  const p=generatePlayer({...options,id,seed,age,position});
  const r=rng(`youth:v2:${seed}:${id}`),shared=r.normal(),domains={};
  // Design priors for an academy intake, not population measurements. Shared
@@ -125,7 +130,9 @@ export function generateYouthPlayer({id,seed='academy',age=16,potential,position
  }
  // Explicit PA remains available for authored players and calibration. Adjust
  // the envelope, never recenter current ability to PA minus an age constant.
- if(potential!==undefined){
+ const naturalPotential=preciseRating({position,attributes:ceilings});
+ potential??=calibratePotential(preciseSkill({position,attributes:ceilings}),id);
+ if(Math.abs(naturalPotential-potential)>1e-10){
   const original={...ceilings};let lo=-100,hi=100;
   for(let i=0;i<50;i++){
    const offset=(lo+hi)/2,attributes=Object.fromEntries(ATTRIBUTE_KEYS.map(key=>[key,clamp(original[key]+offset,1,99)]));
@@ -135,7 +142,7 @@ export function generateYouthPlayer({id,seed='academy',age=16,potential,position
  }
  for(const key of ATTRIBUTE_KEYS)p.attributes[key]=clamp(initial[key],1,Math.max(1,ceilings[key]-4));
  p.growthProfile={version:1,generationVersion:3,referencePosition:position,domains,ceilings,maturityShift,learningRate,priorTraining};
- p.potential=potential??preciseRating({position,attributes:ceilings});p.sharpness=55;
+ p.potential=potential;p.sharpness=55;
  p.bodyProfile=createBodyProfile(p,{age,seed});Object.assign(p,bodyAtAge(p,age));return p;
 }
 export function publicProfile(p){const {personality,potential,developmentAge,growthProfile,bodyProfile,...visible}=structuredClone(p);return visible;}

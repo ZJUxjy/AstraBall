@@ -1,8 +1,11 @@
+import {seniorTeams} from './team-directory.js';
+import {isMetroLeague} from './catalog.js';
 import {footballTeams} from '../football/data.js';
 import {averageQuality,selectLineup,available,FORMATIONS} from '../football/players.js';
 import {createMatch,stepMatch,applyCommand,getResult,snapshotMatch,restoreMatch,validateTactics,DEFAULT_TACTICS} from '../football/engine.js';
 import {pendingMatches,fixtureSides,matchInput,commitResult,tableFor,seasonTeam} from './runtime.js';
 import {getDivision} from './catalog.js';
+import {planAITeam} from '../football/ai-team.js';
 
 export const managedDivision=s=>Object.keys(s.members).find(id=>s.members[id].includes(s.manager?.clubId));
 export const isManagedFixture=(s,m)=>Boolean(s.manager&&Object.values(fixtureSides(s,m)).includes(s.manager.clubId));
@@ -14,16 +17,24 @@ export function seasonGoal(s,clubId=s.manager?.clubId){
  if(!d)throw Error('俱乐部未注册');
  const ranking=s.members[division].map(id=>seasonTeam(s,id,division)).sort((a,b)=>averageQuality(b)-averageQuality(a)||a.id.localeCompare(b.id));
  const predicted=ranking.findIndex(t=>t.id===clubId)+1;
- const target=division==='closed'?(predicted<=8?8:12):predicted<=Math.ceil(d.teams/4)?(d.promotion?6:3):predicted<=Math.ceil(d.teams/2)?Math.ceil(d.teams/2):d.teams-(d.relegation||0);
- return {year:s.year,division,target,label:division==='closed'&&target===8?'进入季后赛':d.promotion&&target===6?'进入升级附加赛':target===d.teams-(d.relegation||0)&&d.relegation?'完成保级':`联赛前 ${target} 名`};
+ const target=isMetroLeague(division)?(predicted<=4?4:8):predicted<=Math.ceil(d.teams/4)?(d.promotion?6:3):predicted<=Math.ceil(d.teams/2)?Math.ceil(d.teams/2):d.teams-(d.relegation||0);
+ return {year:s.year,division,target,label:isMetroLeague(division)&&target===4?'进入星冠季后赛':d.promotion&&target===6?'联赛前六':target===d.teams-(d.relegation||0)&&d.relegation?'完成保级':`联赛前 ${target} 名`};
 }
 export function appointManager(s,clubId){
  if(s.manager)throw Error('已经接手俱乐部');
- if(!footballTeams.some(t=>t.id===clubId))throw Error('俱乐部不存在');
+ if(!seniorTeams(s).some(t=>t.id===clubId))throw Error('俱乐部不存在');
  s.manager={clubId,appointed:s.date,tactics:{...DEFAULT_TACTICS},lineup:null,goal:seasonGoal(s,clubId)};
  s.revision++;
 }
 export function preferredLineup(team,tactics,saved){
+ const ready=team.roster.filter(available);
+ if(ready.length>=7&&ready.length<11){
+  const roles=[...FORMATIONS[tactics.formation]],remaining=[...roles];
+  if(saved?.length===ready.length&&new Set(saved.map(p=>p.id)).size===saved.length&&saved.filter(p=>p.position==='GK').length===1&&saved.every(p=>{const index=remaining.indexOf(p.position);if(index<0||!ready.some(q=>q.id===p.id))return false;remaining.splice(index,1);return true;})){
+   const indices=new Set();return saved.map(slot=>{const anchorIndex=roles.findIndex((p,i)=>p===slot.position&&!indices.has(i));indices.add(anchorIndex);return {...slot,anchorIndex};});
+  }
+  return planAITeam(team,{formation:tactics.formation,allowIncomplete:true,requireKeeper:true}).lineup;
+ }
  const fallback=selectLineup(team,tactics.formation),used=new Set();
  // Keep eligible selections in their positions; fill gaps from the best available XI.
  return FORMATIONS[tactics.formation].map((position,i)=>{

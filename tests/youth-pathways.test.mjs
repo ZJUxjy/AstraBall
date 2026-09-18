@@ -33,7 +33,7 @@ test('皇家学院不受关联职业队任意处分，毕业选秀先授签约�
  const s=state('sky'),p=youthPlayers(s,'sky').find(p=>p.age===17);
  assert.deepEqual(youthOpportunities(s,p.id).actions,[]);assert.throws(()=>setYouthPath(s,p.id,'promote'));assert.throws(()=>setYouthPath(s,p.id,'release'));
  s.date='0319-01-01';s.year=319;advanceYouthPathways(s,s.date);s.date='0319-01-20';advanceYouthPathways(s,s.date);
- const draft=s.playerRegistry.drafts.find(d=>d.year===319);assert.equal(draft.picks.length,16);
+ const draft=s.playerRegistry.drafts.find(d=>d.year===319);assert.equal(draft.picks.length,36);
  assert.equal(new Set(draft.picks.map(p=>p.playerId)).size,draft.picks.length);
  const pick=draft.picks.find(p=>p.club==='sky');assert.ok(pick);
  const reg=s.playerRegistry.registrations[pick.playerId];assert.equal(reg.status,'free');assert.equal(reg.rightsClubId,'sky');

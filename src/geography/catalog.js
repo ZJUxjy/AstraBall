@@ -6,7 +6,7 @@ export const WORLD = {
 
 export const REGION_CATALOG = [
   { id: 'metro', name: '大都会区', en: 'METROPOLIS', population: 10, color: '#d5bc7d', capital: 'crown-city',
-    text: '经济最发达。皇家学院、两套地方升降级体系与星冠封闭联盟并存。', terrain: '中央高原 · 温带海湾', culture: '皇家学院 / 商业联盟 / 地方俱乐部',
+    text: '经济最发达。三个平级职业联赛共同角逐星冠季后赛。', terrain: '中央高原 · 温带海湾', culture: '皇家学院 / 商业联盟 / 地方俱乐部',
   },
   { id: 'lima', name: '利玛区', en: 'LIMA', population: 155, color: '#82b6b6', capital: 'haimen',
     text: '西部海岸与群岛大区。港口贸易、海洋工程和跨城足球网络发达。', terrain: '海岸平原 · 季风群岛', culture: '港口俱乐部 / 海运网络 / 街区青训',

@@ -13,7 +13,7 @@ import {footballTeams} from '../src/football/data.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
 const career=()=>{const s=createSeason();s.manager={clubId:'bridge'};ensureEconomy(s);return s;};
 test('合并新档只有主项目青训届次，合同转会写回同一注册表且JSON恢复一致',()=>{
- const s=career();assert.equal(s.population,undefined);assert.equal(Object.keys(s.playerRegistry.players).length,268*3);
+ const s=career();assert.equal(s.population,undefined);assert.equal(Object.keys(s.playerRegistry.players).length,217*3);
  let q;for(const p of footballTeams.flatMap(t=>t.roster)){try{q=transferQuote(s,p.id,'bridge');break;}catch{}}
  assert.ok(q);const before=registeredRoster(s,q.from).length;signPlayer(s,q.player);
  assert.equal(registeredPlayer(s,q.player).club,'bridge');assert.equal(populationPlayer(s,q.player).club,'bridge');assert.equal(registeredRoster(s,q.from).length,before-1);

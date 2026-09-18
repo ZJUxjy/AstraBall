@@ -1,7 +1,7 @@
 import {populationPlayers,populationPlayer} from './population.js';
 import {YEAR} from '../world.js';
 import {footballTeams} from '../football/data.js';
-import {ATTRIBUTE_GROUPS,developWeek,preciseRating,focusWeights,trainingEfficiency} from '../football/players.js';
+import {ATTRIBUTE_GROUPS,developWeek,preciseRating,preciseSkill,focusWeights,trainingEfficiency} from '../football/players.js';
 import {clamp} from '../football/random.js';
 import {dateOf,addDays,daysBetween} from './calendar.js';
 
@@ -61,12 +61,12 @@ export function recordDevelopmentMatch(s,input,result,date){
  for(let side=0;side<2;side++){
   const opponent=side?input.home:input.away;
   const outfield=opponent.roster.filter(p=>p.position!=='GK');
-  const opposition=outfield.reduce((n,p)=>n+preciseRating(p),0)/outfield.length;
+  const opposition=outfield.reduce((n,p)=>n+preciseSkill(p),0)/outfield.length;
   for(const line of result.teams[side].players||[]){
    if(!(line.minutes>0))continue;
    const p=populationPlayer(s,line.id);if(!p)continue;
    const r=recordFor(d,p);enterYear(r,p,date);
-   const ability=preciseRating({...p,attributes:r.attributes});
+   const ability=preciseSkill({...p,attributes:r.attributes});
    const challenge=clamp(1-Math.max(0,ability-opposition-5)/45-Math.max(0,opposition-ability-15)/80,.25,1);
    const minutes=Math.min(line.minutes,result.seconds/60);
    r.minutes+=minutes;r.appearances++;r.seasonMinutes+=minutes;r.seasonAppearances++;

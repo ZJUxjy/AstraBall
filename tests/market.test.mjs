@@ -17,7 +17,7 @@ test('初始合同和预算确定性，旧档按当前日期迁移，财务账�
 });
 test('转会一次性更新归属、双方资金、工资和正式比赛输入，重复签约不扣款',()=>{
  const s=createSeason();s.manager={clubId:'sky'};const q=target(s),p=populationPlayer(s,q.player),seller=p.club,buyerBefore=s.economy.accounts.sky.cash,sellerBefore=s.economy.accounts[seller].cash;
- const beforeRoster=clubPlayers(s,'sky').length;signPlayer(s,p.id);assert.equal(p.club,'sky');assert.equal(s.economy.contracts[p.id].club,'sky');assert.equal(s.economy.accounts.sky.cash,buyerBefore-q.fee-q.bonus);assert.equal(s.economy.accounts[seller].cash,sellerBefore+q.fee);
+ const beforeRoster=clubPlayers(s,'sky').length;signPlayer(s,p.id);assert.equal(p.club,'sky');assert.equal(s.economy.contracts[p.id].club,'sky');assert.equal(s.economy.accounts.sky.cash,buyerBefore-q.fee-q.bonus);assert.equal(s.economy.accounts[seller].cash,sellerBefore+q.fee-(q.transferTax||0));
  assert.ok(!seasonTeam(s,seller).roster.some(x=>x.id===p.id));assert.equal(seasonTeam(s,'sky').roster.length,beforeRoster+1);assert.ok(seasonTeam(s,'sky').roster.some(x=>x.id===p.id));validateEconomy(s);
  const saved=digest(s);assert.throws(()=>signPlayer(s,p.id));assert.equal(digest(s),saved);const restored=validateSave(clone(s));assert.equal(digest(restored.economy),digest(s.economy));
  const fixture=s.fixtures.find(m=>m.home==='sky'&&!m.bye);assert.ok(matchInput(s,fixture).home.roster.some(x=>x.id===p.id));
@@ -56,7 +56,7 @@ test('已续约青年满二十一岁仍保留有效合同，实际到期后才�
  p.birthYear=298;s.economy.contracts[id].end='0318-12-31';renewPlayer(s,id,3);
  assert.equal(s.economy.contracts[id].end,'0320-12-31');
  for(const year of [319,320,321]){
-  const date=`${String(year).padStart(4,'0')}-01-01`;accrueEconomy(s,date);s.year=year;s.date=date;s.calendar=seasonCalendar(year);annualPopulation(s);rolloverEconomy(s);
+  const date=`${String(year).padStart(4,'0')}-01-01`;accrueEconomy(s,date);s.year=year;s.date=date;s.calendar=seasonCalendar(year);const scheduled=createSeason({year});s.fixtures=scheduled.fixtures;s.groups=scheduled.groups;s.qualifiers=scheduled.qualifiers;annualPopulation(s);rolloverEconomy(s);
   const current=populationPlayer(s,id);
   if(year<=320){assert.equal(current.club,'sky');assert.equal(current.unit,'youth');assert.equal(s.economy.contracts[id].end,'0320-12-31');assert.ok(clubPlayers(s,'sky',{unit:'youth'}).some(q=>q.id===id));}
   else{assert.equal(current.club,null);assert.equal(current.unit,'free');assert.equal(s.economy.contracts[id],undefined);}
@@ -81,8 +81,8 @@ test('自由球员跨联赛签约仍执行剩余联赛停赛，杯赛纪律独�
 });
 test('拨款覆盖固定工资容量而不随当前工资滚动膨胀，升降级按级别缩放',()=>{
  const s=createSeason();for(const a of Object.values(s.economy.accounts))assert.equal(a.funding,a.wageLimit*72);
- const club=s.members['lima-league-3'][0],other=s.members['lima-league-2'][0],before=s.economy.accounts[club].wageLimit;
- s.members['lima-league-3'][0]=other;s.members['lima-league-2'][0]=club;accrueEconomy(s,'0319-01-01');s.year=319;s.date='0319-01-01';s.calendar=seasonCalendar(s.year);annualPopulation(s);rolloverEconomy(s);
+ const club=s.members['liberlin-league-3'][0],other=s.members['liberlin-league-2'][0],before=s.economy.accounts[club].wageLimit;
+ s.members['liberlin-league-3'][0]=other;s.members['liberlin-league-2'][0]=club;accrueEconomy(s,'0319-01-01');s.year=319;s.date='0319-01-01';s.calendar=seasonCalendar(s.year);annualPopulation(s);rolloverEconomy(s);
  const a=s.economy.accounts[club];assert.ok(a.wageLimit>before);assert.equal(a.funding,a.wageLimit*72);assert.equal(a.baseWageLimit,before);validateEconomy(s);
 });
 test('AI 一线队已有二十七人时仍优先补缺失门将',()=>{
@@ -105,7 +105,7 @@ test('引援预算预筛不改变完整交易结果：新档、自由球员与�
 
 
 test('AI 续约为未填满的一线队预留工资，避免有现金却无法补员',()=>{
- const s=createSeason(),club='crown-league-3-club-3';for(const p of clubPlayers(s,club).slice(-7)){setPlayerClub(s,p,null);p.unit='free';delete s.economy.contracts[p.id];}
+ const s=createSeason(),club='liberlin-league-3-club-3';for(const p of clubPlayers(s,club).slice(-7)){setPlayerClub(s,p,null);p.unit='free';delete s.economy.contracts[p.id];}
  const p=clubPlayers(s,club).find(p=>p.position==='CM'),before=s.economy.contracts[p.id].weeklyWage;
  s.economy.accounts[club].wageLimit=wageBill(s,club)+Math.ceil(before*.1/7)*7;
  assert.doesNotThrow(()=>renewalQuote(s,p.id));const hashBefore=digest(s);assert.throws(()=>renewPlayer(s,p.id,3,{automatic:true}),/预算/);assert.equal(digest(s),hashBefore);
@@ -114,7 +114,7 @@ test('AI 续约为未填满的一线队预留工资，避免有现金却无法�
 
 
 test('合同到期后定期补查青年队，关闭转会窗口也能在预算内提拔现有球员',()=>{
- const s=createSeason(),club='crown-league-3-club-3';s.date='0318-05-01';s.economy.through=s.date;s.economy.nextReview='0318-05-08';s.development={...s.development,since:s.date,through:s.date,nextWeek:'0318-05-08'};
+ const s=createSeason(),club='liberlin-league-3-club-3';s.date='0318-05-01';s.economy.through=s.date;s.economy.nextReview='0318-05-08';s.development={...s.development,since:s.date,through:s.date,nextWeek:'0318-05-08'};
  const academy=clubPlayers(s,club,{unit:'youth'}).filter(p=>318-p.birthYear>=16),ids=new Set(academy.map(p=>p.id));assert.ok(ids.size>0);
  for(const p of clubPlayers(s,club).slice(-8)){setPlayerClub(s,p,null);p.unit='free';delete s.economy.contracts[p.id];}
  const count=clubPlayers(s,club).length;advanceCareer(s,'0318-05-08');assert.ok(clubPlayers(s,club).length>count);assert.ok(clubPlayers(s,club).some(p=>ids.has(p.id)));assert.ok(s.economy.moves.some(m=>m.type==='professional'&&ids.has(m.player)));assert.equal(s.economy.moves.filter(m=>m.type==='transfer').length,0);validateEconomy(s);

@@ -70,9 +70,9 @@ test('托管完整赛季：杯赛动态晋级不跳过本队，跨年保留执�
  }
  finishDate(s,'0318-12-31');
  const ours=s.fixtures.filter(m=>!m.bye&&Object.values(fixtureSides(s,m)).includes('sky'));
- assert.equal(coached,ours.length);assert.ok(coached>=33);
+ assert.equal(coached,ours.length);assert.ok(coached>=25);
  assert.ok(ours.every(m=>m.score&&m.coached));assert.equal(pendingMatches(s).length,0);
- assert.equal(tableFor(s,'closed').find(r=>r.id==='sky').played,30);
+ assert.equal(tableFor(s,'closed').find(r=>r.id==='sky').played,22);
  const next=followingSeason(s);assert.equal(next.manager.clubId,'sky');assert.deepEqual(next.manager.tactics,s.manager.tactics);
  assert.deepEqual(next.manager.lineup,s.manager.lineup);assert.equal(next.activeMatch,null);assert.equal(seasonGoal(next).year,319);
 });

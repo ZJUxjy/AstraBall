@@ -1,15 +1,17 @@
-import {clubs,players,cities,provinces,leagues} from '../world.js';
-import {generateTeam,generatePlayer} from './players.js';
+import {clubProfile} from '../competitions/club-profiles.js';
+import {clubs,players,cities,provinces} from '../world.js';
+import {generateTeam,generatePlayer,preciseRating} from './players.js';
 import {generateName} from './names.js';
 import {rng} from './random.js';
 const positions={'中场':'CM','前锋':'ST','边锋':'LW','门将':'GK','中后卫':'CB'};
 const knownKeys={'传球':'passing','视野':'vision','控球':'firstTouch','速度':'pace','盘带':'dribbling','传中':'crossing','反应':'reflexes','扑救':'handling','出击':'rushingOut','防守':'tackling','预判':'anticipation','力量':'strength'};
-export const footballTeams=clubs.map((club,i)=>{
- const team=generateTeam({id:club.id,name:club.name,seed:'astraball-318',quality:club.league==='closed'?74:68+(i%3)-(leagues.find(l=>l.id===club.league).levels.find(d=>d.id===club.division).tier-1)*9});
+export const footballTeams=clubs.map(club=>{
+ const team=generateTeam({id:club.id,name:club.name,seed:'astraball-318',quality:clubProfile(club.id).initialQuality});
  const used=new Set();
  for(const known of players.filter(p=>p.club===club.id&&!p.retired)){
   const p=generatePlayer({id:known.id,name:known.name,position:positions[known.position]||'CM',age:known.age,quality:Math.min(83,known.reputation*.45+35),seed:'astraball-318',identity:{city:known.city,family:known.family,training:known.training,worldId:known.id}});
   for(const [label,value] of known.skills)if(knownKeys[label])p.attributes[knownKeys[label]]=value;
+  p.potential=Math.max(p.potential,preciseRating(p));
   if(known.height)p.height=known.height;if(known.foot)p.foot=known.foot==='左脚'?'left':'right';p.number=known.number;if(known.originalName)Object.assign(p,{originalName:known.originalName,culture:known.culture,surname:known.surname,firstName:known.firstName,secondSurname:known.secondSurname});
   const replace=team.roster.findIndex(q=>q.position===p.position&&!used.has(q.id));if(replace>=0)team.roster[replace]=p;else team.roster.push(p);used.add(p.id);
  }
